@@ -69,10 +69,10 @@ function ControlPanel({
         </button>
         <button
           onClick={onClearHistory}
-          className="w-12 h-12 bg-red-700 text-white rounded-lg hover:bg-red-600 text-xl flex items-center justify-center shadow-lg"
+          className="w-12 h-12 bg-red-700 text-white rounded-lg hover:bg-red-600 text-2xl flex items-center justify-center shadow-lg"
           title="Clear History"
         >
-          🗑
+          ✕
         </button>
       </div>
 
