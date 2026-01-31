@@ -29,8 +29,9 @@ class TabModel extends window.EventEmitter {
       name = `Simulation ${n}`;
     }
 
+    // Use counter to ensure unique IDs even when called rapidly
     const newTab = {
-      id: `sim-${Date.now()}`,
+      id: `sim-${Date.now()}-${this.nextTabNumber}`,
       name: name,
       type: 'simulation'
     };
@@ -38,7 +39,7 @@ class TabModel extends window.EventEmitter {
     this.tabs.push(newTab);
     this.activeTabId = newTab.id;
 
-    // Update nextTabNumber for future reference (though we use smart search)
+    // Update nextTabNumber for future reference
     this.nextTabNumber++;
 
     this.emit('tab-added', { tab: newTab });
