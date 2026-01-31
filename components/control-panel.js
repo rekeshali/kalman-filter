@@ -34,9 +34,12 @@ function ControlPanel({
   onTimelineChange
 }) {
   return (
-    <div className="flex flex-col gap-3">
-      {/* Playback Controls */}
-      <div className="flex gap-2 justify-center flex-wrap">
+    <div className="bg-gray-800 p-4 rounded-lg border border-gray-700" style={{width: '304px'}}>
+      {/* Title */}
+      <h3 className="text-sm font-semibold text-gray-300 mb-3">Playback Controls</h3>
+
+      {/* Playback Buttons */}
+      <div className="flex gap-2 justify-center flex-nowrap">
         <button
           onClick={onStart}
           className="w-12 h-12 bg-green-700 text-white rounded-lg hover:bg-green-600 text-2xl disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center shadow-lg"
@@ -78,7 +81,7 @@ function ControlPanel({
 
       {/* Timeline Slider - only show when data exists */}
       {totalPoints > 0 && (
-        <div className="w-full px-2">
+        <div className="w-full mt-3 px-2">
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-400 w-8 text-right">0s</span>
             <input
