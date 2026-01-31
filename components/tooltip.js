@@ -22,9 +22,9 @@ function Tooltip({ text, position = 'bottom', children }) {
     : 'top-full mt-2';
 
   return (
-    <div className="tooltip-delay-group relative inline-block">
+    <div className="tooltip-delay-group relative inline-block w-full">
       {children}
-      <div className={`tooltip-content absolute left-1/2 -translate-x-1/2 ${positionClasses} z-50 w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg`}>
+      <div className={`tooltip-content absolute left-0 right-0 ${positionClasses} z-50 mx-auto max-w-xs p-2 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-pre-line break-words`}>
         {text}
       </div>
     </div>

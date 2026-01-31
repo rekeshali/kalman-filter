@@ -104,7 +104,7 @@ function ParameterControls({ parameters, onParameterChange }) {
         {/* Frequency and Scale */}
         <div className="grid grid-cols-2 gap-3 mb-2">
           <Tooltip
-            text={`Wave Frequency: ${frequency.toFixed(1)} Hz. Range: 0.1 - 2.0 Hz. Controls how fast the wave oscillates.`}
+            text={`Wave Frequency: ${frequency.toFixed(1)} Hz. Controls how fast the wave oscillates.\n\nRange: 0.1 - 2.0 Hz`}
             position="bottom"
           >
             <div>
@@ -119,7 +119,7 @@ function ParameterControls({ parameters, onParameterChange }) {
           </Tooltip>
 
           <Tooltip
-            text={`Wave Scale: ${scale.toFixed(1)}x. Range: 0.1x - 5.0x. Multiplies the wave amplitude.`}
+            text={`Wave Scale: ${scale.toFixed(1)}x. Multiplies the wave amplitude.\n\nRange: 0.1x - 5.0x`}
             position="bottom"
           >
             <div>
@@ -137,7 +137,7 @@ function ParameterControls({ parameters, onParameterChange }) {
         {/* Wave Type and Jitter */}
         <div className="grid grid-cols-2 gap-3">
           <Tooltip
-            text={`Wave Type: ${waveType.charAt(0).toUpperCase() + waveType.slice(1)}. Options: Sine, Triangle, Square. Determines the wave shape.`}
+            text={`Wave Type: ${waveType.charAt(0).toUpperCase() + waveType.slice(1)}. Determines the wave shape.\n\nOptions: Sine, Triangle, Square`}
             position="bottom"
           >
             <div>
@@ -205,7 +205,7 @@ function ParameterControls({ parameters, onParameterChange }) {
             <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Noise</p>
 
             <Tooltip
-              text={`Inertial Sensor Noise - TRUE: The actual noise level in the simulated sensor. Current: ${trueInertialNoise.charAt(0).toUpperCase() + trueInertialNoise.slice(1)}. Options: Zero, Low (0.05), Med (0.2), High (0.5)`}
+              text={`Inertial Sensor Noise - TRUE: The actual noise level in the simulated sensor. Current: ${trueInertialNoise.charAt(0).toUpperCase() + trueInertialNoise.slice(1)}\n\nOptions: Zero, Low (0.05), Med (0.2), High (0.5)`}
               position="top"
             >
               <div className="mb-2">
@@ -217,7 +217,7 @@ function ParameterControls({ parameters, onParameterChange }) {
             </Tooltip>
 
             <Tooltip
-              text={`Inertial Sensor Noise - EKF: What the filter thinks the noise level is (process noise Q matrix). Current: ${ekfProcessNoise.charAt(0).toUpperCase() + ekfProcessNoise.slice(1)}. Options: Zero, Low (0.05), Med (0.2), High (0.5)`}
+              text={`Inertial Sensor Noise - EKF: What the filter thinks the noise level is (process noise Q matrix). Current: ${ekfProcessNoise.charAt(0).toUpperCase() + ekfProcessNoise.slice(1)}\n\nOptions: Zero, Low (0.05), Med (0.2), High (0.5)`}
               position="top"
             >
               <div>
@@ -234,7 +234,7 @@ function ParameterControls({ parameters, onParameterChange }) {
             <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Bias</p>
 
             <Tooltip
-              text={`Inertial Sensor Bias - TRUE: Constant offset error in accelerometer readings. Current: ${trueInertialBias.charAt(0).toUpperCase() + trueInertialBias.slice(1)}. Options: Zero, Low (0.1), Med (0.5), High (1.0)`}
+              text={`Inertial Sensor Bias - TRUE: Constant offset error in accelerometer readings. Current: ${trueInertialBias.charAt(0).toUpperCase() + trueInertialBias.slice(1)}\n\nOptions: Zero, Low (0.1), Med (0.5), High (1.0)`}
               position="top"
             >
               <div className="mb-2">
@@ -246,7 +246,7 @@ function ParameterControls({ parameters, onParameterChange }) {
             </Tooltip>
 
             <Tooltip
-              text={`Inertial Sensor Bias - EKF: What the filter thinks the bias is. Current: ${ekfInertialBias.charAt(0).toUpperCase() + ekfInertialBias.slice(1)}. Options: Zero, Low (0.1), Med (0.5), High (1.0)`}
+              text={`Inertial Sensor Bias - EKF: What the filter thinks the bias is. Current: ${ekfInertialBias.charAt(0).toUpperCase() + ekfInertialBias.slice(1)}\n\nOptions: Zero, Low (0.1), Med (0.5), High (1.0)`}
               position="top"
             >
               <div>
@@ -275,7 +275,7 @@ function ParameterControls({ parameters, onParameterChange }) {
             <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Noise</p>
 
             <Tooltip
-              text={`External Probe Noise - TRUE: The actual noise level in the simulated probe. Current: ${trueProbeNoise.charAt(0).toUpperCase() + trueProbeNoise.slice(1)}. Options: Zero, Low (0.02), Med (0.1), High (0.3)`}
+              text={`External Probe Noise - TRUE: The actual noise level in the simulated probe. Current: ${trueProbeNoise.charAt(0).toUpperCase() + trueProbeNoise.slice(1)}\n\nOptions: Zero, Low (0.02), Med (0.1), High (0.3)`}
               position="top"
             >
               <div className="mb-2">
@@ -287,7 +287,7 @@ function ParameterControls({ parameters, onParameterChange }) {
             </Tooltip>
 
             <Tooltip
-              text={`External Probe Noise - EKF: What the filter thinks the probe noise is (measurement noise R matrix). Current: ${ekfProbeNoise.charAt(0).toUpperCase() + ekfProbeNoise.slice(1)}. Options: Zero, Low (0.02), Med (0.1), High (0.3)`}
+              text={`External Probe Noise - EKF: What the filter thinks the probe noise is (measurement noise R matrix). Current: ${ekfProbeNoise.charAt(0).toUpperCase() + ekfProbeNoise.slice(1)}\n\nOptions: Zero, Low (0.02), Med (0.1), High (0.3)`}
               position="top"
             >
               <div>
@@ -304,7 +304,7 @@ function ParameterControls({ parameters, onParameterChange }) {
             <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Bias</p>
 
             <Tooltip
-              text={`External Probe Bias - TRUE: Constant offset error in position sensor. Current: ${trueProbeBias.charAt(0).toUpperCase() + trueProbeBias.slice(1)}. Options: Zero, Low (0.05), Med (0.2), High (0.5)`}
+              text={`External Probe Bias - TRUE: Constant offset error in position sensor. Current: ${trueProbeBias.charAt(0).toUpperCase() + trueProbeBias.slice(1)}\n\nOptions: Zero, Low (0.05), Med (0.2), High (0.5)`}
               position="top"
             >
               <div className="mb-2">
@@ -316,7 +316,7 @@ function ParameterControls({ parameters, onParameterChange }) {
             </Tooltip>
 
             <Tooltip
-              text={`External Probe Bias - EKF: What the filter thinks the probe bias is. Current: ${ekfProbeBias.charAt(0).toUpperCase() + ekfProbeBias.slice(1)}. Options: Zero, Low (0.05), Med (0.2), High (0.5)`}
+              text={`External Probe Bias - EKF: What the filter thinks the probe bias is. Current: ${ekfProbeBias.charAt(0).toUpperCase() + ekfProbeBias.slice(1)}\n\nOptions: Zero, Low (0.05), Med (0.2), High (0.5)`}
               position="top"
             >
               <div>
