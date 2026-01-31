@@ -14,13 +14,41 @@
   <div id="root"></div>
 
   <!-- Load modular dependencies in order (regular JS) -->
+  <!-- 1. Utils -->
   <script src="./utils/noise.js"></script>
+  <script src="./utils/event-emitter.js"></script>
+
+  <!-- 2. Physics/Filter -->
   <script src="./physics/wave-simulator.js"></script>
   <script src="./config.js"></script>
   <script src="./filter/kalman-filter.js"></script>
 
-  <!-- Load main app with Babel for JSX transpilation -->
-  <script type="text/babel" src="./app.js"></script>
+  <!-- 3. Services -->
+  <script src="./services/storage-service.js"></script>
+  <script src="./services/data-collector.js"></script>
+  <script src="./services/chart-manager.js"></script>
+
+  <!-- 4. Models -->
+  <script src="./models/parameter-model.js"></script>
+  <script src="./models/tab-model.js"></script>
+  <script src="./models/simulation-state.js"></script>
+
+  <!-- 5. Controllers -->
+  <script src="./controllers/simulation-controller.js"></script>
+
+  <!-- 6. Components (React with Babel) -->
+  <script type="text/babel" src="./components/tooltip.js"></script>
+  <script type="text/babel" src="./components/control-panel.js"></script>
+  <script type="text/babel" src="./components/parameter-controls.js"></script>
+  <script type="text/babel" src="./components/chart-canvas.js"></script>
+  <script type="text/babel" src="./components/tab-bar.js"></script>
+  <script type="text/babel" src="./components/welcome-screen.js"></script>
+
+  <!-- 7. Main View -->
+  <script type="text/babel" src="./views/app-view.js"></script>
+
+  <!-- OLD: Legacy monolithic app (kept for rollback) -->
+  <!-- <script type="text/babel" src="./app.js"></script> -->
 
   <!-- Render the React application -->
   <script type="text/babel">

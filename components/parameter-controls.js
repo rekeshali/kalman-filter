@@ -1,0 +1,337 @@
+/**
+ * ParameterControls component
+ * All 13 simulation parameters with tooltips
+ */
+
+const { Tooltip } = window;
+
+/**
+ * LevelButtonGroup - Reusable button group for zero/low/med/high levels
+ */
+function LevelButtonGroup({ value, onChange, compact = false }) {
+  const sizeClass = compact ? 'px-1.5 py-1 text-xs' : 'px-2 py-1.5 text-sm';
+
+  return (
+    <div className="flex">
+      <button
+        onClick={() => onChange('zero')}
+        className={`flex-1 ${sizeClass} font-medium transition-colors ${
+          value === 'zero'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+        } rounded-l`}
+      >
+        Ø
+      </button>
+      <button
+        onClick={() => onChange('low')}
+        className={`flex-1 ${sizeClass} font-medium transition-colors ${
+          value === 'low'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+        }`}
+      >
+        L
+      </button>
+      <button
+        onClick={() => onChange('med')}
+        className={`flex-1 ${sizeClass} font-medium transition-colors ${
+          value === 'med'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+        }`}
+      >
+        M
+      </button>
+      <button
+        onClick={() => onChange('high')}
+        className={`flex-1 ${sizeClass} font-medium transition-colors ${
+          value === 'high'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+        } rounded-r`}
+      >
+        H
+      </button>
+    </div>
+  );
+}
+
+/**
+ * ParameterControls - All simulation parameter controls
+ * @param {Object} props
+ * @param {Object} props.parameters - All parameter values
+ * @param {Function} props.onParameterChange - Parameter change handler (name, value)
+ */
+function ParameterControls({ parameters, onParameterChange }) {
+  const {
+    frequency = 0.5,
+    scale = 1.0,
+    waveType = 'sine',
+    jitter = 'low',
+    trueInertialNoise = 'low',
+    trueInertialBias = 'low',
+    ekfProcessNoise = 'low',
+    ekfInertialBias = 'low',
+    trueProbeNoise = 'low',
+    trueProbeBias = 'low',
+    ekfProbeNoise = 'low',
+    ekfProbeBias = 'low'
+  } = parameters;
+
+  const incrementFrequency = () => {
+    onParameterChange('frequency', Math.min(2.0, frequency + 0.1));
+  };
+
+  const decrementFrequency = () => {
+    onParameterChange('frequency', Math.max(0.1, frequency - 0.1));
+  };
+
+  const incrementScale = () => {
+    onParameterChange('scale', Math.min(5.0, scale + 0.5));
+  };
+
+  const decrementScale = () => {
+    onParameterChange('scale', Math.max(0.1, scale - 0.5));
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Wave Parameters */}
+      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
+        <h3 className="font-semibold text-gray-300 text-sm mb-2">Wave Parameters</h3>
+
+        {/* Frequency and Scale */}
+        <div className="grid grid-cols-2 gap-3 mb-2">
+          <Tooltip
+            text={`Wave Frequency: ${frequency.toFixed(1)} Hz. Range: 0.1 - 2.0 Hz. Controls how fast the wave oscillates.`}
+            position="bottom"
+          >
+            <div>
+              <label className="block text-xs font-medium mb-1 text-gray-200">
+                Frequency: <span className="text-blue-400">{frequency.toFixed(1)} Hz</span>
+              </label>
+              <div className="flex gap-2">
+                <button onClick={decrementFrequency} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
+                <button onClick={incrementFrequency} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
+              </div>
+            </div>
+          </Tooltip>
+
+          <Tooltip
+            text={`Wave Scale: ${scale.toFixed(1)}x. Range: 0.1x - 5.0x. Multiplies the wave amplitude.`}
+            position="bottom"
+          >
+            <div>
+              <label className="block text-xs font-medium mb-1 text-gray-200">
+                Scale: <span className="text-blue-400">{scale.toFixed(1)}x</span>
+              </label>
+              <div className="flex gap-2">
+                <button onClick={decrementScale} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
+                <button onClick={incrementScale} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
+              </div>
+            </div>
+          </Tooltip>
+        </div>
+
+        {/* Wave Type and Jitter */}
+        <div className="grid grid-cols-2 gap-3">
+          <Tooltip
+            text={`Wave Type: ${waveType.charAt(0).toUpperCase() + waveType.slice(1)}. Options: Sine, Triangle, Square. Determines the wave shape.`}
+            position="bottom"
+          >
+            <div>
+              <label className="block text-xs font-medium mb-1 text-gray-200">
+                Type: <span className="text-blue-400">{waveType.charAt(0).toUpperCase() + waveType.slice(1)}</span>
+              </label>
+              <div className="flex">
+                <button
+                  onClick={() => onParameterChange('waveType', 'sine')}
+                  className={`flex-1 px-2 py-1.5 text-sm font-medium transition-colors ${
+                    waveType === 'sine' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  } rounded-l`}
+                  title="Sine"
+                >
+                  ∿
+                </button>
+                <button
+                  onClick={() => onParameterChange('waveType', 'triangle')}
+                  className={`flex-1 px-2 py-1.5 text-sm font-medium transition-colors ${
+                    waveType === 'triangle' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                  title="Triangle"
+                >
+                  △
+                </button>
+                <button
+                  onClick={() => onParameterChange('waveType', 'square')}
+                  className={`flex-1 px-2 py-1.5 text-sm font-medium transition-colors ${
+                    waveType === 'square' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  } rounded-r`}
+                  title="Square"
+                >
+                  ⊓⊔
+                </button>
+              </div>
+            </div>
+          </Tooltip>
+
+          <Tooltip
+            text={`Process Noise (Jitter): ${jitter.charAt(0).toUpperCase() + jitter.slice(1)}. Random perturbations to the true trajectory (Ornstein-Uhlenbeck process).`}
+            position="bottom"
+          >
+            <div>
+              <label className="block text-xs font-medium mb-1 text-gray-200">
+                Jitter: <span className="text-blue-400">{jitter.charAt(0).toUpperCase() + jitter.slice(1)}</span>
+              </label>
+              <LevelButtonGroup value={jitter} onChange={(v) => onParameterChange('jitter', v)} />
+            </div>
+          </Tooltip>
+        </div>
+      </div>
+
+      {/* Inertial Sensor */}
+      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
+        <Tooltip
+          text="Inertial Sensor (Accelerometer): Measures acceleration (second derivative of position). Examples: IMU, MEMS accelerometer in smartphones, drones, vehicles."
+          position="top"
+        >
+          <h3 className="font-semibold text-gray-300 text-sm mb-2">Inertial Sensor</h3>
+        </Tooltip>
+
+        <div className="grid grid-cols-2 gap-3">
+          {/* Noise Column */}
+          <div>
+            <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Noise</p>
+
+            <Tooltip
+              text={`Inertial Sensor Noise - TRUE: The actual noise level in the simulated sensor. Current: ${trueInertialNoise.charAt(0).toUpperCase() + trueInertialNoise.slice(1)}. Options: Zero, Low (0.05), Med (0.2), High (0.5)`}
+              position="top"
+            >
+              <div className="mb-2">
+                <label className="block text-xs mb-1 text-gray-200">
+                  TRUE: <span className="text-blue-400">{trueInertialNoise.charAt(0).toUpperCase() + trueInertialNoise.slice(1)}</span>
+                </label>
+                <LevelButtonGroup value={trueInertialNoise} onChange={(v) => onParameterChange('trueInertialNoise', v)} compact />
+              </div>
+            </Tooltip>
+
+            <Tooltip
+              text={`Inertial Sensor Noise - EKF: What the filter thinks the noise level is (process noise Q matrix). Current: ${ekfProcessNoise.charAt(0).toUpperCase() + ekfProcessNoise.slice(1)}. Options: Zero, Low (0.05), Med (0.2), High (0.5)`}
+              position="top"
+            >
+              <div>
+                <label className="block text-xs mb-1 text-gray-200">
+                  EKF: <span className="text-blue-400">{ekfProcessNoise.charAt(0).toUpperCase() + ekfProcessNoise.slice(1)}</span>
+                </label>
+                <LevelButtonGroup value={ekfProcessNoise} onChange={(v) => onParameterChange('ekfProcessNoise', v)} compact />
+              </div>
+            </Tooltip>
+          </div>
+
+          {/* Bias Column */}
+          <div>
+            <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Bias</p>
+
+            <Tooltip
+              text={`Inertial Sensor Bias - TRUE: Constant offset error in accelerometer readings. Current: ${trueInertialBias.charAt(0).toUpperCase() + trueInertialBias.slice(1)}. Options: Zero, Low (0.1), Med (0.5), High (1.0)`}
+              position="top"
+            >
+              <div className="mb-2">
+                <label className="block text-xs mb-1 text-gray-200">
+                  TRUE: <span className="text-blue-400">{trueInertialBias.charAt(0).toUpperCase() + trueInertialBias.slice(1)}</span>
+                </label>
+                <LevelButtonGroup value={trueInertialBias} onChange={(v) => onParameterChange('trueInertialBias', v)} compact />
+              </div>
+            </Tooltip>
+
+            <Tooltip
+              text={`Inertial Sensor Bias - EKF: What the filter thinks the bias is. Current: ${ekfInertialBias.charAt(0).toUpperCase() + ekfInertialBias.slice(1)}. Options: Zero, Low (0.1), Med (0.5), High (1.0)`}
+              position="top"
+            >
+              <div>
+                <label className="block text-xs mb-1 text-gray-200">
+                  EKF: <span className="text-blue-400">{ekfInertialBias.charAt(0).toUpperCase() + ekfInertialBias.slice(1)}</span>
+                </label>
+                <LevelButtonGroup value={ekfInertialBias} onChange={(v) => onParameterChange('ekfInertialBias', v)} compact />
+              </div>
+            </Tooltip>
+          </div>
+        </div>
+      </div>
+
+      {/* External Probe */}
+      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
+        <Tooltip
+          text="External Probe (Position Sensor): Directly measures position. Examples: GPS, ultrasonic rangefinder, laser distance meter. Provides reference measurements to correct drift."
+          position="top"
+        >
+          <h3 className="font-semibold text-gray-300 text-sm mb-2">External Probe</h3>
+        </Tooltip>
+
+        <div className="grid grid-cols-2 gap-3">
+          {/* Noise Column */}
+          <div>
+            <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Noise</p>
+
+            <Tooltip
+              text={`External Probe Noise - TRUE: The actual noise level in the simulated probe. Current: ${trueProbeNoise.charAt(0).toUpperCase() + trueProbeNoise.slice(1)}. Options: Zero, Low (0.02), Med (0.1), High (0.3)`}
+              position="top"
+            >
+              <div className="mb-2">
+                <label className="block text-xs mb-1 text-gray-200">
+                  TRUE: <span className="text-blue-400">{trueProbeNoise.charAt(0).toUpperCase() + trueProbeNoise.slice(1)}</span>
+                </label>
+                <LevelButtonGroup value={trueProbeNoise} onChange={(v) => onParameterChange('trueProbeNoise', v)} compact />
+              </div>
+            </Tooltip>
+
+            <Tooltip
+              text={`External Probe Noise - EKF: What the filter thinks the probe noise is (measurement noise R matrix). Current: ${ekfProbeNoise.charAt(0).toUpperCase() + ekfProbeNoise.slice(1)}. Options: Zero, Low (0.02), Med (0.1), High (0.3)`}
+              position="top"
+            >
+              <div>
+                <label className="block text-xs mb-1 text-gray-200">
+                  EKF: <span className="text-blue-400">{ekfProbeNoise.charAt(0).toUpperCase() + ekfProbeNoise.slice(1)}</span>
+                </label>
+                <LevelButtonGroup value={ekfProbeNoise} onChange={(v) => onParameterChange('ekfProbeNoise', v)} compact />
+              </div>
+            </Tooltip>
+          </div>
+
+          {/* Bias Column */}
+          <div>
+            <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Bias</p>
+
+            <Tooltip
+              text={`External Probe Bias - TRUE: Constant offset error in position sensor. Current: ${trueProbeBias.charAt(0).toUpperCase() + trueProbeBias.slice(1)}. Options: Zero, Low (0.05), Med (0.2), High (0.5)`}
+              position="top"
+            >
+              <div className="mb-2">
+                <label className="block text-xs mb-1 text-gray-200">
+                  TRUE: <span className="text-blue-400">{trueProbeBias.charAt(0).toUpperCase() + trueProbeBias.slice(1)}</span>
+                </label>
+                <LevelButtonGroup value={trueProbeBias} onChange={(v) => onParameterChange('trueProbeBias', v)} compact />
+              </div>
+            </Tooltip>
+
+            <Tooltip
+              text={`External Probe Bias - EKF: What the filter thinks the probe bias is. Current: ${ekfProbeBias.charAt(0).toUpperCase() + ekfProbeBias.slice(1)}. Options: Zero, Low (0.05), Med (0.2), High (0.5)`}
+              position="top"
+            >
+              <div>
+                <label className="block text-xs mb-1 text-gray-200">
+                  EKF: <span className="text-blue-400">{ekfProbeBias.charAt(0).toUpperCase() + ekfProbeBias.slice(1)}</span>
+                </label>
+                <LevelButtonGroup value={ekfProbeBias} onChange={(v) => onParameterChange('ekfProbeBias', v)} compact />
+              </div>
+            </Tooltip>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Export to global scope
+window.ParameterControls = ParameterControls;
