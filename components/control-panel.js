@@ -87,7 +87,6 @@ function ControlPanel({
               max="100"
               value={timelinePosition}
               onChange={(e) => onTimelineChange(Number(e.target.value))}
-              disabled={isRunning}
               className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
               title={`Time: ${currentTime.toFixed(1)}s`}
             />

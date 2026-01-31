@@ -53,18 +53,28 @@ function EKFVisualization() {
           appearance: none;
           width: 4px;
           height: 20px;
-          background: #10b981;
+          background: #6b7280;  /* gray-500 default */
           border-radius: 2px;
           cursor: pointer;
+          transition: background-color 0.2s;
         }
 
         .slider-thumb::-moz-range-thumb {
           width: 4px;
           height: 20px;
-          background: #10b981;
+          background: #6b7280;  /* gray-500 default */
           border-radius: 2px;
           cursor: pointer;
           border: none;
+          transition: background-color 0.2s;
+        }
+
+        .slider-thumb:hover::-webkit-slider-thumb {
+          background: #9ca3af;  /* gray-400 hover */
+        }
+
+        .slider-thumb:hover::-moz-range-thumb {
+          background: #9ca3af;  /* gray-400 hover */
         }
 
         .slider-thumb:disabled {
