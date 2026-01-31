@@ -6,16 +6,16 @@ class SimulationController extends window.EventEmitter {
   constructor() {
     super();
 
-    // Initialize models
-    this.parameterModel = new window.ParameterModel();
+    // Tab model (shared across all tabs)
     this.tabModel = new window.TabModel();
-    this.simulationState = new window.SimulationState();
+
+    // Per-tab state: Map<tabId, {parameterModel, simulationState, isRunning}>
+    this.tabStates = new Map();
 
     // Initialize services
     this.chartManager = new window.ChartManager();
 
     // Animation state
-    this.isRunning = false;
     this.animationFrameId = null;
 
     // Chart registry: chartName -> chartId
@@ -29,6 +29,37 @@ class SimulationController extends window.EventEmitter {
 
     // Load saved state
     this._loadState();
+
+    // Initialize state for current tab
+    this._ensureTabState(this.tabModel.getActiveTab());
+  }
+
+  /**
+   * Ensure tab state exists for a given tab ID
+   * @private
+   */
+  _ensureTabState(tabId) {
+    if (!tabId || tabId === 'welcome') return;
+
+    if (!this.tabStates.has(tabId)) {
+      this.tabStates.set(tabId, {
+        parameterModel: new window.ParameterModel(),
+        simulationState: new window.SimulationState(),
+        isRunning: false
+      });
+    }
+  }
+
+  /**
+   * Get current tab's state
+   * @private
+   */
+  _getCurrentTabState() {
+    const activeTabId = this.tabModel.getActiveTab();
+    if (!activeTabId || activeTabId === 'welcome') return null;
+
+    this._ensureTabState(activeTabId);
+    return this.tabStates.get(activeTabId);
   }
 
   /**
@@ -36,24 +67,52 @@ class SimulationController extends window.EventEmitter {
    * @private
    */
   _setupEventListeners() {
-    // Parameter changes trigger state persistence
-    this.parameterModel.on('parameter-changed', () => {
-      this._saveState();
-      this.emit('parameters-updated', this.parameterModel.getAllParameters());
-    });
-
-    // Tab changes trigger state persistence
-    this.tabModel.on('tab-added', () => {
+    // Tab changes
+    this.tabModel.on('tab-added', ({ tab }) => {
+      // Create fresh state for new tab
+      this._ensureTabState(tab.id);
       this._saveState();
       this.emit('tabs-updated', this.tabModel.getAllTabs());
     });
 
-    this.tabModel.on('tab-removed', () => {
+    this.tabModel.on('tab-removed', ({ tabId }) => {
+      // Remove tab state
+      const tabState = this.tabStates.get(tabId);
+      if (tabState && tabState.isRunning) {
+        this._stopAnimation();
+      }
+      this.tabStates.delete(tabId);
       this._saveState();
       this.emit('tabs-updated', this.tabModel.getAllTabs());
     });
 
     this.tabModel.on('tab-activated', ({ tabId }) => {
+      // Stop current animation
+      this._stopAnimation();
+
+      // Ensure new tab has state
+      this._ensureTabState(tabId);
+
+      // Clear and update charts with new tab's data
+      const tabState = this._getCurrentTabState();
+      if (tabState) {
+        const data = tabState.simulationState.getDataArrays();
+        if (data && data.times && data.times.length > 0) {
+          this._updateAllCharts(data);
+        } else {
+          this._clearAllCharts();
+        }
+
+        // Emit state updates
+        this.emit('parameters-updated', tabState.parameterModel.getAllParameters());
+        this.emit('running-changed', tabState.isRunning);
+
+        // Restart animation if tab was running
+        if (tabState.isRunning) {
+          this._startAnimation();
+        }
+      }
+
       this._saveState();
       this.emit('tab-changed', tabId);
     });
@@ -62,17 +121,27 @@ class SimulationController extends window.EventEmitter {
       this._saveState();
       this.emit('tabs-updated', this.tabModel.getAllTabs());
     });
+  }
 
-    // Simulation state changes trigger chart updates
-    this.simulationState.on('state-changed', (data) => {
-      this._updateAllCharts(data);
-      this.emit('simulation-updated', data);
-    });
+  /**
+   * Stop animation (helper method)
+   * @private
+   */
+  _stopAnimation() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+  }
 
-    this.simulationState.on('reset', () => {
-      this._clearAllCharts();
-      this.emit('simulation-reset');
-    });
+  /**
+   * Start animation (helper method)
+   * @private
+   */
+  _startAnimation() {
+    if (!this.animationFrameId) {
+      this._animate();
+    }
   }
 
   /**
@@ -80,21 +149,25 @@ class SimulationController extends window.EventEmitter {
    * @private
    */
   _loadState() {
-    const savedParams = window.StorageService.load('ekf-parameters');
-    if (savedParams) {
-      Object.keys(savedParams).forEach(key => {
-        this.parameterModel.setParameter(key, savedParams[key]);
-      });
-    }
-
     const savedTabs = window.StorageService.load('ekf-tabs');
     if (savedTabs && savedTabs.tabs) {
       let lastCreatedTabId = null;
+      const savedTabStates = window.StorageService.load('ekf-tab-states') || {};
 
       savedTabs.tabs.forEach(tab => {
         if (tab.type === 'simulation') {
           // Create new tab and track its ID
           lastCreatedTabId = this.tabModel.addTab(tab.name);
+
+          // Load saved parameters for this tab if they exist
+          // Use tab name as key since IDs change
+          if (savedTabStates[tab.name]) {
+            this._ensureTabState(lastCreatedTabId);
+            const tabState = this.tabStates.get(lastCreatedTabId);
+            Object.keys(savedTabStates[tab.name]).forEach(key => {
+              tabState.parameterModel.setParameter(key, savedTabStates[tab.name][key]);
+            });
+          }
         }
       });
 
@@ -111,11 +184,20 @@ class SimulationController extends window.EventEmitter {
    * @private
    */
   _saveState() {
-    window.StorageService.save('ekf-parameters', this.parameterModel.getAllParameters());
     window.StorageService.save('ekf-tabs', {
       tabs: this.tabModel.getAllTabs(),
       activeTabId: this.tabModel.getActiveTab()
     });
+
+    // Save per-tab parameters (indexed by tab name for persistence across sessions)
+    const tabStates = {};
+    this.tabModel.getAllTabs().forEach(tab => {
+      if (tab.type === 'simulation' && this.tabStates.has(tab.id)) {
+        const state = this.tabStates.get(tab.id);
+        tabStates[tab.name] = state.parameterModel.getAllParameters();
+      }
+    });
+    window.StorageService.save('ekf-tab-states', tabStates);
   }
 
   /**
@@ -266,10 +348,16 @@ class SimulationController extends window.EventEmitter {
    * @private
    */
   _animate() {
-    if (!this.isRunning) return;
+    const tabState = this._getCurrentTabState();
+    if (!tabState || !tabState.isRunning) return;
 
-    const params = this.parameterModel.getScaledParameters();
-    this.simulationState.step(params);
+    const params = tabState.parameterModel.getScaledParameters();
+    tabState.simulationState.step(params);
+
+    // Update charts
+    const data = tabState.simulationState.getDataArrays();
+    this._updateAllCharts(data);
+    this.emit('simulation-updated', data);
 
     this.animationFrameId = requestAnimationFrame(() => this._animate());
   }
@@ -278,47 +366,53 @@ class SimulationController extends window.EventEmitter {
    * Start simulation
    */
   start() {
-    if (this.isRunning) return;
+    const tabState = this._getCurrentTabState();
+    if (!tabState || tabState.isRunning) return;
 
     // Initialize if not already initialized
-    if (!this.simulationState.initialized) {
+    if (!tabState.simulationState.initialized) {
       this.reset();
+      return; // reset() will call start()
     }
 
-    this.isRunning = true;
+    tabState.isRunning = true;
     this.emit('running-changed', true);
-    this._animate();
+    this._startAnimation();
   }
 
   /**
    * Pause simulation
    */
   pause() {
-    if (!this.isRunning) return;
+    const tabState = this._getCurrentTabState();
+    if (!tabState || !tabState.isRunning) return;
 
-    this.isRunning = false;
+    tabState.isRunning = false;
     this.emit('running-changed', false);
-
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
+    this._stopAnimation();
   }
 
   /**
    * Reset simulation to initial state
    */
   reset() {
-    const wasRunning = this.isRunning;
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return;
+
+    const wasRunning = tabState.isRunning;
 
     // Stop animation if running
-    if (this.isRunning) {
+    if (tabState.isRunning) {
       this.pause();
     }
 
     // Reset simulation state
-    const params = this.parameterModel.getScaledParameters();
-    this.simulationState.reset(params);
+    const params = tabState.parameterModel.getScaledParameters();
+    tabState.simulationState.reset(params);
+
+    // Clear and update charts
+    this._clearAllCharts();
+    this.emit('simulation-reset');
 
     // Restart if was running
     if (wasRunning) {
@@ -330,9 +424,13 @@ class SimulationController extends window.EventEmitter {
    * Restart simulation (reset + start)
    */
   restart() {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return;
+
     this.pause();
-    const params = this.parameterModel.getScaledParameters();
-    this.simulationState.reset(params);
+    const params = tabState.parameterModel.getScaledParameters();
+    tabState.simulationState.reset(params);
+    this._clearAllCharts();
     this.start();
   }
 
@@ -343,7 +441,15 @@ class SimulationController extends window.EventEmitter {
    * @returns {boolean} Success status
    */
   setParameter(name, value) {
-    return this.parameterModel.setParameter(name, value);
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return false;
+
+    const success = tabState.parameterModel.setParameter(name, value);
+    if (success) {
+      this._saveState();
+      this.emit('parameters-updated', tabState.parameterModel.getAllParameters());
+    }
+    return success;
   }
 
   /**
@@ -352,7 +458,9 @@ class SimulationController extends window.EventEmitter {
    * @returns {*} Parameter value
    */
   getParameter(name) {
-    return this.parameterModel.getParameter(name);
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return null;
+    return tabState.parameterModel.getParameter(name);
   }
 
   /**
@@ -360,14 +468,20 @@ class SimulationController extends window.EventEmitter {
    * @returns {Object} All parameters
    */
   getAllParameters() {
-    return this.parameterModel.getAllParameters();
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return {};
+    return tabState.parameterModel.getAllParameters();
   }
 
   /**
    * Reset parameters to defaults
    */
   resetParameters() {
-    this.parameterModel.resetToDefaults();
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return;
+    tabState.parameterModel.resetToDefaults();
+    this._saveState();
+    this.emit('parameters-updated', tabState.parameterModel.getAllParameters());
   }
 
   /**
@@ -428,7 +542,9 @@ class SimulationController extends window.EventEmitter {
    * @returns {Object} Metrics object
    */
   getMetrics() {
-    return this.simulationState.getMetrics();
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return {};
+    return tabState.simulationState.getMetrics();
   }
 
   /**
@@ -436,7 +552,9 @@ class SimulationController extends window.EventEmitter {
    * @returns {Object} All data arrays
    */
   getDataArrays() {
-    return this.simulationState.getDataArrays();
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return {};
+    return tabState.simulationState.getDataArrays();
   }
 
   /**
@@ -444,7 +562,9 @@ class SimulationController extends window.EventEmitter {
    * @returns {boolean} Running status
    */
   getIsRunning() {
-    return this.isRunning;
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return false;
+    return tabState.isRunning;
   }
 
   /**
