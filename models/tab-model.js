@@ -168,10 +168,10 @@ class TabModel extends window.EventEmitter {
   }
 
   /**
-   * Get active tab
+   * Get active tab object
    * @returns {Object|null} Active tab object or null
    */
-  getActiveTab() {
+  getActiveTabObject() {
     return this.getTab(this.activeTabId);
   }
 }
