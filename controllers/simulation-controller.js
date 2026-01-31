@@ -93,17 +93,9 @@ class SimulationController extends window.EventEmitter {
       // Ensure new tab has state
       this._ensureTabState(tabId);
 
-      // Clear and update charts with new tab's data
+      // Emit state updates
       const tabState = this._getCurrentTabState();
       if (tabState) {
-        const data = tabState.simulationState.getDataArrays();
-        if (data && data.times && data.times.length > 0) {
-          this._updateAllCharts(data);
-        } else {
-          this._clearAllCharts();
-        }
-
-        // Emit state updates
         this.emit('parameters-updated', tabState.parameterModel.getAllParameters());
         this.emit('running-changed', tabState.isRunning);
 
@@ -574,6 +566,18 @@ class SimulationController extends window.EventEmitter {
     const tabState = this._getCurrentTabState();
     if (!tabState) return false;
     return tabState.isRunning;
+  }
+
+  /**
+   * Refresh charts with current simulation data
+   * Call this after registering charts to populate them with existing data
+   */
+  refreshCharts() {
+    const tabState = this._getCurrentTabState();
+    if (tabState && tabState.simulationState.initialized) {
+      const data = tabState.simulationState.getDataArrays();
+      this._updateAllCharts(data);
+    }
   }
 
   /**

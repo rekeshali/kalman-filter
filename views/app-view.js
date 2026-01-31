@@ -249,6 +249,9 @@ function EKFVisualization() {
         }
       });
     }
+
+    // After all charts are registered, refresh them with current simulation data
+    controllerRef.current.refreshCharts();
   }, [activeTabId]); // Re-run when switching tabs to register charts
 
   // Event handlers
