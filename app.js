@@ -5,7 +5,7 @@
 const { useState, useEffect, useRef } = React;
 
 function EKFVisualization() {
-  // Add CSS for 2-second tooltip delay
+  // Inject tooltip delay CSS - prevents tooltips from showing on page load
   useEffect(() => {
     if (!document.querySelector('style[data-tooltip-delay]')) {
       const tooltipDelayStyle = document.createElement('style');
@@ -14,13 +14,14 @@ function EKFVisualization() {
         .tooltip-delay-group .tooltip-content {
           opacity: 0;
           visibility: hidden;
-          transition: opacity 0.2s 0s, visibility 0.2s 0s;
-          z-index: 999999 !important;
+          pointer-events: none;
+          transition: none;
         }
         .tooltip-delay-group:hover .tooltip-content {
           opacity: 1;
           visibility: visible;
-          transition: opacity 0.2s 2s, visibility 0.2s 2s;
+          pointer-events: auto;
+          transition: opacity 0.2s 1s, visibility 0s 1s;
         }
       `;
       document.head.appendChild(tooltipDelayStyle);
@@ -1605,13 +1606,7 @@ function EKFVisualization() {
           {/* Parameter controls */}
           {/* Wave Parameters */}
           <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
-            <div className="relative tooltip-delay-group inline-block mb-2">
-              <h3 className="font-semibold text-gray-300 text-sm">Wave Parameters</h3>
-              <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                <strong className="text-blue-400 block mb-1">Wave Motion Controls</strong>
-                <p>Configure the analytical wave trajectory that the mass follows. Frequency sets oscillation rate, Scale adjusts amplitude, Type selects wave shape (sine/triangle/square), and Jitter adds realistic process noise.</p>
-              </div>
-            </div>
+            <h3 className="font-semibold text-gray-300 text-sm mb-2">Wave Parameters</h3>
 
             {/* Frequency and Scale */}
             <div className="grid grid-cols-2 gap-3 mb-2">
@@ -1619,30 +1614,30 @@ function EKFVisualization() {
                 <label className="block text-xs font-medium mb-1 text-gray-200">
                   Frequency: <span className="text-blue-400">{frequency.toFixed(1)} Hz</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
                   <strong className="text-blue-400 block mb-1">Wave Frequency</strong>
                   <p className="mb-1"><strong>Current:</strong> {frequency.toFixed(1)} Hz</p>
                   <p className="mb-1"><strong>Range:</strong> 0.1 - 2.0 Hz</p>
-                  <p><strong>Effect:</strong> Controls how fast the wave oscillates. Higher frequency = faster oscillation, more challenging for filter to track.</p>
+                  <p><strong>Effect:</strong> Controls how fast the wave oscillates. Higher frequency means more cycles per second.</p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={decrementFrequency} className="px-3 py-1.5 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
-                  <button onClick={incrementFrequency} className="px-3 py-1.5 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
+                  <button onClick={decrementFrequency} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
+                  <button onClick={incrementFrequency} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
                 </div>
               </div>
               <div className="relative tooltip-delay-group">
                 <label className="block text-xs font-medium mb-1 text-gray-200">
                   Scale: <span className="text-blue-400">{scale.toFixed(1)}x</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <strong className="text-blue-400 block mb-1">Wave Amplitude Scale</strong>
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">Wave Scale</strong>
                   <p className="mb-1"><strong>Current:</strong> {scale.toFixed(1)}x</p>
-                  <p className="mb-1"><strong>Range:</strong> 0.5x - 10.0x</p>
-                  <p><strong>Effect:</strong> Multiplies wave amplitude. Larger scale = bigger oscillations, larger position values on charts.</p>
+                  <p className="mb-1"><strong>Range:</strong> 0.1x - 5.0x</p>
+                  <p><strong>Effect:</strong> Multiplies the wave amplitude. Higher scale makes larger oscillations.</p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={decrementScale} className="px-3 py-1.5 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
-                  <button onClick={incrementScale} className="px-3 py-1.5 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
+                  <button onClick={decrementScale} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
+                  <button onClick={incrementScale} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
                 </div>
               </div>
             </div>
@@ -1654,12 +1649,11 @@ function EKFVisualization() {
                 <label className="block text-xs font-medium mb-1 text-gray-200">
                   Type: <span className="text-blue-400">{waveType.charAt(0).toUpperCase() + waveType.slice(1)}</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
                   <strong className="text-blue-400 block mb-1">Wave Type</strong>
                   <p className="mb-1"><strong>Current:</strong> {waveType.charAt(0).toUpperCase() + waveType.slice(1)}</p>
-                  <p className="mb-1"><strong>Sine:</strong> Smooth sinusoidal motion (x=A·sin(ωt))</p>
-                  <p className="mb-1"><strong>Triangle:</strong> Linear ramps up/down</p>
-                  <p><strong>Square:</strong> Abrupt jumps between ±A</p>
+                  <p className="mb-1"><strong>Options:</strong> Sine, Triangle, Square</p>
+                  <p><strong>Effect:</strong> Determines the shape of the oscillating wave pattern.</p>
                 </div>
                 <div className="flex">
                   <button
@@ -1703,11 +1697,11 @@ function EKFVisualization() {
                 <label className="block text-xs font-medium mb-1 text-gray-200">
                   Jitter: <span className="text-blue-400">{jitter.charAt(0).toUpperCase() + jitter.slice(1)}</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
                   <strong className="text-blue-400 block mb-1">Process Noise (Jitter)</strong>
-                  <p className="mb-1"><strong>Current:</strong> {jitter.charAt(0).toUpperCase() + jitter.slice(1)} (σ = {window.Config.JITTER_LEVELS[jitter]})</p>
-                  <p className="mb-1"><strong>Range:</strong> Zero (0) to High (1.0)</p>
-                  <p><strong>Effect:</strong> Adds Ornstein-Uhlenbeck process noise to true trajectory. Perturbs position/velocity from ideal wave. Higher jitter = more realistic disturbances, harder tracking problem.</p>
+                  <p className="mb-1"><strong>Current:</strong> {jitter.charAt(0).toUpperCase() + jitter.slice(1)}</p>
+                  <p className="mb-1"><strong>Options:</strong> Zero, Low, Med, High</p>
+                  <p><strong>Effect:</strong> Random perturbations to the true trajectory (Ornstein-Uhlenbeck process). Higher jitter creates more random wiggling around the ideal wave.</p>
                 </div>
                 <div className="flex">
                   <button
@@ -1757,14 +1751,12 @@ function EKFVisualization() {
 
         {/* Inertial Sensor */}
         <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
-          <div className="relative tooltip-delay-group inline-block mb-2">
+          <div className="relative tooltip-delay-group mb-2">
             <h3 className="font-semibold text-gray-300 text-sm">Inertial Sensor</h3>
-            <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-green-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-              <strong className="text-green-400 block mb-1">Accelerometer (Inertial Measurement Unit)</strong>
-              <p className="mb-1">Measures acceleration directly. Used in the <strong>prediction step</strong> to propagate state forward in time.</p>
-              <p className="mb-1"><strong>Measurement:</strong> z = a_true + bias + noise</p>
-              <p className="mb-1"><strong>TRUE:</strong> Reality's actual sensor characteristics</p>
-              <p><strong>EKF:</strong> Filter's assumptions about sensor (can mismatch!)</p>
+            <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-green-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+              <strong className="text-green-400 block mb-1">Inertial Sensor (Accelerometer)</strong>
+              <p className="mb-1"><strong>Purpose:</strong> Measures acceleration (second derivative of position).</p>
+              <p><strong>Examples:</strong> IMU, MEMS accelerometer. Used in smartphones, drones, vehicles for motion tracking without external references.</p>
             </div>
           </div>
 
@@ -1772,11 +1764,18 @@ function EKFVisualization() {
             {/* Noise Column */}
             <div>
               <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Noise</p>
-              <div className="mb-2">
+              <div className="mb-2 relative tooltip-delay-group">
                 <label className="block text-xs mb-1 text-gray-200">
                   TRUE: <span className="text-blue-400">{trueInertialNoise.charAt(0).toUpperCase() + trueInertialNoise.slice(1)}</span>
                 </label>
-                <div className="relative tooltip-delay-group">
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">Inertial Sensor Noise</strong>
+                  <p className="mb-2">Random measurement errors in the accelerometer readings.</p>
+                  <p className="mb-1"><strong>TRUE:</strong> The actual noise level in the simulated sensor.</p>
+                  <p className="mb-1"><strong>Current:</strong> {trueInertialNoise.charAt(0).toUpperCase() + trueInertialNoise.slice(1)}</p>
+                  <p><strong>Options:</strong> Zero, Low (0.05), Med (0.2), High (0.5)</p>
+                </div>
+                <div className="relative">
                   <div className="flex">
                     <button
                       onClick={() => setTrueInertialNoise('zero')}
@@ -1819,18 +1818,20 @@ function EKFVisualization() {
                       H
                     </button>
                   </div>
-                  <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                    <p className="mb-2">Random zero-mean Gaussian noise added to each acceleration measurement. Range: 0 (zero) to 0.5 (high).</p>
-                    <p className="mb-1"><strong>TRUE Value:</strong> {window.Config.NOISE_LEVELS[trueInertialNoise]}</p>
-                    <p>Actual noise in the real sensor. Affects measurements used for prediction.</p>
-                  </div>
-                </div>
+                                  </div>
               </div>
-              <div>
+              <div className="relative tooltip-delay-group">
                 <label className="block text-xs mb-1 text-gray-200">
                   EKF: <span className="text-blue-400">{ekfProcessNoise.charAt(0).toUpperCase() + ekfProcessNoise.slice(1)}</span>
                 </label>
-                <div className="relative tooltip-delay-group">
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">Inertial Sensor Noise</strong>
+                  <p className="mb-2">Random measurement errors in the accelerometer readings.</p>
+                  <p className="mb-1"><strong>EKF:</strong> What the filter *thinks* the noise level is (process noise Q matrix).</p>
+                  <p className="mb-1"><strong>Current:</strong> {ekfProcessNoise.charAt(0).toUpperCase() + ekfProcessNoise.slice(1)}</p>
+                  <p><strong>Options:</strong> Zero, Low (0.05), Med (0.2), High (0.5)</p>
+                </div>
+                <div className="relative">
                   <div className="flex">
                     <button
                       onClick={() => setEkfProcessNoise('zero')}
@@ -1873,31 +1874,25 @@ function EKFVisualization() {
                       H
                     </button>
                   </div>
-                  <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                    <p className="mb-2">Random zero-mean Gaussian noise added to each acceleration measurement. Range: 0 (zero) to 0.5 (high).</p>
-                    <p className="mb-1"><strong>EKF Value:</strong> {window.Config.NOISE_LEVELS[ekfProcessNoise]}</p>
-                    <p>Filter's assumption about sensor noise. Mismatch from TRUE tests filter robustness!</p>
-                  </div>
-                </div>
+                                  </div>
               </div>
             </div>
 
             {/* Bias Column */}
             <div>
-              <div className="relative tooltip-delay-group inline-block w-full">
+              <div className="relative">
                 <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Bias</p>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-green-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <strong className="text-green-400 block mb-1">Constant Bias Offset</strong>
-                  <p>Systematic offset added to all acceleration measurements. Range: 0 (zero) to 1.0 (high).</p>
-                </div>
               </div>
               <div className="mb-2 relative tooltip-delay-group">
                 <label className="block text-xs mb-1 text-gray-200">
                   TRUE: <span className="text-blue-400">{trueInertialBias.charAt(0).toUpperCase() + trueInertialBias.slice(1)}</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <p className="mb-1"><strong>Value:</strong> {window.Config.BIAS_LEVELS[trueInertialBias]}</p>
-                  <p>Actual constant bias in the real sensor.</p>
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">Inertial Sensor Bias</strong>
+                  <p className="mb-2">Constant offset error in accelerometer readings (doesn't average to zero).</p>
+                  <p className="mb-1"><strong>TRUE:</strong> The actual bias in the simulated sensor.</p>
+                  <p className="mb-1"><strong>Current:</strong> {trueInertialBias.charAt(0).toUpperCase() + trueInertialBias.slice(1)}</p>
+                  <p><strong>Options:</strong> Zero, Low (0.1), Med (0.5), High (1.0)</p>
                 </div>
                 <div className="flex">
                   <button
@@ -1946,9 +1941,12 @@ function EKFVisualization() {
                 <label className="block text-xs mb-1 text-gray-200">
                   EKF: <span className="text-blue-400">{ekfInertialBias.charAt(0).toUpperCase() + ekfInertialBias.slice(1)}</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <p className="mb-1"><strong>Value:</strong> {window.Config.BIAS_LEVELS[ekfInertialBias]}</p>
-                  <p>Filter's assumption about sensor bias. The filter compensates for this bias during prediction.</p>
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">Inertial Sensor Bias</strong>
+                  <p className="mb-2">Constant offset error in accelerometer readings (doesn't average to zero).</p>
+                  <p className="mb-1"><strong>EKF:</strong> What the filter *thinks* the bias level is (used to compensate measurements).</p>
+                  <p className="mb-1"><strong>Current:</strong> {ekfInertialBias.charAt(0).toUpperCase() + ekfInertialBias.slice(1)}</p>
+                  <p><strong>Options:</strong> Zero, Low (0.1), Med (0.5), High (1.0)</p>
                 </div>
                 <div className="flex">
                   <button
@@ -1999,34 +1997,31 @@ function EKFVisualization() {
 
         {/* External Probe */}
         <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
-          <div className="relative tooltip-delay-group inline-block mb-2">
+          <div className="relative tooltip-delay-group mb-2">
             <h3 className="font-semibold text-gray-300 text-sm">External Probe</h3>
-            <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-purple-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-              <strong className="text-purple-400 block mb-1">Position Sensor (External Reference)</strong>
-              <p className="mb-1">Measures position directly. Used in the <strong>update step</strong> to correct state predictions with actual measurements.</p>
-              <p className="mb-1"><strong>Measurement:</strong> z = x_true + bias + noise</p>
-              <p className="mb-1"><strong>TRUE:</strong> Reality's actual sensor characteristics</p>
-              <p><strong>EKF:</strong> Filter's assumptions about sensor (can mismatch!)</p>
+            <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-purple-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+              <strong className="text-purple-400 block mb-1">External Probe (Position Sensor)</strong>
+              <p className="mb-1"><strong>Purpose:</strong> Directly measures position (absolute or relative).</p>
+              <p><strong>Examples:</strong> GPS, ultrasonic rangefinder, laser distance meter. Provides reference measurements to correct accumulated drift from inertial sensors.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             {/* Noise Column */}
             <div>
-              <div className="relative tooltip-delay-group inline-block w-full">
+              <div className="relative">
                 <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Noise</p>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-purple-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <strong className="text-purple-400 block mb-1">Measurement Noise</strong>
-                  <p>Random zero-mean Gaussian noise added to each position measurement. Range: 0 (zero) to 0.3 (high).</p>
-                </div>
               </div>
               <div className="mb-2 relative tooltip-delay-group">
                 <label className="block text-xs mb-1 text-gray-200">
                   TRUE: <span className="text-blue-400">{trueProbeNoise.charAt(0).toUpperCase() + trueProbeNoise.slice(1)}</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <p className="mb-1"><strong>Value:</strong> {window.Config.PROBE_NOISE_LEVELS[trueProbeNoise]}</p>
-                  <p>Actual noise in the real position sensor. Affects measurements used for state correction.</p>
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">External Probe Noise</strong>
+                  <p className="mb-2">Random measurement errors in position sensor readings.</p>
+                  <p className="mb-1"><strong>TRUE:</strong> The actual noise level in the simulated probe.</p>
+                  <p className="mb-1"><strong>Current:</strong> {trueProbeNoise.charAt(0).toUpperCase() + trueProbeNoise.slice(1)}</p>
+                  <p><strong>Options:</strong> Zero, Low (0.02), Med (0.1), High (0.3)</p>
                 </div>
                 <div className="flex">
                   <button
@@ -2075,9 +2070,12 @@ function EKFVisualization() {
                 <label className="block text-xs mb-1 text-gray-200">
                   EKF: <span className="text-blue-400">{ekfProbeNoise.charAt(0).toUpperCase() + ekfProbeNoise.slice(1)}</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <p className="mb-1"><strong>Value:</strong> {window.Config.PROBE_NOISE_LEVELS[ekfProbeNoise]}</p>
-                  <p>Filter's assumption about position sensor noise. Used to weight measurements vs predictions.</p>
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">External Probe Noise</strong>
+                  <p className="mb-2">Random measurement errors in position sensor readings.</p>
+                  <p className="mb-1"><strong>EKF:</strong> What the filter *thinks* the noise level is (measurement noise R matrix).</p>
+                  <p className="mb-1"><strong>Current:</strong> {ekfProbeNoise.charAt(0).toUpperCase() + ekfProbeNoise.slice(1)}</p>
+                  <p><strong>Options:</strong> Zero, Low (0.02), Med (0.1), High (0.3)</p>
                 </div>
                 <div className="flex">
                   <button
@@ -2126,20 +2124,19 @@ function EKFVisualization() {
 
             {/* Bias Column */}
             <div>
-              <div className="relative tooltip-delay-group inline-block w-full">
+              <div className="relative">
                 <p className="text-xs font-semibold mb-1 text-gray-200 text-center">Bias</p>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-purple-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <strong className="text-purple-400 block mb-1">Constant Bias Offset</strong>
-                  <p>Systematic offset added to all position measurements. Range: 0 (zero) to 0.8 (high).</p>
-                </div>
               </div>
               <div className="mb-2 relative tooltip-delay-group">
                 <label className="block text-xs mb-1 text-gray-200">
                   TRUE: <span className="text-blue-400">{trueProbeBias.charAt(0).toUpperCase() + trueProbeBias.slice(1)}</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <p className="mb-1"><strong>Value:</strong> {window.Config.PROBE_BIAS_LEVELS[trueProbeBias]}</p>
-                  <p>Actual constant bias in the real position sensor.</p>
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">External Probe Bias</strong>
+                  <p className="mb-2">Constant offset error in position sensor readings (doesn't average to zero).</p>
+                  <p className="mb-1"><strong>TRUE:</strong> The actual bias in the simulated probe.</p>
+                  <p className="mb-1"><strong>Current:</strong> {trueProbeBias.charAt(0).toUpperCase() + trueProbeBias.slice(1)}</p>
+                  <p><strong>Options:</strong> Zero, Low (0.1), Med (0.3), High (0.8)</p>
                 </div>
                 <div className="flex">
                   <button
@@ -2188,9 +2185,12 @@ function EKFVisualization() {
                 <label className="block text-xs mb-1 text-gray-200">
                   EKF: <span className="text-blue-400">{ekfProbeBias.charAt(0).toUpperCase() + ekfProbeBias.slice(1)}</span>
                 </label>
-                <div className="tooltip-content absolute z-[999999] p-2 bg-gray-700 border border-blue-400 rounded-lg shadow-xl top-full mt-1 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
-                  <p className="mb-1"><strong>Value:</strong> {window.Config.PROBE_BIAS_LEVELS[ekfProbeBias]}</p>
-                  <p>Filter's assumption about position sensor bias. The filter compensates for this bias during updates.</p>
+                <div className="tooltip-content absolute z-[999999] p-3 bg-gray-700 border border-blue-400 rounded-lg shadow-xl bottom-full mb-2 left-1/2 -translate-x-1/2 w-full max-w-xs text-xs text-gray-200">
+                  <strong className="text-blue-400 block mb-1">External Probe Bias</strong>
+                  <p className="mb-2">Constant offset error in position sensor readings (doesn't average to zero).</p>
+                  <p className="mb-1"><strong>EKF:</strong> What the filter *thinks* the bias level is (used to compensate measurements).</p>
+                  <p className="mb-1"><strong>Current:</strong> {ekfProbeBias.charAt(0).toUpperCase() + ekfProbeBias.slice(1)}</p>
+                  <p><strong>Options:</strong> Zero, Low (0.1), Med (0.3), High (0.8)</p>
                 </div>
                 <div className="flex">
                   <button
