@@ -379,8 +379,9 @@ class SimulationController extends window.EventEmitter {
 
     // Initialize if not already initialized
     if (!tabState.simulationState.initialized) {
-      this.reset();
-      return; // reset() will call start()
+      const params = tabState.parameterModel.getScaledParameters();
+      tabState.simulationState.reset(params);
+      this._clearAllCharts();
     }
 
     tabState.isRunning = true;
