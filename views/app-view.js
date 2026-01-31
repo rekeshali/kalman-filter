@@ -52,18 +52,18 @@ function EKFVisualization() {
         /* Timeline slider styles */
         .slider-thumb::-webkit-slider-thumb {
           appearance: none;
-          width: 16px;
-          height: 16px;
+          width: 4px;
+          height: 20px;
           background: #10b981;
-          border-radius: 50%;
+          border-radius: 2px;
           cursor: pointer;
         }
 
         .slider-thumb::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
+          width: 4px;
+          height: 20px;
           background: #10b981;
-          border-radius: 50%;
+          border-radius: 2px;
           cursor: pointer;
           border: none;
         }
