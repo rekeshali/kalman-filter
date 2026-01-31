@@ -7,7 +7,6 @@
  * ControlPanel - Control buttons and timeline for simulation
  * @param {Object} props
  * @param {boolean} props.isRunning - Whether simulation is running
- * @param {string} props.viewportMode - 'live' or 'historical'
  * @param {number} props.timelinePosition - Current timeline position (0-100 percentage)
  * @param {number} props.currentTime - Current viewing time in seconds
  * @param {number} props.endTime - Total simulation duration in seconds
@@ -21,7 +20,6 @@
  */
 function ControlPanel({
   isRunning,
-  viewportMode = 'live',
   timelinePosition = 100,
   currentTime = 0,
   endTime = 0,
@@ -83,7 +81,6 @@ function ControlPanel({
       {totalPoints > 0 && (
         <div className="w-full mt-3 px-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 w-8 text-right">0s</span>
             <input
               type="range"
               min="0"
@@ -95,9 +92,6 @@ function ControlPanel({
               title={`Time: ${currentTime.toFixed(1)}s`}
             />
             <span className="text-xs text-gray-400 w-12">{endTime.toFixed(1)}s</span>
-          </div>
-          <div className="text-center text-xs text-gray-500 mt-1">
-            {viewportMode === 'live' ? 'Live Mode' : `Viewing: ${currentTime.toFixed(1)}s`}
           </div>
         </div>
       )}

@@ -27,7 +27,6 @@ function EKFVisualization() {
   const [activeTabId, setActiveTabId] = useState('welcome');
   const [isRunning, setIsRunning] = useState(false);
   const [parameters, setParameters] = useState({});
-  const [viewportInfo, setViewportInfo] = useState({ isLive: true, showing: '', mode: 'live' });
   const [timelineInfo, setTimelineInfo] = useState({ position: 100, currentTime: 0, endTime: 0, totalPoints: 0 });
 
   // Inject tooltip delay CSS and slider styles
@@ -125,14 +124,6 @@ function EKFVisualization() {
 
     unsubscribers.push(controllerRef.current.subscribe('simulation-reset', () => {
       forceUpdate();
-    }));
-
-    unsubscribers.push(controllerRef.current.subscribe('viewport-changed', (info) => {
-      setViewportInfo(prev => ({ ...prev, ...info }));
-    }));
-
-    unsubscribers.push(controllerRef.current.subscribe('viewport-mode-changed', ({ mode }) => {
-      setViewportInfo(prev => ({ ...prev, mode }));
     }));
 
     unsubscribers.push(controllerRef.current.subscribe('timeline-position-changed', () => {
@@ -413,7 +404,6 @@ function EKFVisualization() {
           <div className="space-y-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)'}}>
             <ControlPanel
               isRunning={isRunning}
-              viewportMode={viewportInfo.mode}
               timelinePosition={timelineInfo.position}
               currentTime={timelineInfo.currentTime}
               endTime={timelineInfo.endTime}
