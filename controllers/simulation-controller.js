@@ -395,12 +395,11 @@ class SimulationController extends window.EventEmitter {
 
   /**
    * Reset simulation to initial state
+   * Clears all data and stops the simulation
    */
   reset() {
     const tabState = this._getCurrentTabState();
     if (!tabState) return;
-
-    const wasRunning = tabState.isRunning;
 
     // Stop animation if running
     if (tabState.isRunning) {
@@ -414,11 +413,6 @@ class SimulationController extends window.EventEmitter {
     // Clear and update charts
     this._clearAllCharts();
     this.emit('simulation-reset');
-
-    // Restart if was running
-    if (wasRunning) {
-      this.start();
-    }
   }
 
   /**
