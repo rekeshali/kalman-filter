@@ -18,6 +18,11 @@ class SimulationController extends window.EventEmitter {
     // Animation state
     this.animationFrameId = null;
 
+    // Viewport state
+    this.viewportMode = 'live';  // 'live' or 'historical'
+    this.viewportEndIndex = null;  // null = live mode (show latest data)
+    this.timelinePosition = 100;  // 0-100 percentage (100 = live mode)
+
     // Chart registry: chartName -> chartId
     this.chartRegistry = new Map();
 
@@ -220,9 +225,23 @@ class SimulationController extends window.EventEmitter {
 
   /**
    * Update all registered charts with simulation data
+   * Uses viewport windowing for efficient rendering
    * @private
    */
-  _updateAllCharts(data) {
+  _updateAllCharts(simulationState) {
+    // Get viewport data instead of full history
+    const viewportInfo = simulationState.getViewportData(this.viewportEndIndex);
+    const data = viewportInfo.data;
+
+    // Emit viewport info for UI updates
+    this.emit('viewport-changed', {
+      isLive: viewportInfo.isLive,
+      showing: `${viewportInfo.start}-${viewportInfo.end} of ${viewportInfo.total}`,
+      start: viewportInfo.start,
+      end: viewportInfo.end,
+      total: viewportInfo.total
+    });
+
     // Position chart
     if (this.chartRegistry.has('position')) {
       this.chartManager.updateChart(this.chartRegistry.get('position'), {
@@ -354,10 +373,9 @@ class SimulationController extends window.EventEmitter {
     const params = tabState.parameterModel.getScaledParameters();
     tabState.simulationState.step(params);
 
-    // Update charts
-    const data = tabState.simulationState.getDataArrays();
-    this._updateAllCharts(data);
-    this.emit('simulation-updated', data);
+    // Update charts with viewport data
+    this._updateAllCharts(tabState.simulationState);
+    this.emit('simulation-updated');
 
     this.animationFrameId = requestAnimationFrame(() => this._animate());
   }
@@ -368,6 +386,13 @@ class SimulationController extends window.EventEmitter {
   start() {
     const tabState = this._getCurrentTabState();
     if (!tabState || tabState.isRunning) return;
+
+    // Always jump to live mode when starting
+    this.viewportEndIndex = null;
+    this.viewportMode = 'live';
+    this.timelinePosition = 100;
+    this.emit('viewport-mode-changed', { mode: 'live' });
+    this.emit('timeline-position-changed', { position: 100 });
 
     // Initialize if not already initialized
     if (!tabState.simulationState.initialized) {
@@ -569,9 +594,115 @@ class SimulationController extends window.EventEmitter {
   refreshCharts() {
     const tabState = this._getCurrentTabState();
     if (tabState && tabState.simulationState.initialized) {
-      const data = tabState.simulationState.getDataArrays();
-      this._updateAllCharts(data);
+      this._updateAllCharts(tabState.simulationState);
     }
+  }
+
+  /**
+   * Return to live mode (show latest data)
+   * Simplified to use timeline slider
+   */
+  returnToLiveMode() {
+    this.handleTimelineChange(100);
+  }
+
+  /**
+   * Clear all historical data
+   * Useful for long-running simulations to free memory
+   */
+  clearHistory() {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return;
+
+    tabState.simulationState.clearHistory();
+    this.returnToLiveMode();  // Reset to live mode after clearing
+    this.emit('history-cleared');
+  }
+
+  /**
+   * Check if simulation is currently running
+   * @returns {boolean} True if running
+   */
+  isRunning() {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return false;
+    return tabState.isRunning;
+  }
+
+  /**
+   * Get current viewport mode
+   * @returns {string} 'live' or 'historical'
+   */
+  getViewportMode() {
+    return this.viewportMode;
+  }
+
+  /**
+   * Handle timeline slider change
+   * @param {number} position - Slider position (0-100 percentage)
+   */
+  handleTimelineChange(position) {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return;
+
+    // Auto-pause if simulation is running
+    if (tabState.isRunning) {
+      this.pause();
+    }
+
+    this.timelinePosition = position;
+
+    const totalPoints = tabState.simulationState.dataCollector.getLength();
+    if (totalPoints === 0) return;
+
+    // Convert percentage to data index
+    if (position >= 99) {
+      // At or near end = live mode
+      this.viewportEndIndex = null;
+      this.viewportMode = 'live';
+    } else {
+      // Historical mode
+      const endIndex = Math.floor((position / 100) * totalPoints);
+      this.viewportEndIndex = Math.max(1, endIndex);
+      this.viewportMode = 'historical';
+    }
+
+    this._updateAllCharts(tabState.simulationState);
+    this.emit('viewport-mode-changed', { mode: this.viewportMode });
+    this.emit('timeline-position-changed', { position: this.timelinePosition });
+  }
+
+  /**
+   * Get timeline metadata for UI
+   * @returns {Object} Timeline info
+   */
+  getTimelineInfo() {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) {
+      return { position: 100, currentTime: 0, endTime: 0, totalPoints: 0 };
+    }
+
+    const dataCollector = tabState.simulationState.dataCollector;
+    const totalPoints = dataCollector.getLength();
+
+    if (totalPoints === 0) {
+      return { position: 100, currentTime: 0, endTime: 0, totalPoints: 0 };
+    }
+
+    const times = dataCollector.data.times;
+    const endTime = times[times.length - 1] || 0;
+
+    let currentTime = endTime;
+    if (this.viewportMode === 'historical' && this.viewportEndIndex !== null) {
+      currentTime = times[Math.min(this.viewportEndIndex - 1, times.length - 1)] || 0;
+    }
+
+    return {
+      position: this.timelinePosition,
+      currentTime: currentTime,
+      endTime: endTime,
+      totalPoints: totalPoints
+    };
   }
 
   /**

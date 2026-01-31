@@ -27,8 +27,10 @@ function EKFVisualization() {
   const [activeTabId, setActiveTabId] = useState('welcome');
   const [isRunning, setIsRunning] = useState(false);
   const [parameters, setParameters] = useState({});
+  const [viewportInfo, setViewportInfo] = useState({ isLive: true, showing: '', mode: 'live' });
+  const [timelineInfo, setTimelineInfo] = useState({ position: 100, currentTime: 0, endTime: 0, totalPoints: 0 });
 
-  // Inject tooltip delay CSS (prevents tooltips from showing on page load)
+  // Inject tooltip delay CSS and slider styles
   useEffect(() => {
     if (!document.querySelector('style[data-tooltip-delay]')) {
       const tooltipDelayStyle = document.createElement('style');
@@ -45,6 +47,38 @@ function EKFVisualization() {
           visibility: visible;
           pointer-events: auto;
           transition: opacity 0.2s 1s, visibility 0s 1s;
+        }
+
+        /* Timeline slider styles */
+        .slider-thumb::-webkit-slider-thumb {
+          appearance: none;
+          width: 16px;
+          height: 16px;
+          background: #10b981;
+          border-radius: 50%;
+          cursor: pointer;
+        }
+
+        .slider-thumb::-moz-range-thumb {
+          width: 16px;
+          height: 16px;
+          background: #10b981;
+          border-radius: 50%;
+          cursor: pointer;
+          border: none;
+        }
+
+        .slider-thumb:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .slider-thumb:disabled::-webkit-slider-thumb {
+          cursor: not-allowed;
+        }
+
+        .slider-thumb:disabled::-moz-range-thumb {
+          cursor: not-allowed;
         }
       `;
       document.head.appendChild(tooltipDelayStyle);
@@ -93,6 +127,23 @@ function EKFVisualization() {
       forceUpdate();
     }));
 
+    unsubscribers.push(controllerRef.current.subscribe('viewport-changed', (info) => {
+      setViewportInfo(prev => ({ ...prev, ...info }));
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('viewport-mode-changed', ({ mode }) => {
+      setViewportInfo(prev => ({ ...prev, mode }));
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('timeline-position-changed', () => {
+      setTimelineInfo(controllerRef.current.getTimelineInfo());
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('simulation-updated', () => {
+      // Update timeline info on every frame to show current time in live mode
+      setTimelineInfo(controllerRef.current.getTimelineInfo());
+    }));
+
     // Cleanup on unmount
     return () => {
       unsubscribers.forEach(unsub => unsub());
@@ -101,6 +152,36 @@ function EKFVisualization() {
       }
     };
   }, []);
+
+  // Pan/zoom configuration for Chart.js plugin
+  const createPanZoomConfig = () => ({
+    pan: {
+      enabled: false,  // Disabled - using timeline slider instead
+    },
+    zoom: {
+      wheel: {
+        enabled: true,
+        speed: 0.1,  // Mouse wheel zoom speed
+        mode: 'x'
+      },
+      pinch: {
+        enabled: true,
+        mode: 'x'  // Pinch in = zoom in (more detail), pinch out = zoom out (more data)
+      },
+      mode: 'x'
+    },
+    limits: {
+      x: {
+        min: 'original',  // Can't pan before start of data
+        max: 'original',  // Can't pan beyond end of data
+        minRange: 0.01   // Minimum zoom: 1% of total data (prevents zooming in too far)
+      },
+      y: {
+        min: 'original',
+        max: 'original'
+      }
+    }
+  });
 
   // Register charts after refs are available and simulation tab is active
   useEffect(() => {
@@ -125,7 +206,7 @@ function EKFVisualization() {
             x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Position', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -2, max: 2 }
           },
-          plugins: { legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Wave Position Tracking', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
+          plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Wave Position Tracking', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
         }
       });
     }
@@ -146,7 +227,7 @@ function EKFVisualization() {
             x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Acceleration', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -5, max: 5 }
           },
-          plugins: { legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Wave Acceleration', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
+          plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Wave Acceleration', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
         }
       });
     }
@@ -167,7 +248,7 @@ function EKFVisualization() {
             x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Velocity', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -3, max: 3 }
           },
-          plugins: { legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Velocity Tracking', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
+          plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Velocity Tracking', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
         }
       });
     }
@@ -185,7 +266,7 @@ function EKFVisualization() {
             x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Innovation', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -1, max: 1 }
           },
-          plugins: { legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Measurement Residual', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
+          plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Measurement Residual', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
         }
       });
     }
@@ -206,7 +287,7 @@ function EKFVisualization() {
             x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Kalman Gain', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 1 }
           },
-          plugins: { legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Kalman Gain (Measurement Trust)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
+          plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Kalman Gain (Measurement Trust)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
         }
       });
     }
@@ -227,7 +308,7 @@ function EKFVisualization() {
             x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Std Dev (σ)', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 1 }
           },
-          plugins: { legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Filter Uncertainty (Convergence)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
+          plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Filter Uncertainty (Convergence)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
         }
       });
     }
@@ -245,7 +326,7 @@ function EKFVisualization() {
             x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
             y: { title: { display: true, text: '|Error|', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 0.5 }
           },
-          plugins: { legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Position Error (Performance)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
+          plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Position Error (Performance)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
         }
       });
     }
@@ -288,6 +369,14 @@ function EKFVisualization() {
     controllerRef.current.restart();
   };
 
+  const handleClearHistory = () => {
+    controllerRef.current.clearHistory();
+  };
+
+  const handleTimelineChange = (position) => {
+    controllerRef.current.handleTimelineChange(position);
+  };
+
   const handleParameterChange = (name, value) => {
     controllerRef.current.setParameter(name, value);
   };
@@ -324,10 +413,17 @@ function EKFVisualization() {
           <div className="space-y-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)'}}>
             <ControlPanel
               isRunning={isRunning}
+              viewportMode={viewportInfo.mode}
+              timelinePosition={timelineInfo.position}
+              currentTime={timelineInfo.currentTime}
+              endTime={timelineInfo.endTime}
+              totalPoints={timelineInfo.totalPoints}
               onStart={handleStart}
               onPause={handlePause}
               onReset={handleReset}
               onRestart={handleRestart}
+              onClearHistory={handleClearHistory}
+              onTimelineChange={handleTimelineChange}
             />
             <ParameterControls
               parameters={parameters}
