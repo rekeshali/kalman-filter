@@ -209,6 +209,14 @@ class SimulationController extends window.EventEmitter {
    * @returns {string|null} chartId or null if failed
    */
   registerChart(chartName, canvasElement, chartConfig, updateConfig = {}) {
+    // Destroy existing chart if already registered
+    if (this.chartRegistry.has(chartName)) {
+      const oldChartId = this.chartRegistry.get(chartName);
+      this.chartManager.destroyChart(oldChartId);
+      this.chartRegistry.delete(chartName);
+      this.chartConfigs.delete(chartName);
+    }
+
     const chartId = this.chartManager.initializeChart(canvasElement, 'line', chartConfig);
     if (chartId) {
       this.chartRegistry.set(chartName, chartId);
