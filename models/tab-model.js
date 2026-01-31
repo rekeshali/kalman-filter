@@ -134,11 +134,27 @@ class TabModel extends window.EventEmitter {
   }
 
   /**
+   * Get all tabs (alias for getTabs)
+   * @returns {Array} Copy of tabs array
+   */
+  getAllTabs() {
+    return this.getTabs();
+  }
+
+  /**
    * Get active tab ID
    * @returns {string} Active tab ID
    */
   getActiveTabId() {
     return this.activeTabId;
+  }
+
+  /**
+   * Get active tab (alias for getActiveTabId)
+   * @returns {string} Active tab ID
+   */
+  getActiveTab() {
+    return this.getActiveTabId();
   }
 
   /**
