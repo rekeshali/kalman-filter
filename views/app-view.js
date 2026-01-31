@@ -102,9 +102,10 @@ function EKFVisualization() {
     };
   }, []);
 
-  // Register charts after refs are available
+  // Register charts after refs are available and simulation tab is active
   useEffect(() => {
     if (!controllerRef.current) return;
+    if (activeTabId === 'welcome') return; // Don't register charts on welcome tab
 
     // Position chart
     if (positionChartRef.current) {
@@ -248,7 +249,7 @@ function EKFVisualization() {
         }
       });
     }
-  }, []); // Run once after mount
+  }, [activeTabId]); // Re-run when switching tabs to register charts
 
   // Event handlers
   const handleTabChange = (tabId) => {

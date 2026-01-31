@@ -88,14 +88,20 @@ class SimulationController extends window.EventEmitter {
     }
 
     const savedTabs = window.StorageService.load('ekf-tabs');
-    if (savedTabs) {
+    if (savedTabs && savedTabs.tabs) {
+      let lastCreatedTabId = null;
+
       savedTabs.tabs.forEach(tab => {
         if (tab.type === 'simulation') {
-          this.tabModel.addTab(tab.name);
+          // Create new tab and track its ID
+          lastCreatedTabId = this.tabModel.addTab(tab.name);
         }
       });
-      if (savedTabs.activeTabId) {
-        this.tabModel.setActiveTab(savedTabs.activeTabId);
+
+      // If there was an active tab that wasn't 'welcome', activate the last created tab
+      // Otherwise the welcome tab will remain active
+      if (savedTabs.activeTabId && savedTabs.activeTabId !== 'welcome' && lastCreatedTabId) {
+        this.tabModel.setActiveTab(lastCreatedTabId);
       }
     }
   }
