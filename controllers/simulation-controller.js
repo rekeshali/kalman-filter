@@ -1038,8 +1038,14 @@ class SimulationController extends window.EventEmitter {
         // Update running state for new slot
         this.emit('running-changed', slotState.isRunning);
 
+        // Update timeline slider to new slot's position (BUG-6 fix)
+        const timelineInfo = this.getTimelineInfo();
+        this.emit('timeline-position-changed', { position: timelineInfo.position });
+
         // Restart animation if new slot was running
         if (slotState.isRunning) {
+          // Resume to adjust startTime and prevent time jump (BUG-4 fix)
+          slotState.simulationState.resume();
           this._startAnimation();
         }
       }

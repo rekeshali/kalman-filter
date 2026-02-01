@@ -87,23 +87,28 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 **Branch**: `feat/gif-recording`
 **Feature**: Record button captures charts as GIF alongside JSON data
 
-**Requirements**:
-1. When recording starts (● → ↓), begin capturing chart frames
-2. When recording stops, generate GIF from captured frames
-3. Download GIF alongside the JSON debug log
-4. Capture at reasonable frame rate (10-15 fps?)
-
-**Implementation Options**:
-- Use `html2canvas` or `canvas.toDataURL()` to capture frames
-- Use `gif.js` or similar library to encode GIF
-- Consider which chart(s) to capture (main position chart? all?)
-
-**Files**: `controllers/simulation-controller.js`, `views/app-view.js`
-
 **Specs**:
-- **Charts**: All visible charts
+- **Charts**: All 4 visible charts (position, acceleration, velocity, error)
 - **Frame rate**: 15 fps
 - **Max duration**: 10× context window (40,000 points worth)
+
+**Scope Boundaries**:
+- IN: Capture chart canvases only (not controls/UI)
+- IN: Single GIF containing all charts (stacked or grid layout)
+- OUT: Video formats (MP4, WebM)
+- OUT: Configurable frame rate/quality
+
+**Definition of Done**:
+1. Click ● starts both JSON logging AND GIF frame capture
+2. Click ↓ stops recording, generates GIF, downloads both files
+3. Files have matching timestamps in filename
+4. GIF plays back chart animation from recording period
+
+**Verification**:
+- [ ] Start recording, run sim for 5s, stop → GIF downloads
+- [ ] GIF file opens and shows chart animation
+- [ ] GIF timestamp matches JSON timestamp
+- [ ] GIF captures all 4 chart areas
 
 **Acceptance**:
 - [ ] Record button starts GIF capture
@@ -131,10 +136,24 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 **Branch**: `feat/drag-timeline`
 **Feature**: Pan inside plot to move through history (when paused)
 
-**Implementation**:
-- Enable pan gestures when paused only
-- Pan left = backward, pan right = forward
-- Sync slider position during pan
+**Scope Boundaries**:
+- IN: Pan gestures on chart area when paused
+- IN: Bidirectional sync between pan and slider
+- OUT: Pan while running (stays disabled)
+- OUT: Vertical pan (y-axis navigation)
+
+**Definition of Done**:
+1. When paused, dragging left/right on chart moves through history
+2. Slider thumb moves in sync with pan gesture
+3. Releasing pan leaves view at that position
+4. Zoom (pinch/wheel) works in both running and paused states
+
+**Verification**:
+- [ ] Pause sim → drag chart left → slider moves left
+- [ ] Pause sim → drag chart right → slider moves right
+- [ ] Drag slider → chart view matches
+- [ ] While running → pan disabled, zoom works
+- [ ] While paused → both pan and zoom work
 
 **Acceptance**:
 - [ ] Panning updates slider in real-time
@@ -153,13 +172,15 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 
 ### Open
 
-- **BUG-4**: Tab switch time jump - switching away from running sim and back causes large dt, messing up calculations. **Fix**: call `simulationState.resume()` before `_startAnimation()` in `setActiveSlot()` (same pattern as pause/play fix)
-- **BUG-5**: Problem type buttons enlarge when selected - should maintain consistent size. **File**: `components/problem-type-selector.js`
+(none)
 
 ### Fixed
 - **BUG-1**: Mouse wheel scroll blocked - fixed
 - **BUG-2**: Timeline clock reset (`08b94ac`) - emit events in `reset()`
 - **BUG-3**: X-axis tick labels incorrect - fixed timeline slider/chart time alignment
+- **BUG-4**: Tab switch time jump - call `simulationState.resume()` before `_startAnimation()` in `setActiveSlot()`
+- **BUG-5**: Problem type buttons enlarge when selected - removed `scale-105` transform from active state
+- **BUG-6**: Timeline slider stale on slot switch - emit `timeline-position-changed` when switching slots
 
 ---
 
