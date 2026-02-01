@@ -22,7 +22,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 20 → 2. ❌ Item 21
+**Priority**: 1. ❌ Item 20 → 2. ❌ Item 21 → 3. ❌ Item 22 → 4. ❌ Item 23 → 5. ❌ Item 24
 
 ---
 
@@ -65,6 +65,49 @@ idle →[press]→ rampUp →[1s]→ sustain →[release|6s]→ rampDown →[1s]
 **Files**: `components/parameter-controls.js`, `controllers/simulation-controller.js`
 
 **Done when**: Wide button, hold sustains, bar animates (6s), auto-cutoff, smooth envelope
+
+---
+
+### Item 22: Limit to 3 Simulation Slots ❌
+**Branch**: `feat/fixed-slots`
+
+**Change**: Remove + button, default to exactly 3 slots per problem type
+
+**Scope**:
+- IN: Hide + button from UI
+- IN: Default to 3 pre-created slots
+- OUT: Backend/JS changes (keep slot management code intact)
+
+**Files**: `components/simulation-grid.js` (hide + button)
+
+**Done when**: 3 slots visible, no + button, backend unchanged
+
+---
+
+### Item 23: Consistent Highlight Colors ❌
+**Branch**: `feat/highlight-colors`
+
+**Change**: Match highlight color between problem type cards and simulation slots
+
+**Files**: `components/problem-type-selector.js`, `components/simulation-slot.js`
+
+**Done when**: Same blue shade for active state on both problem type and sim tabs
+
+---
+
+### Item 24: Reset Button → ✕ with Full Reset ❌
+**Branch**: `feat/reset-button`
+
+**Change**: Replace ↺ with ✕, reset both name AND settings on click
+
+**Behavior**:
+- Click ✕ → immediately reset slot name to default ("Sim 1", "Sim 2", etc.)
+- Click ✕ → immediately reset all parameters to defaults
+- No confirm dialog
+
+**Files**: `components/simulation-slot.js`, `controllers/simulation-controller.js`
+
+**Done when**: ✕ button resets name + settings, no ↺ visible
 
 ---
 
