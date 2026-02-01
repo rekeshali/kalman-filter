@@ -413,9 +413,9 @@ function EKFVisualization() {
 
       {/* Simulation Content */}
       {activeTabId !== 'welcome' && (
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 overflow-hidden bg-gray-900">
-          {/* LEFT COLUMN: Controls */}
-          <div className="space-y-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)'}}>
+        <div className="flex-1 flex gap-4 p-4 overflow-hidden bg-gray-900">
+          {/* LEFT COLUMN: Controls - Fixed width, always visible */}
+          <div className="flex-shrink-0 space-y-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', width: '320px'}}>
             <ControlPanel
               isRunning={isRunning}
               timelinePosition={timelineInfo.position}
@@ -435,9 +435,9 @@ function EKFVisualization() {
             />
           </div>
 
-          {/* RIGHT SIDE: Charts */}
-          <div className="lg:col-span-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)'}}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* RIGHT SIDE: Charts - Can overflow to the right */}
+          <div className="flex-1 overflow-y-auto overflow-x-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', minWidth: 0}}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{minWidth: '800px'}}>
               {/* Row 1: Position Tracking (spanning 2 cols) */}
               <div className="md:col-span-2 h-80">
                 <ChartCanvas ref={positionChartRef} />
