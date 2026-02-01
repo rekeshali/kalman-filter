@@ -397,13 +397,13 @@ class SimulationController extends window.EventEmitter {
    * @private
    */
   _animate() {
-    const tabState = this._getCurrentTabState();
-    if (!tabState || !tabState.isRunning) return;
+    const slotState = this._getCurrentSlotState();
+    if (!slotState || !slotState.isRunning) return;
 
-    const params = tabState.parameterModel.getScaledParameters();
+    const params = slotState.parameterModel.getScaledParameters();
 
     // Apply splash transients if active
-    const currentTime = tabState.simulationState.time;
+    const currentTime = slotState.simulationState.time;
 
     // Frequency splash (hold-to-sustain envelope)
     if (this.splashState.frequency.active) {
@@ -433,10 +433,10 @@ class SimulationController extends window.EventEmitter {
       }
     }
 
-    tabState.simulationState.step(params);
+    slotState.simulationState.step(params);
 
     // Update charts with viewport data
-    this._updateAllCharts(tabState.simulationState);
+    this._updateAllCharts(slotState.simulationState);
     this.emit('simulation-updated');
 
     this.animationFrameId = requestAnimationFrame(() => this._animate());

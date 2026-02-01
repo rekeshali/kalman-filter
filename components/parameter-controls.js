@@ -60,7 +60,7 @@ function LevelButtonGroup({ value, onChange, compact = false }) {
 /**
  * SplashButton - Inline button with hold-to-sustain and progress bar
  * Progress bar only shows after holding for 0.5s
- * On max-out (6s timeout), bar decays exponentially back to 0
+ * On release, bar decays exponentially back to 0
  */
 function SplashButton({ onStart, onEnd, progress, active }) {
   const [isHolding, setIsHolding] = React.useState(false);
@@ -68,11 +68,21 @@ function SplashButton({ onStart, onEnd, progress, active }) {
   const [decayProgress, setDecayProgress] = React.useState(null); // null = not decaying, number = current decay %
   const holdTimerRef = React.useRef(null);
   const decayAnimationRef = React.useRef(null);
+  const hasEndedRef = React.useRef(false); // Track if we've called onEnd to prevent restart
 
   const handleMouseDown = (e) => {
     e.preventDefault();
     setIsHolding(true);
-    setDecayProgress(null); // Cancel any ongoing decay
+    setShowProgress(false);
+    setDecayProgress(null);
+    hasEndedRef.current = false; // Reset on new press
+
+    // Cancel any ongoing decay
+    if (decayAnimationRef.current) {
+      cancelAnimationFrame(decayAnimationRef.current);
+      decayAnimationRef.current = null;
+    }
+
     onStart();
 
     // Only show progress bar after 0.5s of holding
@@ -82,18 +92,25 @@ function SplashButton({ onStart, onEnd, progress, active }) {
   };
 
   const handleMouseUp = () => {
-    setIsHolding(false);
-    setShowProgress(false);
+    // Clear the delay timer if button released before 0.5s
     if (holdTimerRef.current) {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
     }
-    if (decayAnimationRef.current) {
-      cancelAnimationFrame(decayAnimationRef.current);
-      decayAnimationRef.current = null;
+
+    // If progress bar was showing, start decay animation
+    // Otherwise, just end immediately
+    if (showProgress && !hasEndedRef.current) {
+      // Capture current progress for decay
+      const startProgress = Math.min(progress * 100, 100);
+      setIsHolding(false);
+      startDecayAnimation(startProgress);
+    } else if (!hasEndedRef.current) {
+      // Released before 0.5s - no progress bar shown, just end
+      setIsHolding(false);
+      hasEndedRef.current = true;
+      onEnd();
     }
-    setDecayProgress(null);
-    onEnd();
   };
 
   const handleMouseLeave = () => {
@@ -102,33 +119,41 @@ function SplashButton({ onStart, onEnd, progress, active }) {
     }
   };
 
-  // Detect when progress maxes out (hits 100%) and start decay animation
+  // Decay animation function (extracted for reuse)
+  const startDecayAnimation = (startProgress) => {
+    if (decayAnimationRef.current) return; // Already running
+
+    setDecayProgress(startProgress);
+    const startTime = performance.now();
+    const tau = 100; // Time constant in ms (0.1 seconds)
+
+    const animateDecay = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const decayValue = startProgress * Math.exp(-elapsed / tau);
+
+      if (decayValue > 0.5) {
+        setDecayProgress(decayValue);
+        decayAnimationRef.current = requestAnimationFrame(animateDecay);
+      } else {
+        // Decay complete
+        decayAnimationRef.current = null;
+        setDecayProgress(null);
+        setShowProgress(false);
+        hasEndedRef.current = true;
+        onEnd();
+      }
+    };
+
+    decayAnimationRef.current = requestAnimationFrame(animateDecay);
+  };
+
+  // Handle max-out (6s timeout) - start decay when progress reaches 100%
   React.useEffect(() => {
-    if (progress >= 1.0 && isHolding && showProgress && decayProgress === null) {
-      // Start decay animation
-      const startTime = performance.now();
-      const tau = 100; // Time constant in ms (0.1 seconds)
-
-      const animateDecay = (currentTime) => {
-        const elapsed = currentTime - startTime;
-        // Exponential decay: 100 * e^(-t/tau)
-        const decayValue = 100 * Math.exp(-elapsed / tau);
-
-        if (decayValue > 0.5) { // Stop when nearly invisible
-          setDecayProgress(decayValue);
-          decayAnimationRef.current = requestAnimationFrame(animateDecay);
-        } else {
-          // Decay complete - hide bar and trigger end
-          setDecayProgress(null);
-          setIsHolding(false);
-          setShowProgress(false);
-          onEnd();
-        }
-      };
-
-      decayAnimationRef.current = requestAnimationFrame(animateDecay);
+    if (progress >= 1.0 && isHolding && showProgress && !decayAnimationRef.current && !hasEndedRef.current) {
+      setIsHolding(false);
+      startDecayAnimation(100);
     }
-  }, [progress, isHolding, showProgress, decayProgress, onEnd]);
+  }, [progress, isHolding, showProgress]);
 
   // Clean up timers and animations on unmount
   React.useEffect(() => {
