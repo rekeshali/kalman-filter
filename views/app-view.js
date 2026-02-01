@@ -601,7 +601,7 @@ function EKFVisualization() {
           {/* Right: Title */}
           <div className="text-right pr-4">
             <h1 className="text-2xl font-bold text-white whitespace-nowrap">
-              EKF: {problemTypes.find(pt => pt.id === activeProblemTypeId)?.name || 'Wave Tracking'}
+              Extended Kalman Filter: {problemTypes.find(pt => pt.id === activeProblemTypeId)?.name || 'Wave Tracking'}
             </h1>
           </div>
         </div>
