@@ -34,7 +34,33 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 31
+**Priority**: 1. ❌ Item 31 → 2. ❌ Item 33
+
+---
+
+### Item 33: Recolor "Ready to Explore" Banner with Gradient ❌
+**Branch**: `feat/banner-gradient`
+
+**Change**: Add gradient styling to the "Ready to Explore" banner section
+
+**Scope**: Apply a visually appealing gradient background to the banner/hero section
+
+**Design**: TBD - suggest dark gradient similar to Item 31 (gray-to-navy) or alternative color scheme
+
+**Files**: Welcome/home page banner component (likely `views/welcome.js` or `components/banner.js`)
+
+**Acceptance Criteria**:
+- ✓ Gradient applied to "Ready to Explore" banner
+- ✓ Text remains readable on gradient background
+- ✓ Gradient colors are visually cohesive with overall design
+- ✓ Responsive layout maintained at all breakpoints
+- ✓ Visual hierarchy preserved
+
+**Verification**:
+- View banner on desktop/tablet/mobile
+- Check text contrast and readability
+- Verify gradient appearance and color blend
+- Test responsiveness
 
 ---
 
