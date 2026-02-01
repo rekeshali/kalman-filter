@@ -276,8 +276,6 @@ function EKFFlowchart({ direction = 'vertical', compact = false }) {
   // Vertical layout (original welcome page style)
   return (
     <div className="p-6 bg-gray-900 rounded border border-gray-600">
-      <h3 className="font-semibold text-gray-200 mb-4">Extended Kalman Filter Block Diagram</h3>
-
       {/* Row 1: Initialization and Reality Simulation */}
       <div className="grid grid-cols-2 gap-3 mb-3">
         {row1.map(block => (

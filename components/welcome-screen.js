@@ -38,6 +38,7 @@ function WelcomeScreen({ onCreateSimulation, problemType }) {
         {/* LEFT SIDE: Kalman Filter Explanation */}
         <div className="space-y-6">
           <div className="bg-gray-800 border border-gray-600 rounded-lg p-6 shadow-lg">
+            <h2 className="text-xl font-semibold mb-4 text-gray-200">Extended Kalman Filter Block Diagram</h2>
             <div className="mb-6">
               <EKFFlowchart direction="vertical" />
             </div>
