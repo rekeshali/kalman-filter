@@ -37,7 +37,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. 🐛 BUG-13 (playback controls gradient) → 2. ⏸️ Item 35 (backlog)
+**Priority**: 1. 🐛 BUG-13 (playback controls gradient) → 2. ⏸️ Item 35 (backlog) → 3. ⏸️ Item 36 (backlog)
 
 ---
 
@@ -68,6 +68,40 @@
 - Measure margin spacing (should be px-24)
 - Check divider line visibility and crispness
 - Verify responsiveness and alignment
+
+---
+
+### Item 36: EKF Flowchart Enhanced Tooltips with Math Documentation ❌
+**Branch**: `feat/ekf-flowchart-math-tooltips`
+
+**Change**: Enhance EKF flowchart component tooltips with expanded mathematical equations from FILTER_MATH.md
+
+**Scope**: EKF flowchart component - add rich tooltips with fully expanded matrix equations for each step (Prediction, Update, etc.)
+
+**Design**:
+- Reference fully expanded matrix equations from FILTER_MATH.md
+- Add tooltips to flowchart nodes showing:
+  - Prediction step: state & covariance equations with matrix expansions
+  - Update step: innovation, gain, state update equations
+  - Key matrix forms (F, B, Q, H, R, K)
+- Make tooltips accessible and readable with proper formatting
+- Link to relevant sections in FILTER_MATH.md when appropriate
+
+**Files**: `components/ekf-flowchart.js` (or related flowchart component)
+
+**Acceptance Criteria**:
+- ✓ Tooltips added to major flowchart nodes (predict, update, etc.)
+- ✓ Equations displayed include fully expanded matrix forms
+- ✓ References to FILTER_MATH.md sections are accurate
+- ✓ Tooltip formatting is readable and well-styled
+- ✓ Tooltips do not obstruct flowchart visual hierarchy
+- ✓ Works on desktop/tablet/mobile breakpoints
+
+**Verification**:
+- View flowchart in welcome page
+- Hover over nodes and verify tooltip content
+- Check accuracy of mathematical expressions
+- Verify responsive behavior on mobile
 
 ---
 
