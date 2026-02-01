@@ -4,7 +4,7 @@
  */
 
 const { useState, useEffect, useRef, useReducer } = React;
-const { TabBar, WelcomeScreen, ControlPanel, ParameterControls, ChartCanvas, ProblemTypeSelector, SimulationGrid } = window;
+const { TabBar, WelcomeScreen, ControlPanel, ParameterControls, ChartCanvas, ProblemTypeSelector, SimulationGrid, EKFFlowchart } = window;
 
 function EKFVisualization() {
   // Controller ref
@@ -535,7 +535,7 @@ function EKFVisualization() {
     <div className="flex flex-col h-screen bg-gray-900">
       {/* Header - Three Section Layout */}
       <div className="bg-gray-800 border-b border-gray-700">
-        <div className="grid grid-cols-[auto_1fr_auto] gap-x-2 p-4 items-start">
+        <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 p-4 items-center">
           {/* Left: Problem Type Selector */}
           <ProblemTypeSelector
             problemTypes={problemTypes}
@@ -543,7 +543,7 @@ function EKFVisualization() {
             onProblemTypeChange={handleProblemTypeChange}
           />
 
-          {/* Center: Simulation Grid */}
+          {/* Center: Simulation Grid + EKF Flowchart */}
           <SimulationGrid
             slots={currentSlots.map(slot => ({
               ...slot,
@@ -554,7 +554,12 @@ function EKFVisualization() {
             onSlotRename={handleSlotRename}
             onSlotReset={handleSlotReset}
             onAddColumn={handleAddColumn}
-          />
+          >
+            {/* EKF Flowchart (horizontal) - after + button */}
+            <div className="overflow-visible">
+              <EKFFlowchart direction="horizontal" compact={true} />
+            </div>
+          </SimulationGrid>
 
           {/* Right: Title */}
           <div className="text-right pr-4">
