@@ -26,73 +26,16 @@
 | 28 | Header horizontal margin alignment | `d092d81`, `7bbdf74` |
 | 30 | Simulation tab horizontal margins (24px left/right) | `9abe87c`, `e036eaa` |
 | 32 | Welcome page Kalman section reorganization (diagram first) | `80660c2`, `b053664`, `c0ff81c` |
+| 26 | Kalman filter math documentation (FILTER_MATH.md) | `9c1cba5`, `b9b49c7` |
+| 31 | Chart bubble with dark gradient styling | `e56078a`, `1e50f81` |
 
-**Merges**: `c0ff81c` (Item 32), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `1e50f81` (Item 31), `b9b49c7` (Item 26), `c0ff81c` (Item 32), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 31 → 2. ❌ Item 26
-
----
-
-### Item 31: Chart Bubble with Dark Gradient ❌
-**Branch**: `feat/chart-bubble-gradient`
-
-**Change**: Wrap charts in a bubble container with dark gradient (gray to navy)
-
-**Scope**: Create dark gradient bubble background for all plots
-
-**Design**: Dark gray-to-navy gradient with rounded corners, subtle shadow
-
-**Files**: Chart container/layout components (likely `components/chart-grid.js` or wrapper)
-
-**Acceptance Criteria**:
-- ✓ Charts wrapped in bubble container
-- ✓ Dark gradient applied (gray to navy)
-- ✓ Rounded corners on bubble
-- ✓ Subtle shadow for depth
-- ✓ Charts visible and readable on gradient background
-- ✓ Consistent styling across all chart types
-
-**Verification**:
-- View all chart types in bubble
-- Check gradient direction and color blend
-- Verify chart readability on dark background
-- Test responsiveness at different screen sizes
-
----
-
-### Item 26: Kalman Filter Math Verification ❌
-**Branch**: `doc/filter-math-verification`
-
-**Scope**: Verify filter algorithm (Kalman) and EKF against academic references
-
-**Deliverable**: README with mathematical derivations in LaTeX
-
-**Files**:
-- `FILTER_MATH.md` (new) - comprehensive math documentation
-- `controllers/kalman-filter.js` - inline math comments referencing document
-- `controllers/ekf-controller.js` - inline math comments referencing document
-
-**Acceptance Criteria**:
-- ✓ Kalman filter equations documented with LaTeX
-  - Predict step: x̂⁻ = Fx̂⁺, P⁻ = FP⁺Fᵀ + Q
-  - Update step: K = P⁻Hᵀ(HP⁻Hᵀ + R)⁻¹, x̂⁺ = x̂⁻ + K(z - Hx̂⁻)
-- ✓ EKF equations documented with LaTeX
-  - Jacobian matrices (F_x, H_x) defined and explained
-  - State transition function derivation
-  - Measurement model derivation
-- ✓ Equations verified against academic references (textbooks/papers)
-- ✓ Code comments link to relevant equations in documentation
-- ✓ Parameter definitions (Q, R, initial state covariance, etc.)
-
-**Verification**:
-- Read through FILTER_MATH.md - equations are clear and mathematically sound
-- Check code comments reference specific equations
-- Confirm math matches implementation logic
-- Cross-check against known Kalman/EKF references (e.g., Welch & Bishop, Bar-Shalom)
+*All tasks complete!* ✅
 
 ---
 
