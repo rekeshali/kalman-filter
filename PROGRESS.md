@@ -28,7 +28,29 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 26 → 2. ❌ Item 27
+**Priority**: 1. ❌ Item 28 → 2. ❌ Item 26 → 3. ❌ Item 27
+
+---
+
+### Item 28: Banner Margin Alignment ❌
+**Branch**: `fix/banner-margins`
+
+**Change**: Align top banner left/right margins to match content area margins
+
+**Issue**: Top banner has different left/right margins than the main content below, causing misalignment
+
+**Files**: `components/app-header.js` or main layout file
+
+**Acceptance Criteria**:
+- ✓ Top banner left margin matches content area left margin
+- ✓ Top banner right margin matches content area right margin
+- ✓ Visual alignment is pixel-perfect across all screen sizes
+- ✓ No content overflow or clipping
+
+**Verification**:
+- View app at different breakpoints (mobile, tablet, desktop)
+- Check alignment: banner edges should align with content edges
+- Use browser DevTools to measure margins and verify they match
 
 ---
 
