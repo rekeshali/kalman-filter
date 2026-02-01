@@ -24,17 +24,16 @@
 
 | 27 | Splash button explanation tooltip | `c958315`, `02ca97e` |
 | 28 | Header horizontal margin alignment | `d092d81`, `7bbdf74` |
-| 26 | Kalman filter math documentation (FILTER_MATH.md) | `9c1cba5`, `b9b49c7` |
-| 30 | Simulation tab horizontal margins (px-24) | `9abe87c`, `e036eaa` |
-| 32 | Welcome page Kalman section reorg | `b053664`, `c0ff81c` |
+| 30 | Simulation tab horizontal margins (24px left/right) | `9abe87c`, `e036eaa` |
+| 32 | Welcome page Kalman section reorganization (diagram first) | `80660c2`, `b053664`, `c0ff81c` |
 
-**Merges**: `c0ff81c` (Item 32), `e036eaa` (Item 30), `b9b49c7` (Item 26), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `c0ff81c` (Item 32), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: ❌ Item 31
+**Priority**: 1. ❌ Item 31 → 2. ❌ Item 26
 
 ---
 
@@ -65,6 +64,37 @@
 
 ---
 
+### Item 26: Kalman Filter Math Verification ❌
+**Branch**: `doc/filter-math-verification`
+
+**Scope**: Verify filter algorithm (Kalman) and EKF against academic references
+
+**Deliverable**: README with mathematical derivations in LaTeX
+
+**Files**:
+- `FILTER_MATH.md` (new) - comprehensive math documentation
+- `controllers/kalman-filter.js` - inline math comments referencing document
+- `controllers/ekf-controller.js` - inline math comments referencing document
+
+**Acceptance Criteria**:
+- ✓ Kalman filter equations documented with LaTeX
+  - Predict step: x̂⁻ = Fx̂⁺, P⁻ = FP⁺Fᵀ + Q
+  - Update step: K = P⁻Hᵀ(HP⁻Hᵀ + R)⁻¹, x̂⁺ = x̂⁻ + K(z - Hx̂⁻)
+- ✓ EKF equations documented with LaTeX
+  - Jacobian matrices (F_x, H_x) defined and explained
+  - State transition function derivation
+  - Measurement model derivation
+- ✓ Equations verified against academic references (textbooks/papers)
+- ✓ Code comments link to relevant equations in documentation
+- ✓ Parameter definitions (Q, R, initial state covariance, etc.)
+
+**Verification**:
+- Read through FILTER_MATH.md - equations are clear and mathematically sound
+- Check code comments reference specific equations
+- Confirm math matches implementation logic
+- Cross-check against known Kalman/EKF references (e.g., Welch & Bishop, Bar-Shalom)
+
+---
 
 ## Bugs
 
