@@ -15,7 +15,7 @@ const EKF_BLOCKS = [
     row: 1,
     tooltip: {
       title: 'Initialization:',
-      formula: 'x₀ = [p₀, v₀]ᵀ = [0, 0]ᵀ\nP₀ = diag([σ²ₚ₀, σ²ᵥ₀])',
+      formula: 'x₀ = [p₀, v₀]ᵀ = [0, 0]ᵀ\n\nP₀ = [σ²ₚ₀   0  ]\n     [  0   σ²ᵥ₀]',
       purpose: 'Set initial state estimate and uncertainty.',
       intuition: 'Start with high uncertainty (large P₀). As measurements arrive, filter converges to true state.'
     }
@@ -30,7 +30,7 @@ const EKF_BLOCKS = [
     row: 1,
     tooltip: {
       title: 'Reality Simulation:',
-      formula: 'x(t) = A·sin(ωt) + η(t)\nη: OU process noise',
+      formula: 'x(t) = A·sin(ωt) + η(t)\nη: OU process noise (mean-reverting)',
       purpose: 'Generate ground truth with realistic disturbances.',
       intuition: 'Black line in charts. The "reality" our filter tries to track despite never directly observing it.'
     }
@@ -45,7 +45,7 @@ const EKF_BLOCKS = [
     row: 2,
     tooltip: {
       title: 'State Prediction:',
-      formula: 'x̄ₖ = F·xₖ₋₁ + B·uₖ\nF = [1  dt; 0  1], B = [½dt²; dt]\nuₖ = accelerometer measurement',
+      formula: 'x̂ₖ₊₁⁻ = F·x̂ₖ⁺ + B·uₖ\n\nF = [1  Δt]    B = [½Δt²]\n    [0   1]        [ Δt ]\n\nExpanded:\np̂ₖ₊₁⁻ = p̂ₖ⁺ + v̂ₖ⁺·Δt + ½uₖ·Δt²\nv̂ₖ₊₁⁻ = v̂ₖ⁺ + uₖ·Δt\n\nuₖ = aₘₑₐₛ - bₐ (bias-corrected accel)',
       purpose: 'Use acceleration measurement to predict next position and velocity.',
       intuition: 'Dead reckoning - where do we think we are based on motion? Uncertainty grows due to imperfect model.'
     }
@@ -60,7 +60,7 @@ const EKF_BLOCKS = [
     row: 2,
     tooltip: {
       title: 'Linearization Matrices:',
-      formula: 'F = ∂f/∂x (state transition)\nH = ∂h/∂x (measurement model)\nFor linear case: F constant, H=[1 0]',
+      formula: 'F = ∂f/∂x = [1  Δt]  (state transition)\n            [0   1]\n\nH = ∂h/∂x = [1  0]  (measurement)\n\nFor our linear model, Jacobians are exact\n(no linearization error).',
       purpose: 'Linearize nonlinear dynamics for Gaussian propagation.',
       intuition: 'EKF approximates nonlinear system as locally linear. For our linear model, Jacobians are exact.'
     }
@@ -75,7 +75,7 @@ const EKF_BLOCKS = [
     row: 2,
     tooltip: {
       title: 'Uncertainty Propagation:',
-      formula: 'P̄ₖ = F·Pₖ₋₁·Fᵀ + Q\nQ = process noise covariance',
+      formula: 'P̄ₖ₊₁ = F·Pₖ·Fᵀ + Q\n\nQ = σₐ²·B·Bᵀ = σₐ²·[Δt⁴/4  Δt³/2]\n                   [Δt³/2   Δt² ]\n\nExpanded P̄:\nP̄ₚₚ = Pₚₚ + 2Δt·Pₚᵥ + Δt²·Pᵥᵥ + Qₚₚ\nP̄ₚᵥ = Pₚᵥ + Δt·Pᵥᵥ + Qₚᵥ\nP̄ᵥᵥ = Pᵥᵥ + Qᵥᵥ',
       purpose: 'Grow uncertainty during prediction due to process noise.',
       intuition: 'Uncertainty grows when we predict without measurements. Q represents model imperfections. See Uncertainty chart.'
     }
@@ -90,9 +90,9 @@ const EKF_BLOCKS = [
     row: 3,
     tooltip: {
       title: 'Optimal Weighting:',
-      formula: 'K = P̄·Hᵀ·(H·P̄·Hᵀ + R)⁻¹\nR = measurement noise covariance',
+      formula: 'K = P̄·Hᵀ·S⁻¹\n\nS = H·P̄·Hᵀ + R = P̄ₚₚ + R  (scalar)\n\nK = [P̄ₚₚ/S]  = [K₁]\n    [P̄ᵥₚ/S]    [K₂]\n\nK₁: position gain, K₂: velocity gain',
       purpose: 'Balance trust between prediction and measurement.',
-      intuition: 'K→1: trust measurement (low P̄, high R). K→0: trust prediction (high P̄, low R).',
+      intuition: 'K→1: trust measurement (low R). K→0: trust prediction (high R). S is innovation covariance.',
       chart: 'Kalman Gain chart shows K over time. Watch it adapt to changing uncertainty!'
     }
   },
@@ -106,7 +106,7 @@ const EKF_BLOCKS = [
     row: 3,
     tooltip: {
       title: 'Measurement Residual:',
-      formula: 'ỹ = zₖ - H·x̄ₖ\n= (measured pos) - (predicted pos)',
+      formula: 'y = zᶜᵒʳʳ - H·x̂⁻\n\nzᶜᵒʳʳ = zₘₑₐₛ - bᵤ  (bias-corrected)\n\nSince H = [1  0]:\ny = zᶜᵒʳʳ - p̂⁻  (scalar)',
       purpose: 'Quantify prediction error using measurement.',
       intuition: 'How surprised are we by the measurement? Large innovation means poor prediction.',
       chart: 'Innovation chart should be zero-mean white noise if filter is tuned correctly.'
@@ -122,9 +122,9 @@ const EKF_BLOCKS = [
     row: 3,
     tooltip: {
       title: 'Posterior State Estimate:',
-      formula: 'xₖ = x̄ₖ + K·ỹ\n= prediction + correction',
+      formula: 'x̂⁺ = x̂⁻ + K·y\n\nExpanded:\np̂⁺ = p̂⁻ + K₁·y\nv̂⁺ = v̂⁻ + K₂·y\n\nCorrection = Gain × Innovation',
       purpose: 'Fuse prediction with measurement for optimal estimate.',
-      intuition: 'Pull prediction toward measurement by K·ỹ. This is the magic of Kalman filtering!',
+      intuition: 'Pull prediction toward measurement by K·y. This is the magic of Kalman filtering!',
       chart: 'Red line (EKF estimate) tracks black (true) by correcting predictions with measurements.'
     }
   },
@@ -138,7 +138,7 @@ const EKF_BLOCKS = [
     row: 3,
     tooltip: {
       title: 'Uncertainty Reduction:',
-      formula: 'Pₖ = (I - K·H)·P̄ₖ\nI = identity matrix',
+      formula: 'P⁺ = (I - K·H)·P̄\n\nI - K·H = [1-K₁  0]\n          [-K₂   1]\n\nReduced uncertainty after measurement:\nP⁺ₚₚ = (1-K₁)·P̄ₚₚ\nP⁺ₚᵥ = (1-K₁)·P̄ₚᵥ\nP⁺ᵥᵥ = -K₂·P̄ᵥₚ + P̄ᵥᵥ',
       purpose: 'Reduce uncertainty after incorporating measurement.',
       intuition: 'Measurements give us information, reducing uncertainty. Uncertainty decreases after update, grows after prediction.',
       chart: 'Uncertainty chart shows σ decreasing as filter converges, then stabilizing.'
