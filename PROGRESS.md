@@ -127,7 +127,14 @@ Custom drag handlers on chart grid: pan left/right when paused to navigate histo
 
 ### Open
 
-(None)
+- **BUG-8**: X-axis tick labels fix not applied to all charts
+  - **Repro**: Run simulation, observe x-axis labels on charts below position chart
+  - **Expected**: All charts show actual time values from labels array
+  - **Actual**: Only position chart (top) uses correct tick callback; other 6 charts use `(v) => Number(v).toFixed(2)` which shows index values
+  - **Root Cause**: BUG-3 fix (`5682d7c`) only updated position chart callback at line 320
+  - **Likely Files**: [views/app-view.js](views/app-view.js) lines 344, 365, 383, 404, 425, 443
+  - **Fix**: Apply same `function(v, index, ticks) { return this.chart.data.labels[index]... }` pattern to all 6 remaining chart configs
+  - **Priority**: P2 (display consistency)
 
 ### Fixed
 - **BUG-1**: Mouse wheel scroll blocked
