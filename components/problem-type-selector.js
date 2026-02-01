@@ -36,13 +36,6 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
             {/* Gradient overlay for sheen effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
 
-            {/* Active indicator (subtle pulse) */}
-            {isActive && (
-              <div className="absolute top-2 right-2">
-                <div className="w-3 h-3 bg-white rounded-full opacity-90 shadow-lg" />
-              </div>
-            )}
-
             {/* Name */}
             <div className="absolute inset-0 flex items-center justify-center p-2">
               <span className="text-white font-bold text-sm text-center drop-shadow-lg">
