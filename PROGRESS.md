@@ -31,7 +31,48 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 30 → 2. ❌ Item 31 → 3. ❌ Item 29 → 4. ❌ Item 26
+**Priority**: 1. ❌ Item 32 → 2. ❌ Item 30 → 3. ❌ Item 31 → 4. ❌ Item 29 → 5. ❌ Item 26
+
+---
+
+### Item 32: Welcome Page Kalman Filter Section Reorganization ❌
+**Branch**: `feat/welcome-kalman-reorg`
+
+**Change**: Reorganize welcome page Kalman filter section layout
+
+**Current Layout**:
+- "How a Kalman Filter Works" text at top
+- Diagram at bottom
+
+**New Layout**:
+- Diagram at top
+- "How a Kalman Filter Works" text at bottom
+
+**Content**: The "How a Kalman Filter Works" section includes:
+```
+The Kalman filter is an optimal recursive algorithm for estimating the state of a system from noisy measurements. It operates in two steps:
+
+1. Prediction Step
+Uses the system dynamics model to predict the next state based on the current estimate and control inputs (acceleration measurements). Uncertainty grows due to process noise.
+
+2. Update Step
+Fuses the prediction with new measurements (position from external probe) using the Kalman gain. The gain balances trust between the model and measurements. Uncertainty decreases.
+```
+
+**Files**: Welcome/home page component (likely `views/welcome.js` or similar)
+
+**Acceptance Criteria**:
+- ✓ Diagram moved to top of Kalman section
+- ✓ "How a Kalman Filter Works" text moved to bottom
+- ✓ Visual hierarchy and spacing preserved
+- ✓ All content remains intact and readable
+- ✓ Responsive layout at all breakpoints
+
+**Verification**:
+- View welcome page on desktop/tablet/mobile
+- Confirm diagram appears first in Kalman section
+- Confirm text explanation appears after diagram
+- Check visual spacing and alignment
 
 ---
 
