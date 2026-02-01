@@ -667,20 +667,29 @@ class SimulationController extends window.EventEmitter {
       this.pause();
     }
 
-    this.timelinePosition = position;
-
     const totalPoints = tabState.simulationState.dataCollector.getLength();
     if (totalPoints === 0) return;
 
+    // Prevent scrolling below viewport size (400 points)
+    // This prevents axis scaling issues when there aren't enough points
+    const viewportSize = tabState.simulationState.dataCollector.viewportSize;
+    const minPosition = totalPoints > viewportSize
+      ? (viewportSize / totalPoints) * 100
+      : 0;
+
+    // Clamp position to valid range
+    const clampedPosition = Math.max(minPosition, Math.min(100, position));
+    this.timelinePosition = clampedPosition;
+
     // Convert percentage to data index
-    if (position >= 99) {
+    if (clampedPosition >= 99) {
       // At or near end = live mode
       this.viewportEndIndex = null;
       this.viewportMode = 'live';
     } else {
       // Historical mode
-      const endIndex = Math.floor((position / 100) * totalPoints);
-      this.viewportEndIndex = Math.max(1, endIndex);
+      const endIndex = Math.floor((clampedPosition / 100) * totalPoints);
+      this.viewportEndIndex = Math.max(viewportSize, endIndex);
       this.viewportMode = 'historical';
     }
 
