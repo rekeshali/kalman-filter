@@ -70,7 +70,7 @@ function WelcomeScreen({ onCreateSimulation, problemType }) {
 
         {/* RIGHT SIDE: Problem Description */}
         <div className="space-y-6">
-          <div className="bg-gradient-to-r from-blue-900 to-purple-900 border border-blue-600 rounded-lg p-6 shadow-lg">
+          <div className="bg-gradient-to-br from-gray-800 to-slate-900 border border-gray-600 rounded-lg p-6 shadow-lg">
             <h3 className="text-lg font-semibold mb-2 text-white">Ready to Explore?</h3>
             <p className="text-gray-200 text-sm mb-4">
               Click the button below or the <strong className="text-blue-300">+</strong> button next to the Welcome tab to create a new simulation.
