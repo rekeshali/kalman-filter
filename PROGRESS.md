@@ -29,6 +29,9 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 ### Item 17: Header Revamp (`f4638fa`)
 Slot-based simulation management: problem type selector (2-col gradient cards), simulation grid (3×N), inline editing, per-type isolation
 
+### Item 12: Drag to Navigate History (`f68aa3b`)
+Custom drag handlers on chart grid: pan left/right when paused to navigate history, syncs with slider
+
 ### Merges & Fixes
 - `2d67481` - Merge feature/timeline-slider
 - `08b94ac` - BUG-2 fix + layout stability
@@ -40,8 +43,7 @@ Slot-based simulation management: problem type selector (2-col gradient cards), 
 
 **Priority Order**:
 1. ❌ Item 19: Header EKF flowchart
-2. ❌ Item 18: GIF recording of plots
-3. ❌ Item 12: Drag to navigate history
+2. 🚧 Item 18: GIF recording of plots
 
 ---
 
@@ -84,7 +86,7 @@ Slot-based simulation management: problem type selector (2-col gradient cards), 
 
 ---
 
-### Item 18: GIF Recording of Plots ❌
+### Item 18: GIF Recording of Plots 🚧
 **Branch**: `feat/gif-recording`
 **Feature**: Record button captures charts as GIF alongside JSON data
 
@@ -118,37 +120,6 @@ Slot-based simulation management: problem type selector (2-col gradient cards), 
 - [ ] Stop recording generates and downloads GIF
 - [ ] GIF filename matches JSON filename (same timestamp)
 - [ ] GIF shows all 4 charts during recording period
-
----
-
-### Item 12: Drag to Navigate History ❌
-**Branch**: `feat/drag-timeline`
-**Feature**: Pan inside plot to move through history (when paused)
-
-**Scope Boundaries**:
-- IN: Pan gestures on chart area when paused
-- IN: Bidirectional sync between pan and slider
-- OUT: Pan while running (stays disabled)
-- OUT: Vertical pan (y-axis navigation)
-
-**Definition of Done**:
-1. When paused, dragging left/right on chart moves through history
-2. Slider thumb moves in sync with pan gesture
-3. Releasing pan leaves view at that position
-4. Zoom (pinch/wheel) works in both running and paused states
-
-**Verification**:
-- [ ] Pause sim → drag chart left → slider moves left
-- [ ] Pause sim → drag chart right → slider moves right
-- [ ] Drag slider → chart view matches
-- [ ] While running → pan disabled, zoom works
-- [ ] While paused → both pan and zoom work
-
-**Acceptance**:
-- [ ] Panning updates slider position in real-time
-- [ ] Pan and slider drag produce identical results
-- [ ] Zoom works in both running and paused states
-- [ ] Pan only enabled when paused
 
 ---
 
