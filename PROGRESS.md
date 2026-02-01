@@ -14,6 +14,7 @@
 | 13-16 | 304px width, Record/Download toggle, splash ≋ | `b479cda`..`8096d2f` |
 | 17 | Header revamp: slot-based sims, problem type selector | `f4638fa` |
 | 19 | EKF flowchart component (vertical/horizontal) | `42328d3` |
+| 18 | GIF recording alongside JSON export | `31f1e3a`, `e4d0fb5` |
 
 **Merges**: `6baa407` (Item 19), `2d67481` (timeline-slider)
 
@@ -21,18 +22,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. 🚧 Item 18 → 2. ❌ Item 20 → 3. ❌ Item 21
-
----
-
-### Item 18: GIF Recording 🚧
-**Branch**: `feat/gif-recording` | **Blocker**: BUG-10
-
-Capture chart grid as GIF (html2canvas + gif.js, 15fps)
-
-**Done when**: ● starts JSON+GIF capture, ↓ downloads both with matching timestamps
-
-**Acceptance**: [ ] GIF downloads [ ] Shows 4 charts in grid [ ] Timestamps match JSON
+**Priority**: 1. ❌ Item 20 → 2. ❌ Item 21
 
 ---
 
@@ -64,13 +54,11 @@ Wave = custom icon + gradient overlay; others = "Coming Soon"
 ## Bugs
 
 ### Open
-- **BUG-10**: GIF renders charts stacked (not grid) — **blocks Item 18**
-  - Fix: html2canvas must preserve CSS grid layout
-  - Files: `views/app-view.js`
+(None)
 
 ### Fixed
-BUG-1→9: scroll, reset, tick labels, tab switch, button size, slot switch, white bubble, all charts ticks, wheel zoom
-(`08b94ac`, `5682d7c`, `98b6186`, `1745f53`, `0d9b12a`, `db3e1d8`, `c2ccd8b`)
+BUG-1→10: scroll, reset, tick labels, tab switch, button size, slot switch, white bubble, all charts ticks, wheel zoom, GIF grid layout
+(`08b94ac`, `5682d7c`, `98b6186`, `1745f53`, `0d9b12a`, `db3e1d8`, `c2ccd8b`, `e4d0fb5`)
 
 ---
 
