@@ -17,6 +17,7 @@
 | 18 | GIF recording alongside JSON export | `31f1e3a`, `e4d0fb5` |
 | 20 | Problem type card icons + gradient overlay | `0648e27` |
 | 22 | Limit to 3 simulation slots per problem type | `8fde1a2` |
+| 23 | Unify highlight color to blue-500 across tabs | `b8a4b8e` |
 
 **Merges**: `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
@@ -24,7 +25,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 21 → 2. ❌ Item 23 → 3. ❌ Item 24 → 4. ❌ Item 25
+**Priority**: 1. ❌ Item 21 → 2. ❌ Item 24 → 3. ❌ Item 25
 
 ---
 
@@ -71,27 +72,6 @@ idle →[press]→ rampUp →[1s]→ sustain →[release|6s]→ rampDown →[1s]
 - Release after 3s → bar animates down to 0% over 1s
 - Hold for 6s → auto-release (bar animates down)
 - Observe simulation perturbation follows envelope shape
-
----
-
-### Item 23: Consistent Highlight Colors ❌
-**Branch**: `feat/highlight-colors`
-
-**Change**: Match highlight color between problem type cards and simulation slots
-
-**Files**: `components/problem-type-selector.js`, `components/simulation-slot.js`
-
-**Acceptance Criteria**:
-- ✓ Problem type card active state uses same blue as simulation slot active state
-- ✓ Color applied consistently across all problem types (Wave, Sine, Const Vel, Const Accel)
-- ✓ Active state clearly distinguishes selected tab from inactive tabs
-- ✓ Color matches visual design (no gradient/opacity differences)
-
-**Verification**:
-- Open app, observe problem type selector
-- Click different problem types → active card highlights in blue
-- Switch to each problem type → corresponding simulation slots also use same blue highlight
-- No color discrepancy between the two tab groups
 
 ---
 
