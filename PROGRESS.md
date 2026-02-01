@@ -17,69 +17,70 @@ Replace pan gestures with a timeline slider control for navigating historical da
 ### Phase 1: Core Implementation (`b3e84f5`)
 FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (kept zoom)
 
-### Phase 2: UI Refinements
+### Phase 2: UI Refinements (`7bff6bd`..`8096d2f`)
 | Item | Summary | Commit |
 |------|---------|--------|
-| 1 | Trash → ✕ | `7bff6bd` |
-| 2 | Playback Controls box (304px) | `f823a6a` |
-| 3 | Skinny cursor (4×20px) | `3290c5f` |
-| 4 | Removed 0s label + Live Mode text | `804d9a4` |
-| 5 | Gray cursor + hover, always enabled | `03f761f` |
-| 6-7 | Real-time sync + process model fix | `f390aa8` |
-| 8 | Pause/play time jump fix | `fa4666b`, `c5eb5de` |
-| 9 | Min 400 pts viewport limit | `37da8c6` |
-| 10 | Record button (● symbol) | `31dd9f9` |
-| 11 | Button order: Reset→Play→Pause→Restart→Record | `2413fc8` |
-| 13 | 304px width all control boxes | `b479cda` |
-| 14 | Toggle Record/Download (red, 0.1s) | `eb18601`, `c6df8ea` |
-| 15 | Flexbox layout, controls 320px fixed | `ecd5d59` |
+| 1-5 | Trash→✕, 304px box, skinny cursor, gray+hover | `7bff6bd`..`03f761f` |
+| 6-8 | Real-time sync, process model, pause/play fix | `f390aa8`..`c5eb5de` |
+| 9-11 | Min viewport, Record●, button order | `37da8c6`..`2413fc8` |
+| 13-15 | 304px width, Record/Download toggle, flexbox | `b479cda`..`ecd5d59` |
 | 16 | Splash transient (≋ ripple, 2s cosine) | `d7c7757`, `8096d2f` |
 
-### Merged to Main
-- `2d67481` - Merge feature/timeline-slider (all Phase 2 complete)
-- `08b94ac` - BUG-2 fix + always-visible slider/scrollbar
-- `4dee53a` - Add claude-hitmen submodule
+### Item 17: Header Revamp (`f4638fa`)
+Slot-based simulation management: problem type selector (2-col gradient cards), simulation grid (3×N), inline editing, per-type isolation
 
-### Item 17: Header Revamp ✅
-**Feature**: Three-section header layout with problem types, simulation grid, and dynamic title
-
-**Implementation**:
-- Created slot-based simulation management system
-- Problem type selector with gradient overlay cards (2 columns)
-- Simulation grid (3 rows × N columns, starts with 1 column)
-- Pre-created slots with inline editing and reset functionality
-- Each problem type has its own isolated simulation set
-
-**Files Created**:
-- `models/problem-type-model.js` - Problem type data model
-- `components/problem-type-selector.js` - Left section, gradient cards
-- `components/simulation-slot.js` - Individual slot component
-- `components/simulation-grid.js` - Center section, 3×N grid
-
-**Files Modified**:
-- `models/tab-model.js` - Added slot management methods
-- `controllers/simulation-controller.js` - Added problem type awareness
-- `views/app-view.js` - Replaced header with 3-section layout
-- `index.html` - Added script tags for new components
-
-**Acceptance**: All criteria met
-- [x] Problem type tabs (2 columns, left side)
-- [x] Problem types have gradient overlay sheen effect
-- [x] Simulation grid (3 rows × 1 column initial, center)
-- [x] Simulations pre-created, renamable, 30 char width
-- [x] ↺ resets simulation + name (no close/delete)
-- [x] + adds column of 3 simulation slots
-- [x] Title shows current problem type
-- [x] Clicking problem type → welcome page (with its own sims)
-- [x] Clicking simulation → opens that sim
+### Merges & Fixes
+- `2d67481` - Merge feature/timeline-slider
+- `08b94ac` - BUG-2 fix + layout stability
+- `5682d7c` - BUG-3 fix (x-axis tick labels)
 
 ---
 
 ## Remaining Tasks
 
 **Priority Order**:
-1. ❌ Item 18: GIF recording of plots
-2. ❌ Item 12: Drag to navigate history
+1. ❌ Item 19: Header EKF flowchart
+2. ❌ Item 18: GIF recording of plots
+3. ❌ Item 12: Drag to navigate history
+
+---
+
+### Item 19: Header EKF Flowchart ❌
+**Branch**: `feat/header-flowchart`
+**Feature**: Horizontal EKF block diagram in header (replicate welcome page flowchart)
+
+**Source**: `components/welcome-screen.js` lines 66-233 (Block Diagram section)
+
+**Specs**:
+- **Layout**: Horizontal flow (left→right) instead of vertical (top→bottom)
+- **Blocks**: Same 9 blocks: Init, True Trajectory, Inertial Prop, Jacobian, Cov Pred, Kalman Gain, Innovation, State Corr, Cov Update
+- **Tooltips**: Identical hover content (math formulas, purpose, intuition)
+- **Colors**: Same color scheme per block
+
+**Scope Boundaries**:
+- IN: Extract flowchart into reusable component
+- IN: Horizontal layout variant for header
+- IN: Same hover tooltips
+- OUT: New tooltip content
+- OUT: Different block colors or styles
+
+**Definition of Done**:
+1. Create `components/ekf-flowchart.js` with shared block definitions
+2. Support `direction="vertical"` (welcome) and `direction="horizontal"` (header)
+3. Header displays compact horizontal flowchart between sim grid and title
+4. Hover tooltips work identically in both locations
+
+**Verification**:
+- [ ] Welcome page flowchart unchanged (still vertical)
+- [ ] Header shows same blocks horizontally
+- [ ] Hover any block → tooltip appears with math formulas
+- [ ] Tooltip content matches between welcome and header
+
+**Acceptance**:
+- [ ] Reusable `EKFFlowchart` component created
+- [ ] Welcome page uses `direction="vertical"`
+- [ ] Header uses `direction="horizontal"`
+- [ ] No code duplication between locations
 
 ---
 
@@ -88,15 +89,17 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 **Feature**: Record button captures charts as GIF alongside JSON data
 
 **Specs**:
-- **Charts**: All 4 visible charts (position, acceleration, velocity, error)
+- **Capture**: Entire chart grid container (all 4 charts as unified image)
+- **Libraries**: html2canvas (DOM→canvas) + gif.js (frames→GIF)
 - **Frame rate**: 15 fps
 - **Max duration**: 10× context window (40,000 points worth)
 
 **Scope Boundaries**:
-- IN: Capture chart canvases only (not controls/UI)
-- IN: Single GIF containing all charts (stacked or grid layout)
+- IN: Capture entire chart grid container as one image
+- IN: Single GIF containing all 4 charts in their grid layout
 - OUT: Video formats (MP4, WebM)
-- OUT: Configurable frame rate/quality
+- OUT: Selective chart capture (all or nothing)
+- OUT: Control panel capture
 
 **Definition of Done**:
 1. Click ● starts both JSON logging AND GIF frame capture
@@ -108,27 +111,13 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 - [ ] Start recording, run sim for 5s, stop → GIF downloads
 - [ ] GIF file opens and shows chart animation
 - [ ] GIF timestamp matches JSON timestamp
-- [ ] GIF captures all 4 chart areas
+- [ ] GIF captures all 4 chart areas in grid layout
 
 **Acceptance**:
-- [ ] Record button starts GIF capture
-- [ ] Stop recording generates GIF
-- [ ] GIF downloaded with same timestamp as JSON
-- [ ] GIF shows chart animation during recording period
-
----
-
-### Item 16: Splash Transient Disturbance ✅
-**Commits**: `d7c7757`, `8096d2f`
-**Feature**: Ripple buttons (≋) trigger 2s cosine transients (1x → 2x → 1x)
-
-**Acceptance**: All passing
-- [x] "Scale" → "Amplitude" everywhere
-- [x] Ripple button next to Frequency
-- [x] Ripple button next to Amplitude
-- [x] Click → smooth increase → return to baseline
-- [x] Transient visible on charts
-- [x] Button matches existing UI style
+- [ ] Record button starts GIF capture alongside JSON
+- [ ] Stop recording generates and downloads GIF
+- [ ] GIF filename matches JSON filename (same timestamp)
+- [ ] GIF shows all 4 charts during recording period
 
 ---
 
@@ -156,49 +145,27 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 - [ ] While paused → both pan and zoom work
 
 **Acceptance**:
-- [ ] Panning updates slider in real-time
-- [ ] Pan and slider drag are equivalent
-- [ ] Zoom works regardless of pause state
+- [ ] Panning updates slider position in real-time
+- [ ] Pan and slider drag produce identical results
+- [ ] Zoom works in both running and paused states
+- [ ] Pan only enabled when paused
 
 ---
 
 ## Bugs
 
-### Investigating
-
-(none)
-
----
-
 ### Open
 
-(none)
+(None)
 
 ### Fixed
-- **BUG-1**: Mouse wheel scroll blocked - fixed
-- **BUG-2**: Timeline clock reset (`08b94ac`) - emit events in `reset()`
-- **BUG-3**: X-axis tick labels incorrect - fixed timeline slider/chart time alignment
-- **BUG-4**: Tab switch time jump - call `simulationState.resume()` before `_startAnimation()` in `setActiveSlot()`
-- **BUG-5**: Problem type buttons enlarge when selected - removed `scale-105` transform from active state
-- **BUG-6**: Timeline slider stale on slot switch - emit `timeline-position-changed` when switching slots
-
----
-
-## Commit History
-
-| Commit | Description | Items |
-|--------|-------------|-------|
-| `b3e84f5` | Timeline slider core | Phase 1 |
-| `7bff6bd`..`2413fc8` | UI refinements | 1-11 |
-| `37da8c6` | Viewport min limit | 9 |
-| `b479cda` | 304px width | 13 |
-| `ecd5d59` | Flexbox layout | 15 |
-| `eb18601`, `c6df8ea` | Toggle Record/Download | 14 |
-| `08b94ac` | BUG-2 fix + layout stability | BUG-2 |
-| `2d67481` | Merge feature/timeline-slider | — |
-| `4dee53a` | claude-hitmen submodule | — |
-| `d7c7757` | Scale→Amplitude rename | 16 |
-| `8096d2f` | Splash transient disturbance | 16 |
+- **BUG-1**: Mouse wheel scroll blocked
+- **BUG-2**: Timeline clock reset (`08b94ac`)
+- **BUG-3**: X-axis tick labels (`5682d7c`)
+- **BUG-4**: Tab switch time jump (`98b6186`, `1745f53`)
+- **BUG-5**: Problem type buttons enlarge (`98b6186`)
+- **BUG-6**: Timeline slider stale on slot switch (`98b6186`)
+- **BUG-7**: White bubble on active problem type card (`0d9b12a`)
 
 ---
 
