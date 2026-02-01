@@ -58,14 +58,159 @@ function LevelButtonGroup({ value, onChange, compact = false }) {
 }
 
 /**
+ * SplashButton - Inline button with hold-to-sustain and progress bar
+ * Progress bar only shows after holding for 0.5s
+ * On release, bar decays exponentially back to 0
+ */
+function SplashButton({ onStart, onEnd, progress, active }) {
+  const [isHolding, setIsHolding] = React.useState(false);
+  const [showProgress, setShowProgress] = React.useState(false);
+  const [decayProgress, setDecayProgress] = React.useState(null); // null = not decaying, number = current decay %
+  const holdTimerRef = React.useRef(null);
+  const decayAnimationRef = React.useRef(null);
+  const hasEndedRef = React.useRef(false); // Track if we've called onEnd to prevent restart
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setIsHolding(true);
+    setShowProgress(false);
+    setDecayProgress(null);
+    hasEndedRef.current = false; // Reset on new press
+
+    // Cancel any ongoing decay
+    if (decayAnimationRef.current) {
+      cancelAnimationFrame(decayAnimationRef.current);
+      decayAnimationRef.current = null;
+    }
+
+    onStart();
+
+    // Only show progress bar after 0.5s of holding
+    holdTimerRef.current = setTimeout(() => {
+      setShowProgress(true);
+    }, 500);
+  };
+
+  const handleMouseUp = () => {
+    // Clear the delay timer if button released before 0.5s
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+
+    // If progress bar was showing, start decay animation
+    // Otherwise, just end immediately
+    if (showProgress && !hasEndedRef.current) {
+      // Capture current progress for decay
+      const startProgress = Math.min(progress * 100, 100);
+      setIsHolding(false);
+      startDecayAnimation(startProgress);
+    } else if (!hasEndedRef.current) {
+      // Released before 0.5s - no progress bar shown, just end
+      setIsHolding(false);
+      hasEndedRef.current = true;
+      onEnd();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (isHolding) {
+      handleMouseUp();
+    }
+  };
+
+  // Decay animation function (extracted for reuse)
+  const startDecayAnimation = (startProgress) => {
+    if (decayAnimationRef.current) return; // Already running
+
+    setDecayProgress(startProgress);
+    const startTime = performance.now();
+    const tau = 100; // Time constant in ms (0.1 seconds)
+
+    const animateDecay = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const decayValue = startProgress * Math.exp(-elapsed / tau);
+
+      if (decayValue > 0.5) {
+        setDecayProgress(decayValue);
+        decayAnimationRef.current = requestAnimationFrame(animateDecay);
+      } else {
+        // Decay complete
+        decayAnimationRef.current = null;
+        setDecayProgress(null);
+        setShowProgress(false);
+        hasEndedRef.current = true;
+        onEnd();
+      }
+    };
+
+    decayAnimationRef.current = requestAnimationFrame(animateDecay);
+  };
+
+  // Handle max-out (6s timeout) - start decay when progress reaches 100%
+  React.useEffect(() => {
+    if (progress >= 1.0 && isHolding && showProgress && !decayAnimationRef.current && !hasEndedRef.current) {
+      setIsHolding(false);
+      startDecayAnimation(100);
+    }
+  }, [progress, isHolding, showProgress]);
+
+  // Clean up timers and animations on unmount
+  React.useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) {
+        clearTimeout(holdTimerRef.current);
+      }
+      if (decayAnimationRef.current) {
+        cancelAnimationFrame(decayAnimationRef.current);
+      }
+    };
+  }, []);
+
+  // Progress bar width: use decay progress if decaying, otherwise use actual progress
+  const progressPercent = decayProgress !== null ? decayProgress : Math.min(progress * 100, 100);
+
+  // Show active color only while holding, fade out on release
+  const isActiveDisplay = active && isHolding;
+
+  return (
+    <button
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
+      className={`relative flex-1 py-1 rounded font-medium overflow-hidden transition-all duration-300 ${
+        isActiveDisplay
+          ? 'bg-gray-600 text-white'
+          : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+      }`}
+      title="Click for bump, hold to sustain (6s max)"
+    >
+      {/* Progress bar - blue fill from left, only show if held > 0.5s or decaying */}
+      {((showProgress && isHolding) || decayProgress !== null) && (
+        <div
+          className="absolute inset-0 bg-blue-600"
+          style={{ width: `${progressPercent}%`, left: 0 }}
+        />
+      )}
+      <span className="relative z-10 text-2xl leading-none">≋</span>
+    </button>
+  );
+}
+
+/**
  * ParameterControls - All simulation parameter controls
  * @param {Object} props
  * @param {Object} props.parameters - All parameter values
  * @param {Function} props.onParameterChange - Parameter change handler (name, value)
- * @param {Function} props.onSplashFrequency - Splash frequency handler
- * @param {Function} props.onSplashAmplitude - Splash amplitude handler
+ * @param {Function} props.onSplashFrequencyStart - Splash frequency start handler (mousedown)
+ * @param {Function} props.onSplashFrequencyEnd - Splash frequency end handler (mouseup)
+ * @param {Function} props.onSplashAmplitudeStart - Splash amplitude start handler (mousedown)
+ * @param {Function} props.onSplashAmplitudeEnd - Splash amplitude end handler (mouseup)
+ * @param {Object} props.splashProgress - Splash progress state { frequency: {progress, active}, amplitude: {progress, active} }
  */
-function ParameterControls({ parameters, onParameterChange, onSplashFrequency, onSplashAmplitude }) {
+function ParameterControls({ parameters, onParameterChange, onSplashFrequencyStart, onSplashFrequencyEnd, onSplashAmplitudeStart, onSplashAmplitudeEnd, splashProgress }) {
   const {
     frequency = 0.5,
     scale = 1.0,
@@ -116,7 +261,12 @@ function ParameterControls({ parameters, onParameterChange, onSplashFrequency, o
               <div className="flex gap-1">
                 <button onClick={decrementFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
                 <button onClick={incrementFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
-                <button onClick={onSplashFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm" title="Splash (transient disturbance)">≋</button>
+                <SplashButton
+                  onStart={onSplashFrequencyStart}
+                  onEnd={onSplashFrequencyEnd}
+                  progress={splashProgress?.frequency?.progress || 0}
+                  active={splashProgress?.frequency?.active || false}
+                />
               </div>
             </div>
           </Tooltip>
@@ -132,7 +282,12 @@ function ParameterControls({ parameters, onParameterChange, onSplashFrequency, o
               <div className="flex gap-1">
                 <button onClick={decrementScale} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
                 <button onClick={incrementScale} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
-                <button onClick={onSplashAmplitude} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm" title="Splash (transient disturbance)">≋</button>
+                <SplashButton
+                  onStart={onSplashAmplitudeStart}
+                  onEnd={onSplashAmplitudeEnd}
+                  progress={splashProgress?.amplitude?.progress || 0}
+                  active={splashProgress?.amplitude?.active || false}
+                />
               </div>
             </div>
           </Tooltip>

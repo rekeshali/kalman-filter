@@ -36,12 +36,13 @@ class SimulationController extends window.EventEmitter {
     this.viewportEndIndex = null;  // null = live mode (show latest data)
     this.timelinePosition = 100;  // 0-100 percentage (100 = live mode)
 
-    // Splash state (transient disturbances)
+    // Splash state (transient disturbances with hold-to-sustain)
     this.splashState = {
-      frequency: { active: false, startTime: null, baseline: null },
-      amplitude: { active: false, startTime: null, baseline: null }
+      frequency: { active: false, phase: null, startTime: null, phaseStartTime: null, baseline: null, holding: false },
+      amplitude: { active: false, phase: null, startTime: null, phaseStartTime: null, baseline: null, holding: false }
     };
-    this.splashDuration = 2.0;  // 2 seconds
+    this.splashRampDuration = 1.0;  // 1 second for ramp up/down
+    this.splashMaxSustainDuration = 6.0;  // 6 second max sustain (timeout)
     this.splashPeakMultiplier = 2.0;  // 2x baseline
 
     // Chart registry: chartName -> chartId
@@ -396,48 +397,46 @@ class SimulationController extends window.EventEmitter {
    * @private
    */
   _animate() {
-    const tabState = this._getCurrentTabState();
-    if (!tabState || !tabState.isRunning) return;
+    const slotState = this._getCurrentSlotState();
+    if (!slotState || !slotState.isRunning) return;
 
-    const params = tabState.parameterModel.getScaledParameters();
+    const params = slotState.parameterModel.getScaledParameters();
 
     // Apply splash transients if active
-    const currentTime = tabState.simulationState.time;
+    const currentTime = slotState.simulationState.time;
 
-    // Frequency splash
+    // Frequency splash (hold-to-sustain envelope)
     if (this.splashState.frequency.active) {
-      const elapsed = currentTime - this.splashState.frequency.startTime;
-      if (elapsed >= this.splashDuration) {
-        // Splash complete, deactivate
+      const result = this._applySplashEnvelope(this.splashState.frequency, currentTime);
+      if (result.done) {
         this.splashState.frequency.active = false;
+        this.splashState.frequency.phase = null;
         params.frequency = this.splashState.frequency.baseline;
+        this.emit('splash-progress', { type: 'frequency', progress: 0, active: false });
       } else {
-        // Apply cosine transient: baseline * (1 + (peak-1) * (1 - cos(2π*t/duration)) / 2)
-        const progress = elapsed / this.splashDuration;
-        const multiplier = 1 + (this.splashPeakMultiplier - 1) * (1 - Math.cos(2 * Math.PI * progress)) / 2;
-        params.frequency = this.splashState.frequency.baseline * multiplier;
+        params.frequency = this.splashState.frequency.baseline * result.multiplier;
+        this.emit('splash-progress', { type: 'frequency', progress: result.totalProgress, active: true });
       }
     }
 
-    // Amplitude splash
+    // Amplitude splash (hold-to-sustain envelope)
     if (this.splashState.amplitude.active) {
-      const elapsed = currentTime - this.splashState.amplitude.startTime;
-      if (elapsed >= this.splashDuration) {
-        // Splash complete, deactivate
+      const result = this._applySplashEnvelope(this.splashState.amplitude, currentTime);
+      if (result.done) {
         this.splashState.amplitude.active = false;
+        this.splashState.amplitude.phase = null;
         params.scale = this.splashState.amplitude.baseline;
+        this.emit('splash-progress', { type: 'amplitude', progress: 0, active: false });
       } else {
-        // Apply cosine transient: baseline * (1 + (peak-1) * (1 - cos(2π*t/duration)) / 2)
-        const progress = elapsed / this.splashDuration;
-        const multiplier = 1 + (this.splashPeakMultiplier - 1) * (1 - Math.cos(2 * Math.PI * progress)) / 2;
-        params.scale = this.splashState.amplitude.baseline * multiplier;
+        params.scale = this.splashState.amplitude.baseline * result.multiplier;
+        this.emit('splash-progress', { type: 'amplitude', progress: result.totalProgress, active: true });
       }
     }
 
-    tabState.simulationState.step(params);
+    slotState.simulationState.step(params);
 
     // Update charts with viewport data
-    this._updateAllCharts(tabState.simulationState);
+    this._updateAllCharts(slotState.simulationState);
     this.emit('simulation-updated');
 
     this.animationFrameId = requestAnimationFrame(() => this._animate());
@@ -510,8 +509,10 @@ class SimulationController extends window.EventEmitter {
     this.timelinePosition = 100;
 
     // Clear splash state
-    this.splashState.frequency.active = false;
-    this.splashState.amplitude.active = false;
+    this.splashState.frequency = { active: false, phase: null, startTime: null, phaseStartTime: null, baseline: null, holding: false };
+    this.splashState.amplitude = { active: false, phase: null, startTime: null, phaseStartTime: null, baseline: null, holding: false };
+    this.emit('splash-progress', { type: 'frequency', progress: 0, active: false });
+    this.emit('splash-progress', { type: 'amplitude', progress: 0, active: false });
 
     // Clear and update charts
     this._clearAllCharts();
@@ -585,49 +586,148 @@ class SimulationController extends window.EventEmitter {
   }
 
   /**
-   * Trigger a frequency splash (transient disturbance)
-   * Applies a cosine-shaped transient that temporarily increases frequency
+   * Apply splash envelope with hold-to-sustain behavior
+   * @private
+   * @param {Object} state - Splash state object (frequency or amplitude)
+   * @param {number} currentTime - Current simulation time
+   * @returns {Object} { multiplier, totalProgress, done }
    */
-  splashFrequency() {
-    const tabState = this._getCurrentTabState();
-    if (!tabState) return;
+  _applySplashEnvelope(state, currentTime) {
+    const phaseElapsed = currentTime - state.phaseStartTime;
+    const totalElapsed = currentTime - state.startTime;
+    const maxTotalDuration = this.splashRampDuration + this.splashMaxSustainDuration + this.splashRampDuration;
+
+    if (state.phase === 'rampUp') {
+      if (phaseElapsed >= this.splashRampDuration) {
+        // Ramp up complete - transition based on holding state
+        if (state.holding) {
+          state.phase = 'sustain';
+          state.phaseStartTime = currentTime;
+          return { multiplier: this.splashPeakMultiplier, totalProgress: totalElapsed / maxTotalDuration, done: false };
+        } else {
+          // Not holding - go directly to ramp down
+          state.phase = 'rampDown';
+          state.phaseStartTime = currentTime;
+          return { multiplier: this.splashPeakMultiplier, totalProgress: totalElapsed / maxTotalDuration, done: false };
+        }
+      }
+      // Half-sine ramp up: sin(progress * π/2) gives 0→1
+      const progress = phaseElapsed / this.splashRampDuration;
+      const envelope = Math.sin(progress * Math.PI / 2);
+      const multiplier = 1 + (this.splashPeakMultiplier - 1) * envelope;
+      return { multiplier, totalProgress: totalElapsed / maxTotalDuration, done: false };
+    }
+
+    if (state.phase === 'sustain') {
+      const sustainElapsed = phaseElapsed;
+      // Check for timeout or release
+      if (!state.holding || sustainElapsed >= this.splashMaxSustainDuration) {
+        state.phase = 'rampDown';
+        state.phaseStartTime = currentTime;
+      }
+      return { multiplier: this.splashPeakMultiplier, totalProgress: totalElapsed / maxTotalDuration, done: false };
+    }
+
+    if (state.phase === 'rampDown') {
+      if (phaseElapsed >= this.splashRampDuration) {
+        // Ramp down complete
+        return { multiplier: 1, totalProgress: 1, done: true };
+      }
+      // Half-sine ramp down: cos(progress * π/2) gives 1→0
+      const progress = phaseElapsed / this.splashRampDuration;
+      const envelope = Math.cos(progress * Math.PI / 2);
+      const multiplier = 1 + (this.splashPeakMultiplier - 1) * envelope;
+      return { multiplier, totalProgress: totalElapsed / maxTotalDuration, done: false };
+    }
+
+    return { multiplier: 1, totalProgress: 0, done: true };
+  }
+
+  /**
+   * Start frequency splash (called on mousedown)
+   * Begins ramp up phase and sets holding state
+   */
+  splashFrequencyStart() {
+    const slotState = this._getCurrentSlotState();
+    if (!slotState) return;
 
     // Only allow splash when simulation is running and initialized
-    if (!tabState.isRunning || !tabState.simulationState.initialized) return;
+    if (!slotState.isRunning || !slotState.simulationState.initialized) return;
 
     // Ignore if already splashing
     if (this.splashState.frequency.active) return;
 
-    // Get baseline from scaled parameters (guaranteed to have value)
-    const params = tabState.parameterModel.getScaledParameters();
+    const params = slotState.parameterModel.getScaledParameters();
+    const currentTime = slotState.simulationState.time;
     this.splashState.frequency = {
       active: true,
-      startTime: tabState.simulationState.time,
-      baseline: params.frequency
+      phase: 'rampUp',
+      startTime: currentTime,
+      phaseStartTime: currentTime,
+      baseline: params.frequency,
+      holding: true
     };
+    this.emit('splash-progress', { type: 'frequency', progress: 0, active: true });
   }
 
   /**
-   * Trigger an amplitude splash (transient disturbance)
-   * Applies a cosine-shaped transient that temporarily increases amplitude
+   * End frequency splash (called on mouseup)
+   * Transitions to ramp down phase
    */
-  splashAmplitude() {
-    const tabState = this._getCurrentTabState();
-    if (!tabState) return;
+  splashFrequencyEnd() {
+    if (!this.splashState.frequency.active) return;
+    this.splashState.frequency.holding = false;
+    // Phase transition will happen in _applySplashEnvelope
+  }
+
+  /**
+   * Start amplitude splash (called on mousedown)
+   * Begins ramp up phase and sets holding state
+   */
+  splashAmplitudeStart() {
+    const slotState = this._getCurrentSlotState();
+    if (!slotState) return;
 
     // Only allow splash when simulation is running and initialized
-    if (!tabState.isRunning || !tabState.simulationState.initialized) return;
+    if (!slotState.isRunning || !slotState.simulationState.initialized) return;
 
     // Ignore if already splashing
     if (this.splashState.amplitude.active) return;
 
-    // Get baseline from scaled parameters (guaranteed to have value)
-    const params = tabState.parameterModel.getScaledParameters();
+    const params = slotState.parameterModel.getScaledParameters();
+    const currentTime = slotState.simulationState.time;
     this.splashState.amplitude = {
       active: true,
-      startTime: tabState.simulationState.time,
-      baseline: params.scale
+      phase: 'rampUp',
+      startTime: currentTime,
+      phaseStartTime: currentTime,
+      baseline: params.scale,
+      holding: true
     };
+    this.emit('splash-progress', { type: 'amplitude', progress: 0, active: true });
+  }
+
+  /**
+   * End amplitude splash (called on mouseup)
+   * Transitions to ramp down phase
+   */
+  splashAmplitudeEnd() {
+    if (!this.splashState.amplitude.active) return;
+    this.splashState.amplitude.holding = false;
+    // Phase transition will happen in _applySplashEnvelope
+  }
+
+  // Legacy click handlers (for backwards compatibility - trigger immediate full bump)
+  splashFrequency() {
+    this.splashFrequencyStart();
+    // Immediately release to trigger full bump (rampUp → rampDown, no sustain)
+    setTimeout(() => this.splashFrequencyEnd(), 50);
+  }
+
+  splashAmplitude() {
+    this.splashAmplitudeStart();
+    // Immediately release to trigger full bump (rampUp → rampDown, no sustain)
+    setTimeout(() => this.splashAmplitudeEnd(), 50);
   }
 
   /**
