@@ -30,7 +30,57 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 28 → 2. ❌ Item 29 → 3. ❌ Item 26
+**Priority**: 1. ❌ Item 30 → 2. ❌ Item 31 → 3. ❌ Item 28 → 4. ❌ Item 29 → 5. ❌ Item 26
+
+---
+
+### Item 30: Simulation Tab Horizontal Margins ❌
+**Branch**: `feat/sim-tab-margins`
+
+**Change**: Add 24px left and right margins to simulation tab UI
+
+**Scope**: Simulation grid/tab container should have 24px margin on both sides
+
+**Files**: `components/simulation-grid.js` or main simulation container
+
+**Acceptance Criteria**:
+- ✓ Simulation tab has 24px left margin
+- ✓ Simulation tab has 24px right margin
+- ✓ Margins applied consistently
+- ✓ Content doesn't overflow or get clipped
+- ✓ Responsive at all breakpoints
+
+**Verification**:
+- View simulation tab at desktop, tablet, mobile
+- Use DevTools to verify margins are exactly 24px
+- Check content alignment with overall page layout
+
+---
+
+### Item 31: Chart Bubble with Dark Gradient ❌
+**Branch**: `feat/chart-bubble-gradient`
+
+**Change**: Wrap charts in a bubble container with dark gradient (gray to navy)
+
+**Scope**: Create dark gradient bubble background for all plots
+
+**Design**: Dark gray-to-navy gradient with rounded corners, subtle shadow
+
+**Files**: Chart container/layout components (likely `components/chart-grid.js` or wrapper)
+
+**Acceptance Criteria**:
+- ✓ Charts wrapped in bubble container
+- ✓ Dark gradient applied (gray to navy)
+- ✓ Rounded corners on bubble
+- ✓ Subtle shadow for depth
+- ✓ Charts visible and readable on gradient background
+- ✓ Consistent styling across all chart types
+
+**Verification**:
+- View all chart types in bubble
+- Check gradient direction and color blend
+- Verify chart readability on dark background
+- Test responsiveness at different screen sizes
 
 ---
 
