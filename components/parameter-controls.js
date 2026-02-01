@@ -59,24 +59,54 @@ function LevelButtonGroup({ value, onChange, compact = false }) {
 
 /**
  * SplashButton - Inline button with hold-to-sustain and progress bar
+ * Progress bar only shows after holding for 0.5s
  */
 function SplashButton({ onStart, onEnd, progress, active }) {
+  const [isHolding, setIsHolding] = React.useState(false);
+  const [showProgress, setShowProgress] = React.useState(false);
+  const holdTimerRef = React.useRef(null);
+
   const handleMouseDown = (e) => {
     e.preventDefault();
+    setIsHolding(true);
     onStart();
+
+    // Only show progress bar after 0.5s of holding
+    holdTimerRef.current = setTimeout(() => {
+      setShowProgress(true);
+    }, 500);
   };
 
   const handleMouseUp = () => {
+    setIsHolding(false);
+    setShowProgress(false);
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
     onEnd();
   };
 
   const handleMouseLeave = () => {
-    // Also end on mouse leave to prevent stuck state
-    if (active) onEnd();
+    if (isHolding) {
+      handleMouseUp();
+    }
   };
+
+  // Clean up timer on unmount
+  React.useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) {
+        clearTimeout(holdTimerRef.current);
+      }
+    };
+  }, []);
 
   // Progress bar width: 6s max sustain = 100%
   const progressPercent = Math.min(progress * 100, 100);
+
+  // Show active color only while holding, fade out on release
+  const isActiveDisplay = active && isHolding;
 
   return (
     <button
@@ -85,17 +115,17 @@ function SplashButton({ onStart, onEnd, progress, active }) {
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleMouseDown}
       onTouchEnd={handleMouseUp}
-      className={`relative flex-1 py-1 rounded font-medium transition-colors overflow-hidden ${
-        active
+      className={`relative flex-1 py-1 rounded font-medium overflow-hidden transition-all duration-300 ${
+        isActiveDisplay
           ? 'bg-blue-600 text-white'
           : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
       }`}
       title="Click for bump, hold to sustain (6s max)"
     >
-      {/* Progress bar background */}
-      {active && (
+      {/* Progress bar background - only show if held > 0.5s */}
+      {showProgress && isHolding && (
         <div
-          className="absolute inset-0 bg-blue-400 opacity-50 transition-all"
+          className="absolute inset-0 bg-blue-400 opacity-50"
           style={{ width: `${progressPercent}%`, left: 0 }}
         />
       )}

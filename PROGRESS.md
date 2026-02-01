@@ -64,9 +64,14 @@ Wave = custom icon + gradient overlay; others = "Coming Soon"
 ## Bugs
 
 ### Open
-- **BUG-10**: GIF renders charts stacked (not grid) — **blocks Item 18**
-  - Fix: html2canvas must preserve CSS grid layout
-  - Files: `views/app-view.js`
+- **BUG-11**: Splash progress bar behavior incorrect
+  - Symptoms: Progress shows immediately on click, doesn't stop on release, abrupt color change
+  - Expected: Only show progress if held > 0.5s, stop when released, fade color on release
+  - Files: `components/parameter-controls.js`, `controllers/simulation-controller.js`
+  - Status: Investigating
+
+### Fixed (pending Director update)
+- **BUG-10**: GIF renders charts stacked (not grid) — Fixed `e4d0fb5`
 
 ### Fixed
 BUG-1→9: scroll, reset, tick labels, tab switch, button size, slot switch, white bubble, all charts ticks, wheel zoom
