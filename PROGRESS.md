@@ -123,7 +123,15 @@
 ## Bugs
 
 ### Open
-(None)
+
+**BUG-14: Coming Soon simulation tabs incorrectly linked to Simple Wave**
+- **Repro**: Click a problem type (e.g., "Coming Soon"), then click its simulation tabs
+- **Expected**: Coming Soon simulation tabs should display "under construction" placeholder (like welcome page)
+- **Actual**: Coming Soon tabs are activating/switching to Simple Wave simulation tabs instead
+- **Root cause**: Coming Soon tabs don't have their own identity; they're sharing Simple Wave tab navigation behavior
+- **Impact**: UX broken - clicking Coming Soon tabs navigates to wrong simulation content
+- **Likely files**: Problem type selector component, simulation tab routing/navigation logic
+- **Next experiment**: (1) Find simulation tab component and Coming Soon integration, (2) Verify tab IDs/routing are unique per problem type, (3) Create placeholder content for Coming Soon simulations
 
 ### Fixed
 
