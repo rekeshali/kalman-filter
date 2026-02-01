@@ -60,15 +60,19 @@ function LevelButtonGroup({ value, onChange, compact = false }) {
 /**
  * SplashButton - Inline button with hold-to-sustain and progress bar
  * Progress bar only shows after holding for 0.5s
+ * On max-out (6s timeout), bar decays exponentially back to 0
  */
 function SplashButton({ onStart, onEnd, progress, active }) {
   const [isHolding, setIsHolding] = React.useState(false);
   const [showProgress, setShowProgress] = React.useState(false);
+  const [decayProgress, setDecayProgress] = React.useState(null); // null = not decaying, number = current decay %
   const holdTimerRef = React.useRef(null);
+  const decayAnimationRef = React.useRef(null);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
     setIsHolding(true);
+    setDecayProgress(null); // Cancel any ongoing decay
     onStart();
 
     // Only show progress bar after 0.5s of holding
@@ -84,6 +88,11 @@ function SplashButton({ onStart, onEnd, progress, active }) {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
     }
+    if (decayAnimationRef.current) {
+      cancelAnimationFrame(decayAnimationRef.current);
+      decayAnimationRef.current = null;
+    }
+    setDecayProgress(null);
     onEnd();
   };
 
@@ -93,17 +102,48 @@ function SplashButton({ onStart, onEnd, progress, active }) {
     }
   };
 
-  // Clean up timer on unmount
+  // Detect when progress maxes out (hits 100%) and start decay animation
+  React.useEffect(() => {
+    if (progress >= 1.0 && isHolding && showProgress && decayProgress === null) {
+      // Start decay animation
+      const startTime = performance.now();
+      const tau = 100; // Time constant in ms (0.1 seconds)
+
+      const animateDecay = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        // Exponential decay: 100 * e^(-t/tau)
+        const decayValue = 100 * Math.exp(-elapsed / tau);
+
+        if (decayValue > 0.5) { // Stop when nearly invisible
+          setDecayProgress(decayValue);
+          decayAnimationRef.current = requestAnimationFrame(animateDecay);
+        } else {
+          // Decay complete - hide bar and trigger end
+          setDecayProgress(null);
+          setIsHolding(false);
+          setShowProgress(false);
+          onEnd();
+        }
+      };
+
+      decayAnimationRef.current = requestAnimationFrame(animateDecay);
+    }
+  }, [progress, isHolding, showProgress, decayProgress, onEnd]);
+
+  // Clean up timers and animations on unmount
   React.useEffect(() => {
     return () => {
       if (holdTimerRef.current) {
         clearTimeout(holdTimerRef.current);
       }
+      if (decayAnimationRef.current) {
+        cancelAnimationFrame(decayAnimationRef.current);
+      }
     };
   }, []);
 
-  // Progress bar width: 6s max sustain = 100%
-  const progressPercent = Math.min(progress * 100, 100);
+  // Progress bar width: use decay progress if decaying, otherwise use actual progress
+  const progressPercent = decayProgress !== null ? decayProgress : Math.min(progress * 100, 100);
 
   // Show active color only while holding, fade out on release
   const isActiveDisplay = active && isHolding;
@@ -122,8 +162,8 @@ function SplashButton({ onStart, onEnd, progress, active }) {
       }`}
       title="Click for bump, hold to sustain (6s max)"
     >
-      {/* Progress bar - blue fill from left, only show if held > 0.5s */}
-      {showProgress && isHolding && (
+      {/* Progress bar - blue fill from left, only show if held > 0.5s or decaying */}
+      {((showProgress && isHolding) || decayProgress !== null) && (
         <div
           className="absolute inset-0 bg-blue-600"
           style={{ width: `${progressPercent}%`, left: 0 }}
