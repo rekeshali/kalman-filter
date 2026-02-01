@@ -98,7 +98,7 @@ function SimulationSlot({ id, name, isActive, onRename, onReset, onClick }) {
         />
       ) : (
         <span
-          className="flex-1 text-sm font-medium truncate select-none"
+          className="flex-1 text-sm font-semibold tracking-wide truncate select-none"
           onDoubleClick={handleDoubleClick}
           title={name}
         >
