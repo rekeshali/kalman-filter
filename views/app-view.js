@@ -4,7 +4,7 @@
  */
 
 const { useState, useEffect, useRef, useReducer, useCallback } = React;
-const { TabBar, WelcomeScreen, ControlPanel, ParameterControls, ChartCanvas, ProblemTypeSelector, SimulationGrid } = window;
+const { TabBar, WelcomeScreen, ControlPanel, ParameterControls, ChartCanvas, ProblemTypeSelector, SimulationGrid, EKFFlowchart } = window;
 
 function EKFVisualization() {
   // Controller ref
@@ -348,7 +348,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Acceleration', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -5, max: 5 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Wave Acceleration', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -369,7 +372,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Velocity', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -3, max: 3 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Velocity Tracking', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -387,7 +393,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Innovation', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -1, max: 1 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Measurement Residual', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -408,7 +417,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Kalman Gain', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 1 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Kalman Gain (Measurement Trust)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -429,7 +441,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Std Dev (σ)', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 1 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Filter Uncertainty (Convergence)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -447,7 +462,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: '|Error|', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 0.5 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Position Error (Performance)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -542,7 +560,7 @@ function EKFVisualization() {
     <div className="flex flex-col h-screen bg-gray-900">
       {/* Header - Three Section Layout */}
       <div className="bg-gray-800 border-b border-gray-700">
-        <div className="grid grid-cols-[auto_1fr_auto] gap-x-2 p-4 items-start">
+        <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 p-4 items-center">
           {/* Left: Problem Type Selector */}
           <ProblemTypeSelector
             problemTypes={problemTypes}
@@ -550,7 +568,7 @@ function EKFVisualization() {
             onProblemTypeChange={handleProblemTypeChange}
           />
 
-          {/* Center: Simulation Grid */}
+          {/* Center: Simulation Grid + EKF Flowchart */}
           <SimulationGrid
             slots={currentSlots.map(slot => ({
               ...slot,
@@ -561,7 +579,12 @@ function EKFVisualization() {
             onSlotRename={handleSlotRename}
             onSlotReset={handleSlotReset}
             onAddColumn={handleAddColumn}
-          />
+          >
+            {/* EKF Flowchart (horizontal) - after + button */}
+            <div className="overflow-visible">
+              <EKFFlowchart direction="horizontal" compact={true} />
+            </div>
+          </SimulationGrid>
 
           {/* Right: Title */}
           <div className="text-right pr-4">
