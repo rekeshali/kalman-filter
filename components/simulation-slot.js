@@ -84,7 +84,7 @@ function SimulationSlot({ id, name, isActive, onRename, onReset, onClick, isPlac
         transition-all h-12 w-60
         ${isPlaceholder ? 'cursor-default' : 'cursor-pointer'}
         ${isActive
-          ? 'bg-gray-100 text-gray-900 border-2 border-blue-500 shadow-lg'
+          ? 'bg-gray-100 text-gray-900 border-2 border-white shadow-lg'
           : 'bg-black text-gray-300 hover:bg-gray-900 hover:border-gray-800 border-2 border-transparent'
         }
       `}
