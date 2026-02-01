@@ -24,7 +24,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 21 → 2. ❌ Item 23 → 3. ❌ Item 24
+**Priority**: 1. ❌ Item 21 → 2. ❌ Item 23 → 3. ❌ Item 24 → 4. ❌ Item 25
 
 ---
 
@@ -120,6 +120,31 @@ idle →[press]→ rampUp →[1s]→ sustain →[release|6s]→ rampDown →[1s]
 - Change parameters → click ✕ → all parameters reset to defaults
 - Observe charts update immediately
 - Confirm ✕ icon displays and ↺ is not visible
+
+---
+
+### Item 25: Simulation Tab Hover Highlight ❌
+**Branch**: `feat/slot-hover-highlight`
+
+**Change**: Add hover highlight to simulation slots matching the old + button hover state
+
+**Current State**:
+- Inactive slots: `bg-gray-700` with `hover:bg-gray-650`
+- Hover should provide stronger visual feedback
+
+**Files**: `components/simulation-slot.js`
+
+**Acceptance Criteria**:
+- ✓ Inactive slot shows subtle background color change on hover
+- ✓ Hover state is visually distinct from inactive state
+- ✓ Hover state does not conflict with active state styling
+- ✓ Consistent with old + button hover appearance
+- ✓ Smooth transition animation
+
+**Verification**:
+- Hover over inactive simulation slots → background highlights
+- Active slot hover state unchanged
+- Visual feedback is clear and consistent
 
 ---
 
