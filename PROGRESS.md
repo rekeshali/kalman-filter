@@ -26,16 +26,44 @@
 | 28 | Header horizontal margin alignment | `d092d81`, `7bbdf74` |
 | 26 | Kalman filter math documentation (FILTER_MATH.md) | `9c1cba5`, `b9b49c7` |
 | 30 | Simulation tab horizontal margins (px-24) | `9abe87c`, `e036eaa` |
-| 31 | Chart bubble with dark gradient (gray-to-navy) | `e56078a`, `1e50f81` |
 | 32 | Welcome page Kalman section reorganization (diagram first) | `80660c2`, `b053664`, `c0ff81c` |
 
-**Merges**: `1e50f81` (Item 31), `b9b49c7` (Item 26), `c0ff81c` (Item 32), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-*All tasks complete!* ✅
+**Priority**: 1. ❌ Item 31
+
+---
+
+### Item 31: Chart Bubble with Dark Gradient ❌
+**Branch**: `feat/chart-bubble-gradient`
+
+**Status**: Work in progress - implementation incomplete
+
+**Change**: Wrap charts in a bubble container with dark gradient (gray to navy)
+
+**Scope**: Create dark gradient bubble background for all plots
+
+**Design**: Dark gray-to-navy gradient with rounded corners, subtle shadow
+
+**Files**: Chart container/layout components (likely `components/chart-grid.js` or wrapper)
+
+**Acceptance Criteria**:
+- ✓ Charts wrapped in bubble container
+- ✓ Dark gradient applied (gray to navy)
+- ✓ Rounded corners on bubble
+- ✓ Subtle shadow for depth
+- ✓ Charts visible and readable on gradient background
+- ✓ Consistent styling across all chart types
+
+**Verification**:
+- View all chart types in bubble
+- Check gradient direction and color blend
+- Verify chart readability on dark background
+- Test responsiveness at different screen sizes
 
 ---
 
