@@ -42,7 +42,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 41 (flowchart notation legend)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 41 (flowchart notation legend) → 3. ⏸️ Item 42 (chart momentum scrolling)
 
 ---
 
@@ -110,6 +110,49 @@
 - Compare definitions with FILTER_MATH.md
 - Test on desktop/tablet/mobile
 - Verify visual hierarchy and readability
+
+---
+
+### Item 42: Add Momentum/Inertia Scrolling to Chart X-Axis ❌
+**Branch**: `feat/chart-momentum-scrolling`
+
+**Change**: Implement momentum/inertia-based scrolling on chart x-axis - allow flick gestures to continue scrolling with deceleration
+
+**Scope**: Chart component - enhance drag-to-scroll interaction with momentum physics
+
+**Design**:
+- Detect drag velocity when user releases mouse/touch
+- Apply momentum scroll with deceleration over time
+- Smooth easing/animation (ease-out or similar deceleration curve)
+- Prevent overshooting/boundary issues (respect chart min/max bounds)
+- Make momentum optional or configurable if needed
+- Works on both mouse drag and touch swipe
+
+**Physics**:
+- Calculate velocity from last drag movement speed
+- Apply friction/deceleration (e.g., reduce velocity by 5-10% per frame)
+- Continue scrolling until velocity approaches zero
+- Use requestAnimationFrame for smooth animation
+
+**Files**: Chart component (likely `components/chart.js` or scroll handler)
+
+**Acceptance Criteria**:
+- ✓ Drag gesture followed by release continues scrolling with momentum
+- ✓ Velocity-based deceleration feels natural and responsive
+- ✓ Chart respects min/max scroll bounds (no overshooting)
+- ✓ Smooth animation (60fps or target device FPS)
+- ✓ Works with mouse drag, touch swipe, and trackpad
+- ✓ No conflict with auto-pause-on-drag feature
+- ✓ No performance regression or jank
+- ✓ Responsive on all breakpoints
+
+**Verification**:
+- Perform quick flick drag on chart x-axis
+- Verify scroll continues with smooth deceleration
+- Test at chart edges (verify it stops at bounds)
+- Test on different devices (mouse, touchpad, mobile)
+- Verify no interaction conflicts
+- Check performance with browser DevTools
 
 ---
 
