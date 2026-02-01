@@ -37,7 +37,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35
+**Priority**: 1. 🐛 BUG-13 (playback controls gradient) → 2. ⏸️ Item 35 (backlog)
 
 ---
 
