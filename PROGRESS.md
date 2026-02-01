@@ -31,7 +31,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 32 → 2. ❌ Item 30 → 3. ❌ Item 31 → 4. ❌ Item 29 → 5. ❌ Item 26
+**Priority**: 1. ❌ Item 32 → 2. ❌ Item 30 → 3. ❌ Item 31 → 4. ❌ Item 26
 
 ---
 
@@ -126,30 +126,7 @@ Fuses the prediction with new measurements (position from external probe) using 
 
 ---
 
-### Item 29: Apply Simulation Box Color to Background ❌
-**Branch**: `feat/background-color-update`
-
-**Change**: Change app background color to match the "create new simulation" box color
-
-**Issue**: Background color should be updated to use the same color scheme as the simulation creation box
-
-**Files**: Main layout/app component (likely `views/app-view.js` or main CSS)
-
-**Acceptance Criteria**:
-- ✓ App background color matches simulation box background color
-- ✓ Color applied consistently across entire app
-- ✓ Text contrast is sufficient for readability
-- ✓ No visual regressions on any components
-
-**Verification**:
-- View app and visually compare background color to simulation box
-- Check all page sections have consistent background
-- Verify text/contrast on all backgrounds still readable
-- Test on light/dark mode (if applicable)
-
----
-
-### Item 28: Banner Margin Alignment ❌
+### Item 26: Kalman Filter Math Verification ❌
 **Branch**: `fix/banner-margins`
 
 **Change**: Align top banner left/right margins to match content area margins
