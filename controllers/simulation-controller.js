@@ -9,8 +9,14 @@ class SimulationController extends window.EventEmitter {
     // Tab model (shared across all tabs)
     this.tabModel = new window.TabModel();
 
+    // Problem type model (header revamp)
+    this.problemTypeModel = new window.ProblemTypeModel();
+
     // Per-tab state: Map<tabId, {parameterModel, simulationState, isRunning}>
     this.tabStates = new Map();
+
+    // Per-slot state (header revamp): Map<slotId, {parameterModel, simulationState, isRunning}>
+    this.slotStates = new Map();
 
     // Initialize services
     this.chartManager = new window.ChartManager();
@@ -64,10 +70,18 @@ class SimulationController extends window.EventEmitter {
   }
 
   /**
-   * Get current tab's state
+   * Get current tab's state (handles both tabs and slots)
    * @private
    */
   _getCurrentTabState() {
+    // Check if we're using slot-based system
+    const activeSlotId = this.tabModel.getActiveSlotId();
+    if (activeSlotId && activeSlotId !== 'welcome') {
+      this._ensureSlotState(activeSlotId);
+      return this.slotStates.get(activeSlotId);
+    }
+
+    // Fall back to tab-based system
     const activeTabId = this.tabModel.getActiveTab();
     if (!activeTabId || activeTabId === 'welcome') return null;
 
@@ -862,6 +876,212 @@ class SimulationController extends window.EventEmitter {
    */
   subscribe(event, callback) {
     return this.on(event, callback);
+  }
+
+  // ========== Slot Management Methods (Header Revamp) ==========
+
+  /**
+   * Get current slot state (for active slot)
+   * @returns {Object|null} Slot state object or null
+   * @private
+   */
+  _getCurrentSlotState() {
+    const slotId = this.tabModel.getActiveSlotId();
+    if (slotId === 'welcome') return null;
+    return this.slotStates.get(slotId) || null;
+  }
+
+  /**
+   * Ensure slot state exists (lazy initialization)
+   * @param {string} slotId - Slot ID
+   * @returns {Object} Slot state object
+   * @private
+   */
+  _ensureSlotState(slotId) {
+    if (!this.slotStates.has(slotId)) {
+      const slot = this.tabModel.getSlot(slotId);
+      if (!slot) {
+        console.warn(`SimulationController: Cannot create state for unknown slot: ${slotId}`);
+        return null;
+      }
+
+      // Get problem type to determine which problem config to use
+      const problemType = this.problemTypeModel.getProblemType(slot.problemTypeId);
+      if (!problemType) {
+        console.warn(`SimulationController: Unknown problem type: ${slot.problemTypeId}`);
+        return null;
+      }
+
+      // Create new parameter model for this slot
+      const parameterModel = new window.ParameterModel();
+
+      // Create new simulation state for this slot
+      const simulationState = new window.SimulationState();
+
+      this.slotStates.set(slotId, {
+        parameterModel: parameterModel,
+        simulationState: simulationState,
+        isRunning: false
+      });
+
+      console.log(`[SimulationController] Created new state for slot: ${slotId}`, {
+        parameterModel,
+        simulationState,
+        slotStatesSize: this.slotStates.size
+      });
+    }
+
+    return this.slotStates.get(slotId);
+  }
+
+  /**
+   * Set active problem type
+   * @param {string} problemTypeId - Problem type ID
+   * @returns {boolean} Success
+   */
+  setProblemType(problemTypeId) {
+    const problemType = this.problemTypeModel.getProblemType(problemTypeId);
+    if (!problemType) {
+      console.warn(`SimulationController: Unknown problem type: ${problemTypeId}`);
+      return false;
+    }
+
+    // Set active problem type in both models
+    this.problemTypeModel.setProblemType(problemTypeId);
+    this.tabModel.setActiveProblemType(problemTypeId);
+
+    // Switch to welcome page for this problem type
+    // Use setActiveSlot to trigger proper UI updates
+    this.setActiveSlot('welcome');
+
+    this.emit('problem-type-changed', { problemTypeId });
+
+    return true;
+  }
+
+  /**
+   * Reset a slot to default state
+   * @param {string} slotId - Slot ID
+   * @returns {boolean} Success
+   */
+  resetSlot(slotId) {
+    const slot = this.tabModel.getSlot(slotId);
+    if (!slot) {
+      console.warn(`SimulationController: Slot not found: ${slotId}`);
+      return false;
+    }
+
+    // Reset name to default
+    const defaultName = `Simulation ${slot.globalIndex}`;
+    this.tabModel.renameSlot(slotId, defaultName);
+
+    // Reset simulation state if it exists
+    const state = this.slotStates.get(slotId);
+    if (state) {
+      // Stop if running
+      if (state.isRunning) {
+        state.isRunning = false;
+      }
+
+      // Reset parameter model to defaults
+      state.parameterModel.resetToDefaults();
+
+      // Reset simulation state with new parameters
+      state.simulationState.reset(state.parameterModel.getScaledParameters());
+
+      // Update all charts for this slot if it's active
+      if (this.tabModel.getActiveSlotId() === slotId) {
+        this._updateAllCharts(state.simulationState);
+      }
+    }
+
+    this.emit('slot-reset', { slotId });
+
+    return true;
+  }
+
+  /**
+   * Rename a slot
+   * @param {string} slotId - Slot ID
+   * @param {string} newName - New name
+   * @returns {boolean} Success
+   */
+  renameSlot(slotId, newName) {
+    return this.tabModel.renameSlot(slotId, newName);
+  }
+
+  /**
+   * Set active slot
+   * @param {string} slotId - Slot ID
+   * @returns {boolean} Success
+   */
+  setActiveSlot(slotId) {
+    const success = this.tabModel.setActiveSlot(slotId);
+    if (!success) return false;
+
+    // Stop current animation
+    this._stopAnimation();
+
+    // Emit event for UI update
+    this.emit('slot-activated', { slotId });
+
+    // If switching to a simulation slot, ensure state exists and update UI
+    if (slotId !== 'welcome') {
+      const slotState = this._ensureSlotState(slotId);
+      if (slotState) {
+        // Update charts with new slot's data
+        this._updateAllCharts(slotState.simulationState);
+
+        // Update parameter controls to show new slot's parameters
+        this.emit('parameters-updated', slotState.parameterModel.getAllParameters());
+
+        // Update running state for new slot
+        this.emit('running-changed', slotState.isRunning);
+
+        // Restart animation if new slot was running
+        if (slotState.isRunning) {
+          this._startAnimation();
+        }
+      }
+    } else {
+      // Switching to welcome screen - clear parameter display
+      this.emit('parameters-updated', {});
+      this.emit('running-changed', false);
+    }
+
+    return true;
+  }
+
+  /**
+   * Add a new column (3 slots) to a problem type
+   * @param {string} problemTypeId - Problem type ID
+   * @returns {boolean} Success
+   */
+  addColumnToProblemType(problemTypeId) {
+    const success = this.tabModel.addColumn(problemTypeId);
+    if (!success) return false;
+
+    this.emit('column-added', { problemTypeId });
+
+    return true;
+  }
+
+  /**
+   * Get slots for current problem type
+   * @returns {Array} Array of slot objects
+   */
+  getSlotsForCurrentProblemType() {
+    const problemTypeId = this.tabModel.getActiveProblemTypeId();
+    return this.tabModel.getSlotsForProblemType(problemTypeId);
+  }
+
+  /**
+   * Get column count for current problem type
+   * @returns {number} Column count
+   */
+  getColumnCountForCurrentProblemType() {
+    const problemTypeId = this.tabModel.getActiveProblemTypeId();
+    return this.tabModel.getColumnCount(problemTypeId);
   }
 
   /**

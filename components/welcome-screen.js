@@ -7,8 +7,30 @@
  * WelcomeScreen - Informational welcome screen
  * @param {Object} props
  * @param {Function} props.onCreateSimulation - Handler for creating new simulation
+ * @param {Object} props.problemType - Current problem type {id, name, colorAccent}
  */
-function WelcomeScreen({ onCreateSimulation }) {
+function WelcomeScreen({ onCreateSimulation, problemType }) {
+  // Coming Soon placeholder
+  if (problemType && problemType.id === 'placeholder') {
+    return (
+      <div className="flex-1 overflow-y-auto p-6 bg-gray-900">
+        <div className="max-w-4xl mx-auto flex items-center justify-center min-h-[60vh]">
+          <div className="bg-gray-800 border border-gray-600 rounded-lg p-12 shadow-lg text-center">
+            <div className="text-6xl mb-6">🚧</div>
+            <h2 className="text-3xl font-bold mb-4 text-white">Coming Soon</h2>
+            <p className="text-gray-300 text-lg mb-6">
+              This problem type is under development. Check back later for new physics simulations!
+            </p>
+            <div className="text-gray-400 text-sm">
+              Future problem types may include: projectile motion, orbital mechanics, robot navigation, and more.
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Simple Wave welcome screen
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-gray-900">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">

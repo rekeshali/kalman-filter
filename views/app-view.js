@@ -4,7 +4,7 @@
  */
 
 const { useState, useEffect, useRef, useReducer } = React;
-const { TabBar, WelcomeScreen, ControlPanel, ParameterControls, ChartCanvas } = window;
+const { TabBar, WelcomeScreen, ControlPanel, ParameterControls, ChartCanvas, ProblemTypeSelector, SimulationGrid } = window;
 
 function EKFVisualization() {
   // Controller ref
@@ -29,6 +29,13 @@ function EKFVisualization() {
   const [isRecording, setIsRecording] = useState(false);
   const [parameters, setParameters] = useState({});
   const [timelineInfo, setTimelineInfo] = useState({ position: 100, currentTime: 0, endTime: 0, totalPoints: 0 });
+
+  // Header revamp state (slot-based)
+  const [problemTypes, setProblemTypes] = useState([]);
+  const [activeProblemTypeId, setActiveProblemTypeId] = useState('simple-wave');
+  const [currentSlots, setCurrentSlots] = useState([]);
+  const [currentColumns, setCurrentColumns] = useState(1);
+  const [activeSlotId, setActiveSlotId] = useState('welcome');
 
   // Inject tooltip delay CSS and slider styles
   useEffect(() => {
@@ -107,6 +114,13 @@ function EKFVisualization() {
     setIsRunning(controllerRef.current.getIsRunning());
     setIsRecording(controllerRef.current.getIsRecording());
 
+    // Sync slot-based state
+    setProblemTypes(controllerRef.current.problemTypeModel.getAllProblemTypes());
+    setActiveProblemTypeId(controllerRef.current.problemTypeModel.getActiveProblemType().id);
+    setCurrentSlots(controllerRef.current.getSlotsForCurrentProblemType());
+    setCurrentColumns(controllerRef.current.getColumnCountForCurrentProblemType());
+    setActiveSlotId(controllerRef.current.tabModel.getActiveSlotId());
+
     // Subscribe to controller events
     const unsubscribers = [];
 
@@ -152,6 +166,35 @@ function EKFVisualization() {
       setTimelineInfo(controllerRef.current.getTimelineInfo());
     }));
 
+    // Slot-based event subscriptions
+    unsubscribers.push(controllerRef.current.subscribe('problem-type-changed', ({ problemTypeId }) => {
+      setActiveProblemTypeId(problemTypeId);
+      setCurrentSlots(controllerRef.current.getSlotsForCurrentProblemType());
+      setCurrentColumns(controllerRef.current.getColumnCountForCurrentProblemType());
+      forceUpdate();
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('slot-activated', ({ slotId }) => {
+      setActiveSlotId(slotId);
+      forceUpdate();
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('slot-renamed', () => {
+      setCurrentSlots(controllerRef.current.getSlotsForCurrentProblemType());
+      forceUpdate();
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('slot-reset', () => {
+      setCurrentSlots(controllerRef.current.getSlotsForCurrentProblemType());
+      forceUpdate();
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('column-added', () => {
+      setCurrentSlots(controllerRef.current.getSlotsForCurrentProblemType());
+      setCurrentColumns(controllerRef.current.getColumnCountForCurrentProblemType());
+      forceUpdate();
+    }));
+
     // Cleanup on unmount
     return () => {
       unsubscribers.forEach(unsub => unsub());
@@ -194,7 +237,7 @@ function EKFVisualization() {
   // Register charts after refs are available and simulation tab is active
   useEffect(() => {
     if (!controllerRef.current) return;
-    if (activeTabId === 'welcome') return; // Don't register charts on welcome tab
+    if (activeSlotId === 'welcome') return; // Don't register charts on welcome slot
 
     // Position chart
     if (positionChartRef.current) {
@@ -213,14 +256,6 @@ function EKFVisualization() {
           scales: {
             x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
               const actualTime = this.chart.data.labels[index];
-              console.log('[X-AXIS TICK]', {
-                indexValue: v,
-                index,
-                tickCount: ticks.length,
-                actualTime,
-                currentTimeFromSlider: timelineInfo.currentTime,
-                endTimeFromSlider: timelineInfo.endTime
-              });
               return Number(actualTime).toFixed(2);
             } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Position', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -2, max: 2 }
@@ -352,7 +387,7 @@ function EKFVisualization() {
 
     // After all charts are registered, refresh them with current simulation data
     controllerRef.current.refreshCharts();
-  }, [activeTabId]); // Re-run when switching tabs to register charts
+  }, [activeSlotId]); // Re-run when switching slots to register charts
 
   // Event handlers
   const handleTabChange = (tabId) => {
@@ -412,33 +447,71 @@ function EKFVisualization() {
     controllerRef.current.splashAmplitude();
   };
 
+  // Header revamp handlers (slot-based)
+  const handleProblemTypeChange = (problemTypeId) => {
+    controllerRef.current.setProblemType(problemTypeId);
+  };
+
+  const handleSlotClick = (slotId) => {
+    controllerRef.current.setActiveSlot(slotId);
+  };
+
+  const handleSlotRename = (slotId, newName) => {
+    controllerRef.current.renameSlot(slotId, newName);
+  };
+
+  const handleSlotReset = (slotId) => {
+    controllerRef.current.resetSlot(slotId);
+  };
+
+  const handleAddColumn = () => {
+    controllerRef.current.addColumnToProblemType(activeProblemTypeId);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-900">
-      {/* Header */}
-      <div className="p-4 bg-gray-800 border-b border-gray-700">
-        <h1 className="text-2xl font-bold mb-1 text-white">Extended Kalman Filter: Wave Tracking</h1>
-        <p className="text-gray-300 text-sm">
-          Explore model mismatch in real-time: Change parameters while simulating to see immediate effects.
-        </p>
+      {/* Header - Three Section Layout */}
+      <div className="bg-gray-800 border-b border-gray-700">
+        <div className="grid grid-cols-[auto_1fr_auto] gap-x-2 p-4 items-start">
+          {/* Left: Problem Type Selector */}
+          <ProblemTypeSelector
+            problemTypes={problemTypes}
+            activeProblemTypeId={activeProblemTypeId}
+            onProblemTypeChange={handleProblemTypeChange}
+          />
 
-        {/* Tab Bar */}
-        <TabBar
-          tabs={tabs}
-          activeTabId={activeTabId}
-          onTabChange={handleTabChange}
-          onTabClose={handleTabClose}
-          onTabRename={handleTabRename}
-          onAddTab={handleAddTab}
-        />
+          {/* Center: Simulation Grid */}
+          <SimulationGrid
+            slots={currentSlots.map(slot => ({
+              ...slot,
+              isActive: slot.id === activeSlotId
+            }))}
+            columns={currentColumns}
+            onSlotClick={handleSlotClick}
+            onSlotRename={handleSlotRename}
+            onSlotReset={handleSlotReset}
+            onAddColumn={handleAddColumn}
+          />
+
+          {/* Right: Title */}
+          <div className="text-right pr-4">
+            <h1 className="text-2xl font-bold text-white whitespace-nowrap">
+              EKF: {problemTypes.find(pt => pt.id === activeProblemTypeId)?.name || 'Wave Tracking'}
+            </h1>
+          </div>
+        </div>
       </div>
 
       {/* Welcome Screen */}
-      {activeTabId === 'welcome' && (
-        <WelcomeScreen onCreateSimulation={handleAddTab} />
+      {activeSlotId === 'welcome' && (
+        <WelcomeScreen
+          onCreateSimulation={handleAddTab}
+          problemType={problemTypes.find(pt => pt.id === activeProblemTypeId)}
+        />
       )}
 
       {/* Simulation Content */}
-      {activeTabId !== 'welcome' && (
+      {activeSlotId !== 'welcome' && (
         <div className="flex-1 flex gap-4 p-4 overflow-hidden bg-gray-900">
           {/* LEFT COLUMN: Controls - Fixed width, always visible */}
           <div className="flex-shrink-0 space-y-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', width: '320px'}}>

@@ -1,0 +1,133 @@
+/**
+ * SimulationSlot Component
+ * Individual simulation slot with inline editing and reset functionality
+ */
+
+const { useState } = React;
+
+/**
+ * SimulationSlot - Individual slot in the simulation grid
+ * @param {Object} props
+ * @param {string} props.id - Slot ID
+ * @param {string} props.name - Slot name
+ * @param {boolean} props.isActive - Whether this slot is active
+ * @param {Function} props.onRename - Rename handler (newName)
+ * @param {Function} props.onReset - Reset handler
+ * @param {Function} props.onClick - Click handler
+ */
+function SimulationSlot({ id, name, isActive, onRename, onReset, onClick }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(name);
+
+  // Update edit name when prop name changes
+  React.useEffect(() => {
+    setEditName(name);
+  }, [name]);
+
+  const handleDoubleClick = (e) => {
+    e.stopPropagation();
+    setIsEditing(true);
+  };
+
+  const handleEditClick = (e) => {
+    e.stopPropagation();
+    setIsEditing(true);
+  };
+
+  const handleEditBlur = () => {
+    if (editName.trim()) {
+      onRename(editName);
+    } else {
+      setEditName(name);  // Revert if empty
+    }
+    setIsEditing(false);
+  };
+
+  const handleEditKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (editName.trim()) {
+        onRename(editName);
+      } else {
+        setEditName(name);
+      }
+      setIsEditing(false);
+    } else if (e.key === 'Escape') {
+      setEditName(name);
+      setIsEditing(false);
+    }
+  };
+
+  const handleResetClick = (e) => {
+    e.stopPropagation();
+    onReset();
+  };
+
+  const handleEditChange = (e) => {
+    // Limit to 30 characters
+    const value = e.target.value.substring(0, 30);
+    setEditName(value);
+  };
+
+  return (
+    <div
+      className={`
+        relative flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
+        transition-all h-12 w-60
+        ${isActive
+          ? 'bg-gray-900 text-white border-2 border-blue-500 shadow-lg'
+          : 'bg-gray-700 text-gray-300 hover:bg-gray-650 border-2 border-transparent'
+        }
+      `}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Editable name */}
+      {isEditing ? (
+        <input
+          type="text"
+          value={editName}
+          onChange={handleEditChange}
+          onBlur={handleEditBlur}
+          onKeyDown={handleEditKeyDown}
+          className="flex-1 bg-gray-600 px-2 py-1 rounded text-white text-sm outline-none focus:ring-2 focus:ring-blue-400"
+          maxLength={30}
+          autoFocus
+          onClick={(e) => e.stopPropagation()}
+        />
+      ) : (
+        <span
+          className="flex-1 text-sm font-medium truncate select-none"
+          onDoubleClick={handleDoubleClick}
+          title={name}
+        >
+          {name}
+        </span>
+      )}
+
+      {/* Edit and Reset buttons (visible on hover, hidden when editing) */}
+      {isHovered && !isEditing && (
+        <>
+          <button
+            onClick={handleEditClick}
+            className="text-gray-400 hover:text-blue-400 text-sm transition-colors flex items-center justify-center w-6 h-6"
+            title="Rename simulation"
+          >
+            ✎
+          </button>
+          <button
+            onClick={handleResetClick}
+            className="text-gray-400 hover:text-yellow-400 text-lg transition-colors flex items-center justify-center w-6 h-6"
+            title="Reset simulation and name"
+          >
+            ↺
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Export to global scope
+window.SimulationSlot = SimulationSlot;

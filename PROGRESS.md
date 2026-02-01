@@ -40,14 +40,46 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 - `08b94ac` - BUG-2 fix + always-visible slider/scrollbar
 - `4dee53a` - Add claude-hitmen submodule
 
+### Item 17: Header Revamp ✅
+**Feature**: Three-section header layout with problem types, simulation grid, and dynamic title
+
+**Implementation**:
+- Created slot-based simulation management system
+- Problem type selector with gradient overlay cards (2 columns)
+- Simulation grid (3 rows × N columns, starts with 1 column)
+- Pre-created slots with inline editing and reset functionality
+- Each problem type has its own isolated simulation set
+
+**Files Created**:
+- `models/problem-type-model.js` - Problem type data model
+- `components/problem-type-selector.js` - Left section, gradient cards
+- `components/simulation-slot.js` - Individual slot component
+- `components/simulation-grid.js` - Center section, 3×N grid
+
+**Files Modified**:
+- `models/tab-model.js` - Added slot management methods
+- `controllers/simulation-controller.js` - Added problem type awareness
+- `views/app-view.js` - Replaced header with 3-section layout
+- `index.html` - Added script tags for new components
+
+**Acceptance**: All criteria met
+- [x] Problem type tabs (2 columns, left side)
+- [x] Problem types have gradient overlay sheen effect
+- [x] Simulation grid (3 rows × 1 column initial, center)
+- [x] Simulations pre-created, renamable, 30 char width
+- [x] ↺ resets simulation + name (no close/delete)
+- [x] + adds column of 3 simulation slots
+- [x] Title shows current problem type
+- [x] Clicking problem type → welcome page (with its own sims)
+- [x] Clicking simulation → opens that sim
+
 ---
 
 ## Remaining Tasks
 
 **Priority Order**:
 1. ❌ Item 18: GIF recording of plots
-2. ❌ Item 17: Header revamp (problem types + simulation grid)
-3. ❌ Item 12: Drag to navigate history
+2. ❌ Item 12: Drag to navigate history
 
 ---
 
@@ -78,73 +110,6 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 - [ ] Stop recording generates GIF
 - [ ] GIF downloaded with same timestamp as JSON
 - [ ] GIF shows chart animation during recording period
-
----
-
-### Item 17: Header Revamp ❌
-**Branch**: `feat/header-revamp`
-**Feature**: Two-tier navigation - problem types (left) and simulation grid (right)
-
-**Layout** (initial state - 1 column):
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ [Problem Types]     │ [Sims: 3×1]              │ Title                      │
-│ ┌───────┬─────────┐ │ ┌──────────────────────┐ │                            │
-│ │Simple │(Empty)  │ │ │ 1 (up to 30 chars)   │ │ EKF: Simple Wave           │
-│ │ Wave  │         │ │ ├──────────────────────┤ │                            │
-│ │       │         │ │ │ 2                    │ │                            │
-│ │       │         │ │ ├──────────────────────┤ │                            │
-│ │       │         │ │ │ 3                    │ │                            │
-│ └───────┴─────────┘ │ └──────────────────────┘ │                            │
-│                     │ [+]                      │                            │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-**After clicking + (2 columns)**:
-```
-│ ┌──────────────────────┬──────────────────────┐ │
-│ │ 1                    │ 4                    │ │
-│ ├──────────────────────┼──────────────────────┤ │
-│ │ 2                    │ 5                    │ │
-│ ├──────────────────────┼──────────────────────┤ │
-│ │ 3                    │ 6                    │ │
-│ └──────────────────────┴──────────────────────┘ │
-│ [+]                                             │
-```
-
-**Requirements**:
-1. **Problem Types** (left): 2 columns
-   - "Simple Wave" (active) + 1 placeholder (different physics problems)
-   - Click → goes to that type's welcome page
-   - Each problem type has its **own set of simulations**
-   - **Visual style**: Flashy design with:
-     - Background image (user-supplied) describing the problem
-     - Transparent overlay / sheen effect
-     - Color accents
-   - Images TBD (user will supply)
-2. **Simulations** (center): 3 rows × N columns
-   - **Start with 1 column** (3 slots)
-   - **Column width**: 30 characters
-   - **Pre-created**: All 3 slots always exist per column
-   - **Renamable**: editable like current tabs
-   - **Reset button** (↺): replaces ✕, resets sim AND name to default
-   - Named by 1D index (1,2,3 | 4,5,6 | 7,8,9...)
-   - `+` button below adds new column (3 more slots)
-3. **Title** (far right): "EKF: [Problem Type]"
-   - Updates when problem type changes
-
-**Files**: `views/app-view.js`, `components/tab-bar.js`
-
-**Acceptance**:
-- [ ] Problem type tabs (2 columns, left side)
-- [ ] Problem types have image bg + sheen/overlay effect
-- [ ] Simulation grid (3 rows × 1 column initial, right side)
-- [ ] Simulations pre-created, renamable, 30 char width
-- [ ] ↺ resets simulation + name (no close/delete)
-- [ ] + adds column of 3 simulation slots
-- [ ] Title shows current problem type
-- [ ] Clicking problem type → welcome page (with its own sims)
-- [ ] Clicking simulation → opens that sim
 
 ---
 
@@ -188,7 +153,8 @@ FIFO trimming (4000 pts), timeline slider, navigation handlers, disabled pan (ke
 
 ### Open
 
-(none)
+- **BUG-4**: Tab switch time jump - switching away from running sim and back causes large dt, messing up calculations. **Fix**: call `simulationState.resume()` before `_startAnimation()` in `setActiveSlot()` (same pattern as pause/play fix)
+- **BUG-5**: Problem type buttons enlarge when selected - should maintain consistent size. **File**: `components/problem-type-selector.js`
 
 ### Fixed
 - **BUG-1**: Mouse wheel scroll blocked - fixed

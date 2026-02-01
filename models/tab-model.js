@@ -11,6 +11,41 @@ class TabModel extends window.EventEmitter {
     this.tabs = initialTabs || [{ id: 'welcome', name: 'Welcome', type: 'welcome' }];
     this.activeTabId = 'welcome';
     this.nextTabNumber = 1;
+
+    // Slot-based management (new header revamp)
+    // Map: problemTypeId -> Array of slot objects
+    this.simulationsByProblemType = new Map();
+
+    // Map: problemTypeId -> column count
+    this.columnsByProblemType = new Map([
+      ['simple-wave', 1]  // Start with 1 column (3 slots)
+    ]);
+
+    this.activeProblemTypeId = 'simple-wave';
+    this.activeSlotId = 'welcome';
+
+    // Initialize slots for simple-wave
+    this._initializeProblemType('simple-wave');
+  }
+
+  /**
+   * Initialize slots for a problem type
+   * @param {string} problemTypeId - Problem type ID
+   * @private
+   */
+  _initializeProblemType(problemTypeId) {
+    if (!this.simulationsByProblemType.has(problemTypeId)) {
+      this.simulationsByProblemType.set(problemTypeId, []);
+    }
+
+    const columns = this.columnsByProblemType.get(problemTypeId) || 1;
+    const existing = this.simulationsByProblemType.get(problemTypeId);
+
+    // Create initial columns
+    for (let col = 0; col < columns; col++) {
+      const columnSlots = this._createSlotsForColumn(problemTypeId, col);
+      existing.push(...columnSlots);
+    }
   }
 
   /**
@@ -174,6 +209,198 @@ class TabModel extends window.EventEmitter {
    */
   getActiveTabObject() {
     return this.getTab(this.activeTabId);
+  }
+
+  // ========== Slot Management Methods (Header Revamp) ==========
+
+  /**
+   * Create 3 slots for a column
+   * @param {string} problemTypeId - Problem type ID
+   * @param {number} columnIndex - Column index (0-based)
+   * @returns {Array} Array of 3 slot objects
+   * @private
+   */
+  _createSlotsForColumn(problemTypeId, columnIndex) {
+    const slots = [];
+    for (let row = 0; row < 3; row++) {
+      const globalIndex = columnIndex * 3 + row + 1;
+      slots.push({
+        id: `${problemTypeId}-slot-${globalIndex}`,
+        name: `Simulation ${globalIndex}`,
+        problemTypeId: problemTypeId,
+        columnIndex: columnIndex,
+        rowIndex: row,
+        globalIndex: globalIndex
+      });
+    }
+    return slots;
+  }
+
+  /**
+   * Add a new column (3 slots) to a problem type
+   * @param {string} problemTypeId - Problem type ID
+   * @returns {boolean} Success
+   */
+  addColumn(problemTypeId) {
+    if (!this.simulationsByProblemType.has(problemTypeId)) {
+      console.warn(`TabModel: Problem type not found: ${problemTypeId}`);
+      return false;
+    }
+
+    const currentColumns = this.columnsByProblemType.get(problemTypeId) || 0;
+    const newColumnIndex = currentColumns;
+
+    // Create 3 new slots
+    const newSlots = this._createSlotsForColumn(problemTypeId, newColumnIndex);
+    const slots = this.simulationsByProblemType.get(problemTypeId);
+    slots.push(...newSlots);
+
+    // Update column count
+    this.columnsByProblemType.set(problemTypeId, currentColumns + 1);
+
+    this.emit('column-added', { problemTypeId, columnIndex: newColumnIndex, slots: newSlots });
+
+    return true;
+  }
+
+  /**
+   * Reset a slot to default name
+   * @param {string} slotId - Slot ID
+   * @returns {boolean} Success
+   */
+  resetSlot(slotId) {
+    const slot = this.getSlot(slotId);
+    if (!slot) {
+      console.warn(`TabModel: Slot not found: ${slotId}`);
+      return false;
+    }
+
+    const defaultName = `Simulation ${slot.globalIndex}`;
+    const oldName = slot.name;
+    slot.name = defaultName;
+
+    this.emit('slot-reset', { slotId, name: defaultName, oldName });
+
+    return true;
+  }
+
+  /**
+   * Rename a slot
+   * @param {string} slotId - Slot ID
+   * @param {string} newName - New name (max 30 chars)
+   * @returns {boolean} Success
+   */
+  renameSlot(slotId, newName) {
+    if (!newName || !newName.trim()) {
+      console.warn('TabModel: Invalid slot name');
+      return false;
+    }
+
+    const slot = this.getSlot(slotId);
+    if (!slot) {
+      console.warn(`TabModel: Slot not found: ${slotId}`);
+      return false;
+    }
+
+    const oldName = slot.name;
+    slot.name = newName.trim().substring(0, 30);  // Truncate to 30 chars
+
+    this.emit('slot-renamed', { slotId, name: slot.name, oldName });
+
+    return true;
+  }
+
+  /**
+   * Get all slots for a problem type
+   * @param {string} problemTypeId - Problem type ID
+   * @returns {Array} Array of slot objects
+   */
+  getSlotsForProblemType(problemTypeId) {
+    const slots = this.simulationsByProblemType.get(problemTypeId);
+    return slots ? [...slots] : [];
+  }
+
+  /**
+   * Get a specific slot
+   * @param {string} slotId - Slot ID
+   * @returns {Object|null} Slot object or null
+   */
+  getSlot(slotId) {
+    for (const slots of this.simulationsByProblemType.values()) {
+      const slot = slots.find(s => s.id === slotId);
+      if (slot) return slot;
+    }
+    return null;
+  }
+
+  /**
+   * Set the active slot
+   * @param {string} slotId - Slot ID to activate
+   * @returns {boolean} Success
+   */
+  setActiveSlot(slotId) {
+    if (slotId === 'welcome') {
+      this.activeSlotId = 'welcome';
+      this.emit('slot-activated', { slotId: 'welcome' });
+      return true;
+    }
+
+    const slot = this.getSlot(slotId);
+    if (!slot) {
+      console.warn(`TabModel: Slot not found: ${slotId}`);
+      return false;
+    }
+
+    this.activeSlotId = slotId;
+    this.activeProblemTypeId = slot.problemTypeId;
+
+    this.emit('slot-activated', { slotId, problemTypeId: slot.problemTypeId });
+
+    return true;
+  }
+
+  /**
+   * Get active slot ID
+   * @returns {string} Active slot ID
+   */
+  getActiveSlotId() {
+    return this.activeSlotId;
+  }
+
+  /**
+   * Get number of columns for a problem type
+   * @param {string} problemTypeId - Problem type ID
+   * @returns {number} Column count
+   */
+  getColumnCount(problemTypeId) {
+    return this.columnsByProblemType.get(problemTypeId) || 0;
+  }
+
+  /**
+   * Set active problem type
+   * @param {string} problemTypeId - Problem type ID
+   * @returns {boolean} Success
+   */
+  setActiveProblemType(problemTypeId) {
+    if (!this.simulationsByProblemType.has(problemTypeId)) {
+      // Initialize if not exists
+      this._initializeProblemType(problemTypeId);
+    }
+
+    this.activeProblemTypeId = problemTypeId;
+    this.activeSlotId = 'welcome';  // Reset to welcome when switching types
+
+    this.emit('problem-type-changed', { problemTypeId });
+
+    return true;
+  }
+
+  /**
+   * Get active problem type ID
+   * @returns {string} Active problem type ID
+   */
+  getActiveProblemTypeId() {
+    return this.activeProblemTypeId;
   }
 }
 
