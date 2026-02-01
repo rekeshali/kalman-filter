@@ -1,7 +1,20 @@
 /**
  * ProblemTypeSelector Component
- * 2-column grid of problem type cards with gradient overlay effect
+ * 2-column grid of problem type cards with custom icons and gradient overlay effect
  */
+
+/**
+ * Get icon path for a problem type
+ * @param {string} problemTypeId - Problem type ID
+ * @returns {string|null} Icon path or null
+ */
+function getProblemTypeIconPath(problemTypeId) {
+  const iconMap = {
+    'simple-wave': 'assets/icons/problem-types/wave_problem_icon.png',
+    'placeholder': 'assets/icons/problem-types/under_construction.png'
+  };
+  return iconMap[problemTypeId] || null;
+}
 
 /**
  * ProblemTypeSelector - Visual problem type selection cards
@@ -15,6 +28,7 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
     <div className="grid grid-cols-2 gap-3 w-64">
       {problemTypes.map(type => {
         const isActive = type.id === activeProblemTypeId;
+        const iconPath = getProblemTypeIconPath(type.id);
 
         return (
           <div
@@ -29,16 +43,25 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
             `}
             style={{
               backgroundColor: type.colorAccent,
-              height: 'calc(3 * 3rem + 2 * 0.5rem)'  // 3 slots (h-12 = 3rem) + 2 gaps (gap-2 = 0.5rem)
+              height: 'calc(3 * 3rem + 2 * 0.5rem)',  // 3 slots (h-12 = 3rem) + 2 gaps (gap-2 = 0.5rem)
+              backgroundImage: iconPath ? `url('${iconPath}')` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
             }}
             onClick={() => onProblemTypeChange(type.id)}
           >
-            {/* Gradient overlay for sheen effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            {/* Gradient overlay for depth and readability */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-transparent to-black/50 pointer-events-none" />
 
-            {/* Name */}
-            <div className="absolute inset-0 flex items-center justify-center p-2">
-              <span className="text-white font-bold text-sm text-center drop-shadow-lg">
+            {/* Color gradient overlay - stronger at bottom */}
+            <div
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-current opacity-60 pointer-events-none"
+              style={{ color: type.colorAccent }}
+            />
+
+            {/* Name - positioned at bottom for better readability over icon */}
+            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent">
+              <span className="text-white font-semibold text-xs uppercase tracking-wider text-center drop-shadow-lg block">
                 {type.name}
               </span>
             </div>
