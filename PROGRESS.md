@@ -26,55 +26,15 @@
 | 28 | Header horizontal margin alignment | `d092d81`, `7bbdf74` |
 | 26 | Kalman filter math documentation (FILTER_MATH.md) | `9c1cba5`, `b9b49c7` |
 | 30 | Simulation tab horizontal margins (px-24) | `9abe87c`, `e036eaa` |
+| 32 | Welcome page Kalman section reorg | `b053664`, `c0ff81c` |
 
-**Merges**: `e036eaa` (Item 30), `b9b49c7` (Item 26), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `c0ff81c` (Item 32), `e036eaa` (Item 30), `b9b49c7` (Item 26), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 32 → 2. ❌ Item 31
-
----
-
-### Item 32: Welcome Page Kalman Filter Section Reorganization ❌
-**Branch**: `feat/welcome-kalman-reorg`
-
-**Change**: Reorganize welcome page Kalman filter section layout
-
-**Current Layout**:
-- "How a Kalman Filter Works" text at top
-- Diagram at bottom
-
-**New Layout**:
-- Diagram at top
-- "How a Kalman Filter Works" text at bottom
-
-**Content**: The "How a Kalman Filter Works" section includes:
-```
-The Kalman filter is an optimal recursive algorithm for estimating the state of a system from noisy measurements. It operates in two steps:
-
-1. Prediction Step
-Uses the system dynamics model to predict the next state based on the current estimate and control inputs (acceleration measurements). Uncertainty grows due to process noise.
-
-2. Update Step
-Fuses the prediction with new measurements (position from external probe) using the Kalman gain. The gain balances trust between the model and measurements. Uncertainty decreases.
-```
-
-**Files**: Welcome/home page component (likely `views/welcome.js` or similar)
-
-**Acceptance Criteria**:
-- ✓ Diagram moved to top of Kalman section
-- ✓ "How a Kalman Filter Works" text moved to bottom
-- ✓ Visual hierarchy and spacing preserved
-- ✓ All content remains intact and readable
-- ✓ Responsive layout at all breakpoints
-
-**Verification**:
-- View welcome page on desktop/tablet/mobile
-- Confirm diagram appears first in Kalman section
-- Confirm text explanation appears after diagram
-- Check visual spacing and alignment
+**Priority**: ❌ Item 31
 
 ---
 
