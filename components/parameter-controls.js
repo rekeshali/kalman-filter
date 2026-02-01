@@ -98,7 +98,7 @@ function ParameterControls({ parameters, onParameterChange }) {
   return (
     <div className="space-y-3">
       {/* Wave Parameters */}
-      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
+      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg" style={{width: '304px'}}>
         <h3 className="font-semibold text-gray-300 text-sm mb-2">Wave Parameters</h3>
 
         {/* Frequency and Scale */}
@@ -191,7 +191,7 @@ function ParameterControls({ parameters, onParameterChange }) {
       </div>
 
       {/* Inertial Sensor */}
-      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
+      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg" style={{width: '304px'}}>
         <Tooltip
           text="Inertial Sensor (Accelerometer): Measures acceleration (second derivative of position). Examples: IMU, MEMS accelerometer in smartphones, drones, vehicles."
           position="top"
@@ -261,7 +261,7 @@ function ParameterControls({ parameters, onParameterChange }) {
       </div>
 
       {/* External Probe */}
-      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg">
+      <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg" style={{width: '304px'}}>
         <Tooltip
           text="External Probe (Position Sensor): Directly measures position. Examples: GPS, ultrasonic rangefinder, laser distance meter. Provides reference measurements to correct drift."
           position="top"
