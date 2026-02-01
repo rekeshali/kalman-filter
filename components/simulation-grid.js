@@ -21,7 +21,8 @@ function SimulationGrid({
   onSlotClick,
   onSlotRename,
   onSlotReset,
-  onAddColumn
+  onAddColumn,
+  children  // Optional content to render after + button
 }) {
   // Sort slots by column and row for proper grid rendering
   const sortedSlots = [...slots].sort((a, b) => {
@@ -32,7 +33,7 @@ function SimulationGrid({
   });
 
   return (
-    <div className="flex items-center gap-2 overflow-x-auto">
+    <div className="flex items-center gap-2 overflow-visible">
       {/* Slot Grid */}
       <div
         className="grid grid-rows-3 gap-2"
@@ -66,6 +67,9 @@ function SimulationGrid({
       >
         +
       </button>
+
+      {/* Optional content after + button (e.g., EKF flowchart) */}
+      {children}
     </div>
   );
 }
