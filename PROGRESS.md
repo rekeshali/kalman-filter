@@ -48,6 +48,7 @@ Reusable EKFFlowchart component with direction prop: horizontal 3-row layout in 
 **Priority Order**:
 1. 🚧 Item 18: GIF recording of plots
 2. ❌ Item 20: Problem type card styling enhancements
+3. ❌ Item 21: Splash button hold-to-sustain with progress bar
 
 ---
 
@@ -94,11 +95,10 @@ Reusable EKFFlowchart component with direction prop: horizontal 3-row layout in 
 
 **Likely Files**: `components/problem-type-selector.js`
 
-**Specs**: (TBD — user to specify desired enhancements)
-- Animations?
-- Improved gradients?
-- Icons per problem type?
-- Hover/transition effects?
+**Specs**:
+- **Icons**: Add icon per problem type (wave, satellite, etc.)
+- **Gradient overlay**: Transparent gradient on top of icon image
+- **Style**: Icon with gradient overlay creates depth/visual interest
 
 **Scope Boundaries**:
 - IN: Visual/CSS enhancements to existing cards
@@ -106,13 +106,69 @@ Reusable EKFFlowchart component with direction prop: horizontal 3-row layout in 
 - OUT: New problem types
 
 **Definition of Done**:
-1. Problem type cards have enhanced visual styling
-2. Maintains existing selection/activation behavior
+1. Each problem type card has a unique icon
+2. Transparent gradient overlay on top of icon
+3. Maintains existing selection/activation behavior
 
 **Verification**:
-- [ ] Cards visually improved per specs
+- [ ] Each card has distinct icon (wave, satellite, etc.)
+- [ ] Gradient overlay visible on each card
 - [ ] Selection behavior unchanged
 - [ ] No layout regressions
+
+---
+
+### Item 21: Splash Button Hold-to-Sustain ❌
+**Branch**: `feat/splash-hold`
+**Feature**: Enhanced splash button with hold-to-sustain and gamified progress bar
+
+**Likely Files**: `components/parameter-controls.js`, `controllers/simulation-controller.js`
+
+**Specs**:
+- **Layout**: Extend splash button (≋) horizontally to fill remaining row space
+- **Transfer Function** (envelope):
+  - **Ramp up**: Sin wave transient from 0→1 (attack phase)
+  - **Sustain**: Hold at strength=1 while button held
+  - **Ramp down**: Sin wave transient from 1→0 (release phase)
+- **Behavior**:
+  - **Click (tap)**: Ramp up → peak at 1 → immediately ramp down (full bump)
+  - **Hold**: Ramp up → sustain at 1 → release OR timeout → ramp down
+  - **Timeout**: 6 seconds of sustain triggers auto-release
+- **Animation**: Progress bar fills button background left→right
+  - Uses same blue as other buttons
+  - 6 seconds to fill completely (during sustain phase)
+  - When full → triggers ramp-down phase
+- **UX**: Gamified — hold as long as you can before it "runs out"
+
+**Scope Boundaries**:
+- IN: Button layout change (expand horizontally)
+- IN: Hold interaction (mousedown/mouseup or pointer events)
+- IN: Progress bar animation overlay
+- IN: Modified splash transfer function (sin wave + 1s ramp)
+- IN: 6-second auto-cutoff
+- OUT: Other parameter control changes
+
+**Definition of Done**:
+1. Splash button extends to fill available horizontal space
+2. Holding button sustains splash disturbance
+3. Progress bar fills left→right over 6 seconds
+4. Splash auto-stops when bar fills completely
+5. Release button → splash stops, bar resets
+
+**Verification**:
+- [ ] Button visually wider (fills row)
+- [ ] Click (tap) → sin ramp up, peak, sin ramp down (smooth bump)
+- [ ] Hold → ramp up, sustain at 1, bar fills during sustain
+- [ ] Release during sustain → ramp down begins, bar resets
+- [ ] Hold full 6s → bar full, auto-triggers ramp down
+- [ ] Chart shows smooth sin envelope (no abrupt jumps)
+
+**Acceptance**:
+- [ ] Layout: splash button fills remaining space
+- [ ] Hold sustains disturbance
+- [ ] Progress bar animates left→right (6s)
+- [ ] Auto-cutoff at 6s
+- [ ] Blue color matches existing buttons
 
 ---
 
