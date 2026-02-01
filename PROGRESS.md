@@ -68,6 +68,12 @@
   - Files: `components/parameter-controls.js`, `controllers/simulation-controller.js`
   - Status: Investigating
 
+- **BUG-12**: Slot name doesn't update immediately after rename
+  - Symptoms: Renamed slot name doesn't display until clicking elsewhere
+  - Expected: Name should update immediately after editing and confirm
+  - Files: `components/simulation-slot.js`
+  - Status: New
+
 ### Fixed
 BUG-1→10: scroll, reset, tick labels, tab switch, button size, slot switch, white bubble, all charts ticks, wheel zoom, GIF grid layout
 (`08b94ac`, `5682d7c`, `98b6186`, `1745f53`, `0d9b12a`, `db3e1d8`, `c2ccd8b`, `e4d0fb5`)
