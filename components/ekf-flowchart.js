@@ -186,12 +186,12 @@ function EKFBlock({ block, direction, compact, skinny = false }) {
         <div
           className={`${blockHeight} rounded-lg flex items-center justify-center font-medium ${textSize} px-1 text-center leading-tight transition-colors`}
           style={{
-            backgroundColor: '#374151',  // gray-700 default
+            backgroundColor: '#000000',  // black default
             color: '#d1d5db',  // gray-300 default
             '--hover-bg': hoverBg
           }}
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hoverBg; e.currentTarget.style.color = 'white'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#374151'; e.currentTarget.style.color = '#d1d5db'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#d1d5db'; }}
         >
           {block.label}<br/>{block.sublabel}
         </div>
