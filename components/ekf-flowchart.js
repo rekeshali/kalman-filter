@@ -165,41 +165,54 @@ function EKFBlock({ block, direction, compact, skinny = false }) {
     return 'top-full mt-2 left-0';
   };
 
-  // For horizontal layout - grey by default, color on hover
+  // For horizontal layout - black with colored border by default, white fill on hover
   if (isHorizontal) {
-    // Extract the color class to a CSS variable for hover
-    const bgColorMap = {
-      'bg-indigo-700': '#4338ca',
-      'bg-gray-600': '#4b5563',
-      'bg-purple-700': '#7e22ce',
-      'bg-pink-700': '#be185d',
-      'bg-violet-700': '#6d28d9',
-      'bg-yellow-600': '#ca8a04',
-      'bg-orange-600': '#ea580c',
-      'bg-green-700': '#15803d',
-      'bg-teal-700': '#0f766e'
+    // Map border color classes to actual border color values
+    const borderColorMap = {
+      'border-indigo-400': '#818cf8',
+      'border-gray-400': '#9ca3af',
+      'border-purple-400': '#c084fc',
+      'border-pink-400': '#f472b6',
+      'border-violet-400': '#a78bfa',
+      'border-yellow-400': '#facc15',
+      'border-orange-400': '#fb923c',
+      'border-green-400': '#4ade80',
+      'border-teal-400': '#2dd4bf'
     };
-    const hoverBg = bgColorMap[block.color] || '#4b5563';
+    // Map border color classes to matching text colors for hover state
+    const textColorMap = {
+      'border-indigo-400': '#4338ca',
+      'border-gray-400': '#4b5563',
+      'border-purple-400': '#7e22ce',
+      'border-pink-400': '#be185d',
+      'border-violet-400': '#6d28d9',
+      'border-yellow-400': '#a16207',
+      'border-orange-400': '#c2410c',
+      'border-green-400': '#15803d',
+      'border-teal-400': '#0f766e'
+    };
+    const borderColor = borderColorMap[block.borderColor] || '#9ca3af';
+    const hoverTextColor = textColorMap[block.borderColor] || '#4b5563';
 
     return (
       <div className="relative group ekf-block-hover">
         <div
-          className={`${blockHeight} rounded-lg flex items-center justify-center font-medium ${textSize} px-1 text-center leading-tight transition-colors`}
+          className={`${blockHeight} rounded-lg flex items-center justify-center font-medium ${textSize} px-1 text-center leading-tight transition-colors border-2`}
           style={{
             backgroundColor: '#000000',  // black default
             color: '#d1d5db',  // gray-300 default
-            '--hover-bg': hoverBg
+            borderColor: '#000000'  // black border default
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = hoverBg; e.currentTarget.style.color = 'white'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#d1d5db'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.color = hoverTextColor; e.currentTarget.style.borderColor = borderColor; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#000000'; e.currentTarget.style.color = '#d1d5db'; e.currentTarget.style.borderColor = '#000000'; }}
         >
           {block.label}<br/>{block.sublabel}
         </div>
-        {/* Tooltip - appears below, uses absolute positioning relative to block */}
-        <div className={`absolute hidden group-hover:block z-[999999] ${tooltipWidth} p-4 bg-gray-800 border ${block.borderColor} rounded-lg shadow-xl text-xs text-gray-200`}
-             style={{ top: '100%', marginTop: '8px', left: '0' }}>
-          <strong className={`${block.textColor} block mb-2`}>{block.tooltip.title}</strong>
-          <div className="font-mono text-xs mb-2 bg-gray-900 p-2 rounded whitespace-pre-line">
+        {/* Tooltip - appears below, white background with colored border */}
+        <div className={`absolute hidden group-hover:block z-[999999] ${tooltipWidth} p-4 bg-white border-2 rounded-lg shadow-xl text-xs text-gray-900`}
+             style={{ top: '100%', marginTop: '8px', left: '0', borderColor: borderColor }}>
+          <strong className="block mb-2" style={{ color: hoverTextColor }}>{block.tooltip.title}</strong>
+          <div className="font-mono text-xs mb-2 bg-gray-700 p-2 rounded whitespace-pre-line text-gray-100">
             {block.tooltip.formula}
           </div>
           <p className="mb-1"><strong>Purpose:</strong> {block.tooltip.purpose}</p>
