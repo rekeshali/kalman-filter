@@ -101,7 +101,7 @@ function ParameterControls({ parameters, onParameterChange }) {
       <div className="border border-gray-600 rounded p-3 bg-gray-800 shadow-lg" style={{width: '304px'}}>
         <h3 className="font-semibold text-gray-300 text-sm mb-2">Wave Parameters</h3>
 
-        {/* Frequency and Scale */}
+        {/* Frequency and Amplitude */}
         <div className="grid grid-cols-2 gap-3 mb-2">
           <Tooltip
             text={`Wave Frequency: ${frequency.toFixed(1)} Hz. Controls how fast the wave oscillates.\n\nRange: 0.1 - 2.0 Hz`}
@@ -119,12 +119,12 @@ function ParameterControls({ parameters, onParameterChange }) {
           </Tooltip>
 
           <Tooltip
-            text={`Wave Scale: ${scale.toFixed(1)}x. Multiplies the wave amplitude.\n\nRange: 0.1x - 5.0x`}
+            text={`Wave Amplitude: ${scale.toFixed(1)}x. Multiplies the wave amplitude.\n\nRange: 0.1x - 5.0x`}
             position="bottom"
           >
             <div>
               <label className="block text-xs font-medium mb-1 text-gray-200">
-                Scale: <span className="text-blue-400">{scale.toFixed(1)}x</span>
+                Amplitude: <span className="text-blue-400">{scale.toFixed(1)}x</span>
               </label>
               <div className="flex gap-2">
                 <button onClick={decrementScale} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
