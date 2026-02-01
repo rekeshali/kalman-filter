@@ -37,7 +37,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. 🐛 BUG-13 (playback controls gradient) → 2. ⏸️ Item 35 (backlog) → 3. ⏸️ Item 36 (backlog)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 36 (backlog)
 
 ---
 
@@ -108,16 +108,13 @@
 ## Bugs
 
 ### Open
-
-**BUG-13: Playback controls box missing bubble gradient**
-- **Repro**: View playback controls in the UI — gradient styling is absent
-- **Expected**: Playback controls should have the same dark gradient (gray-to-navy) applied as other bubbles (Item 31)
-- **Suspected cause**: Playback controls component not included in Item 31 gradient styling pass
-- **Likely files**: `components/playback-controls.js` or similar playback control component
-- **Impact**: Visual inconsistency — playback controls appear flat/unstyled compared to other UI elements
-- **Next experiment**: (1) Find playback controls component, (2) Apply same gradient classes used in Item 31 bubbles
+(None)
 
 ### Fixed
+
+BUG-13: Playback controls box missing bubble gradient — added dark gradient styling (gray-800 to slate-900) to control-panel.js (`682b2f9`)
+
+**Previous Fixed**
 BUG-1→12: scroll, reset, tick labels, tab switch, button size, slot switch, white bubble, all charts ticks, wheel zoom, GIF grid layout, splash progress bar, slot name update
 (`08b94ac`, `5682d7c`, `98b6186`, `1745f53`, `0d9b12a`, `db3e1d8`, `c2ccd8b`, `e4d0fb5`, `5c21c95`, `f8f082d`, `c06668e`, `0433730`)
 
