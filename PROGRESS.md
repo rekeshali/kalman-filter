@@ -32,7 +32,11 @@ Slot-based simulation management: problem type selector (2-col gradient cards), 
 ### Item 12: Drag to Navigate History (`f68aa3b`)
 Custom drag handlers on chart grid: pan left/right when paused to navigate history, syncs with slider
 
+### Item 19: Header EKF Flowchart (`42328d3`)
+Reusable EKFFlowchart component with direction prop: horizontal 3-row layout in header, vertical in welcome page, shared block definitions with identical tooltips
+
 ### Merges & Fixes
+- `6baa407` - Merge feat/header-flowchart (Item 19)
 - `2d67481` - Merge feature/timeline-slider
 - `08b94ac` - BUG-2 fix + layout stability
 - `5682d7c` - BUG-3 fix (x-axis tick labels)
@@ -42,47 +46,8 @@ Custom drag handlers on chart grid: pan left/right when paused to navigate histo
 ## Remaining Tasks
 
 **Priority Order**:
-1. ❌ Item 19: Header EKF flowchart
-2. 🚧 Item 18: GIF recording of plots
-
----
-
-### Item 19: Header EKF Flowchart ❌
-**Branch**: `feat/header-flowchart`
-**Feature**: Horizontal EKF block diagram in header (replicate welcome page flowchart)
-
-**Source**: `components/welcome-screen.js` lines 66-233 (Block Diagram section)
-
-**Specs**:
-- **Layout**: Horizontal flow (left→right) instead of vertical (top→bottom)
-- **Blocks**: Same 9 blocks: Init, True Trajectory, Inertial Prop, Jacobian, Cov Pred, Kalman Gain, Innovation, State Corr, Cov Update
-- **Tooltips**: Identical hover content (math formulas, purpose, intuition)
-- **Colors**: Same color scheme per block
-
-**Scope Boundaries**:
-- IN: Extract flowchart into reusable component
-- IN: Horizontal layout variant for header
-- IN: Same hover tooltips
-- OUT: New tooltip content
-- OUT: Different block colors or styles
-
-**Definition of Done**:
-1. Create `components/ekf-flowchart.js` with shared block definitions
-2. Support `direction="vertical"` (welcome) and `direction="horizontal"` (header)
-3. Header displays compact horizontal flowchart between sim grid and title
-4. Hover tooltips work identically in both locations
-
-**Verification**:
-- [ ] Welcome page flowchart unchanged (still vertical)
-- [ ] Header shows same blocks horizontally
-- [ ] Hover any block → tooltip appears with math formulas
-- [ ] Tooltip content matches between welcome and header
-
-**Acceptance**:
-- [ ] Reusable `EKFFlowchart` component created
-- [ ] Welcome page uses `direction="vertical"`
-- [ ] Header uses `direction="horizontal"`
-- [ ] No code duplication between locations
+1. 🚧 Item 18: GIF recording of plots
+2. ❌ Item 20: Problem type card styling enhancements
 
 ---
 
@@ -123,18 +88,45 @@ Custom drag handlers on chart grid: pan left/right when paused to navigate histo
 
 ---
 
+### Item 20: Problem Type Card Styling ❌
+**Branch**: `feat/problem-type-styling`
+**Feature**: Enhanced visual styling for problem type selector cards
+
+**Likely Files**: `components/problem-type-selector.js`
+
+**Specs**: (TBD — user to specify desired enhancements)
+- Animations?
+- Improved gradients?
+- Icons per problem type?
+- Hover/transition effects?
+
+**Scope Boundaries**:
+- IN: Visual/CSS enhancements to existing cards
+- OUT: Functional changes to card behavior
+- OUT: New problem types
+
+**Definition of Done**:
+1. Problem type cards have enhanced visual styling
+2. Maintains existing selection/activation behavior
+
+**Verification**:
+- [ ] Cards visually improved per specs
+- [ ] Selection behavior unchanged
+- [ ] No layout regressions
+
+---
+
 ## Bugs
 
 ### Open
 
-- **BUG-8**: X-axis tick labels fix not applied to all charts
-  - **Repro**: Run simulation, observe x-axis labels on charts below position chart
-  - **Expected**: All charts show actual time values from labels array
-  - **Actual**: Only position chart (top) uses correct tick callback; other 6 charts use `(v) => Number(v).toFixed(2)` which shows index values
-  - **Root Cause**: BUG-3 fix (`5682d7c`) only updated position chart callback at line 320
-  - **Likely Files**: [views/app-view.js](views/app-view.js) lines 344, 365, 383, 404, 425, 443
-  - **Fix**: Apply same `function(v, index, ticks) { return this.chart.data.labels[index]... }` pattern to all 6 remaining chart configs
-  - **Priority**: P2 (display consistency)
+- **BUG-9**: Y-axis zoom conflicts with window scrolling
+  - **Repro**: Scroll mouse wheel over chart area
+  - **Expected**: Page scrolls normally
+  - **Actual**: Chart Y-axis zooms, blocking page scroll
+  - **Likely Files**: [views/app-view.js](views/app-view.js) (chartjs-plugin-zoom config)
+  - **Fix**: Disable Y-axis zoom in zoom plugin config (`zoom.wheel.mode: 'x'` or disable wheel zoom entirely)
+  - **Priority**: P1 (UX blocker)
 
 ### Fixed
 - **BUG-1**: Mouse wheel scroll blocked
@@ -144,6 +136,7 @@ Custom drag handlers on chart grid: pan left/right when paused to navigate histo
 - **BUG-5**: Problem type buttons enlarge (`98b6186`)
 - **BUG-6**: Timeline slider stale on slot switch (`98b6186`)
 - **BUG-7**: White bubble on active problem type card (`0d9b12a`)
+- **BUG-8**: X-axis tick labels on all charts (`db3e1d8`)
 
 ---
 
