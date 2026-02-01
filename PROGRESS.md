@@ -33,14 +33,16 @@
 | 36 | EKF flowchart tooltips with expanded math equations | `b2c2108` |
 | 37 | Flowchart tab icons with white highlight + colored borders | `d35b5d7` |
 | 38 | Problem type icons with conditional gradients (gray/blue) | `581ea20` |
+| 39 | Expanded EKF acronym to full "Extended Kalman Filter" in title | `d9543dc` |
+| 40 | Removed "Ready to Explore" block from welcome page | `9c9a494` |
 
-**Merges**: `76971d5` (Item 38), `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `0a64504` (Item 39), `76971d5` (Item 38), `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 39 (expand EKF title) → 3. ⏸️ Item 40 (remove Ready to Explore) → 4. ⏸️ Item 41 (flowchart notation legend)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 41 (flowchart notation legend)
 
 ---
 
@@ -71,68 +73,6 @@
 - Measure margin spacing (should be px-24)
 - Check divider line visibility and crispness
 - Verify responsiveness and alignment
-
----
-
-### Item 39: Expand "EKF" Acronym to "Extended Kalman Filter" in Title ❌
-**Branch**: `feat/expand-ekf-acronym-title`
-
-**Change**: Replace "EKF" acronym with full text "Extended Kalman Filter" in the section header/title
-
-**Scope**: Welcome/home page EKF flowchart section title
-
-**Design**:
-- Change title from "Extended Kalman Filter Block Diagram" or similar
-- Use full expanded form: "Extended Kalman Filter Block Diagram" (if not already expanded)
-- Or clarify exact current title and update accordingly
-- Maintain consistent formatting and styling
-
-**Files**: `components/welcome-screen.js` or `components/ekf-section.js` (wherever title is defined)
-
-**Acceptance Criteria**:
-- ✓ "EKF" replaced with "Extended Kalman Filter" in title
-- ✓ Title reads clearly and naturally
-- ✓ No acronyms in the title (unless user specifies otherwise)
-- ✓ Formatting and styling unchanged
-- ✓ Responsive on all breakpoints
-- ✓ Consistent with other section titles
-
-**Verification**:
-- View welcome page
-- Check section title displays "Extended Kalman Filter" (no EKF acronym)
-- Verify styling and layout intact
-- Test on desktop/tablet/mobile
-
----
-
-### Item 40: Remove "Ready to Explore" Block from Welcome Page ❌
-**Branch**: `feat/remove-ready-to-explore-block`
-
-**Change**: Remove the "Ready to Explore" section/block from the welcome page
-
-**Scope**: Welcome/home page - remove entire Ready to Explore UI block
-
-**Design**:
-- Delete "Ready to Explore" section entirely
-- Clean up any related styling or spacing
-- Ensure remaining content flows properly
-
-**Files**: `components/welcome-screen.js` or relevant welcome page component
-
-**Acceptance Criteria**:
-- ✓ "Ready to Explore" block completely removed
-- ✓ No orphaned UI elements or broken references
-- ✓ Page layout flows properly without the block
-- ✓ Spacing and alignment correct on all breakpoints
-- ✓ No console errors or warnings
-- ✓ Visual appearance clean and intentional
-
-**Verification**:
-- View welcome page
-- Confirm "Ready to Explore" block is gone
-- Check page layout and spacing
-- Verify responsive behavior on mobile/tablet/desktop
-- Check browser console for errors
 
 ---
 
