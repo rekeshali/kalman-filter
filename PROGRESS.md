@@ -40,7 +40,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 39 (expand EKF title) → 3. ⏸️ Item 40 (remove Ready to Explore)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 39 (expand EKF title) → 3. ⏸️ Item 40 (remove Ready to Explore) → 4. ⏸️ Item 41 (flowchart notation legend)
 
 ---
 
@@ -133,6 +133,43 @@
 - Check page layout and spacing
 - Verify responsive behavior on mobile/tablet/desktop
 - Check browser console for errors
+
+---
+
+### Item 41: Add Variable Notation Legend to Flowchart Tooltips ❌
+**Branch**: `feat/flowchart-tooltip-notation-legend`
+
+**Change**: Add a notation/legend section at the bottom of each flowchart tooltip listing variable definitions
+
+**Scope**: EKF flowchart component - enhance existing tooltips from Item 36 with variable definitions
+
+**Design**:
+- Add "Notation" or "Variables" section at bottom of each tooltip
+- List all variables used in that step with their definitions
+- Format as clean, readable list (e.g., `x_k: state vector`, `P_k: covariance matrix`)
+- Reference definitions from FILTER_MATH.md Notation Summary (lines 454-477)
+- Keep notation section visually distinct from main tooltip content
+- Include only variables relevant to that specific flowchart step
+
+**Files**: `components/ekf-flowchart.js` (enhance existing tooltip data)
+
+**Acceptance Criteria**:
+- ✓ Each tooltip has a "Notation" section at the bottom
+- ✓ Notation lists all variables used in that step
+- ✓ Definitions are clear and match FILTER_MATH.md reference
+- ✓ Notation section is visually distinct
+- ✓ No duplicate variable listings
+- ✓ Formatting is clean and readable
+- ✓ Responsive on all breakpoints
+- ✓ No performance regression from Item 36 implementation
+
+**Verification**:
+- Hover over flowchart nodes
+- Check notation section appears at bottom of each tooltip
+- Verify variable definitions are accurate
+- Compare definitions with FILTER_MATH.md
+- Test on desktop/tablet/mobile
+- Verify visual hierarchy and readability
 
 ---
 
