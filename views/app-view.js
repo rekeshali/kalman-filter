@@ -617,7 +617,7 @@ function EKFVisualization() {
 
       {/* Simulation Content */}
       {activeSlotId !== 'welcome' && (
-        <div className="flex-1 flex gap-4 p-4 overflow-hidden bg-gray-900">
+        <div className="flex-1 flex gap-4 px-24 py-4 overflow-hidden bg-gray-900">
           {/* LEFT COLUMN: Controls - Fixed width, always visible */}
           <div className="flex-shrink-0 space-y-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', width: '320px'}}>
             <ControlPanel
