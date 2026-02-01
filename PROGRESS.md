@@ -37,7 +37,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 36 (EKF flowchart math tooltips) → 2. ⏸️ Item 35 (backlog) → 3. ⏸️ Item 37 (backlog)
+**Priority**: 1. ❌ Item 36 (EKF flowchart math tooltips) → 2. ⏸️ Item 35 (backlog) → 3. ⏸️ Item 37 (backlog) → 4. ⏸️ Item 38 (backlog)
 
 ---
 
@@ -134,6 +134,40 @@
 - Confirm colored borders are preserved
 - Check inactive state styling
 - Test on mobile breakpoints
+
+---
+
+### Item 38: Problem Type Icon Gradient Styling (Selected/Unselected) ❌
+**Branch**: `feat/problem-type-icon-gradients`
+
+**Change**: Update problem type icons with gradient styling based on selection state
+
+**Scope**: Problem type card/icon component - apply conditional gradient colors
+
+**Design**:
+- **Unselected icons**: gray gradient (same as "Coming Soon" card styling)
+- **Selected icons**: blue gradient (same as "Simple Wave" card styling)
+- Clear visual distinction between selected and unselected states
+- Smooth transition/animation between states (if applicable)
+
+**Files**: Problem type component (likely `components/problem-type-card.js` or similar)
+
+**Acceptance Criteria**:
+- ✓ Unselected problem type icons display gray gradient
+- ✓ Selected problem type icons display blue gradient
+- ✓ Gray matches "Coming Soon" card color exactly
+- ✓ Blue matches "Simple Wave" card color exactly
+- ✓ State changes are visually clear
+- ✓ Responsive on all breakpoints
+- ✓ No performance regression
+
+**Verification**:
+- View problem type selector
+- Click between problem types
+- Verify gray gradient on unselected
+- Verify blue gradient on selected
+- Compare colors with existing Coming Soon and Simple Wave styling
+- Test on mobile/tablet/desktop
 
 ---
 
