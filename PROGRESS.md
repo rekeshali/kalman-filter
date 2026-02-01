@@ -16,14 +16,15 @@
 | 19 | EKF flowchart component (vertical/horizontal) | `42328d3` |
 | 18 | GIF recording alongside JSON export | `31f1e3a`, `e4d0fb5` |
 | 20 | Problem type card icons + gradient overlay | `0648e27` |
+| 22 | Limit to 3 simulation slots per problem type | `8fde1a2` |
 
-**Merges**: `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 21 → 2. ❌ Item 22 → 3. ❌ Item 23 → 4. ❌ Item 24
+**Priority**: 1. ❌ Item 21 → 2. ❌ Item 23 → 3. ❌ Item 24
 
 ---
 
@@ -54,23 +55,22 @@ idle →[press]→ rampUp →[1s]→ sustain →[release|6s]→ rampDown →[1s]
 
 **Files**: `components/parameter-controls.js`, `controllers/simulation-controller.js`
 
-**Done when**: Wide button, hold sustains, bar animates (6s), auto-cutoff, smooth envelope
+**Acceptance Criteria**:
+- ✓ Single wide button (no two ≋ buttons)
+- ✓ Button fills full row width
+- ✓ Progress bar animates during ramp-up (0→100% over 1s)
+- ✓ Progress bar holds at 100% while pointer down (up to 6s max)
+- ✓ Progress bar animates during ramp-down (100→0% over 1s)
+- ✓ Button auto-releases and resets after 6s sustain (or on pointer release)
+- ✓ Envelope values smooth (sin/cos applied to both frequency and amplitude)
+- ✓ Simulation responds to envelope changes in real-time
 
----
-
-### Item 22: Limit to 3 Simulation Slots ❌
-**Branch**: `feat/fixed-slots`
-
-**Change**: Remove + button, default to exactly 3 slots per problem type
-
-**Scope**:
-- IN: Hide + button from UI
-- IN: Default to 3 pre-created slots
-- OUT: Backend/JS changes (keep slot management code intact)
-
-**Files**: `components/simulation-grid.js` (hide + button)
-
-**Done when**: 3 slots visible, no + button, backend unchanged
+**Verification**:
+- Hold button for 1s → bar reaches 100%
+- Hold button for 3s → bar stays at 100%
+- Release after 3s → bar animates down to 0% over 1s
+- Hold for 6s → auto-release (bar animates down)
+- Observe simulation perturbation follows envelope shape
 
 ---
 
@@ -81,7 +81,17 @@ idle →[press]→ rampUp →[1s]→ sustain →[release|6s]→ rampDown →[1s]
 
 **Files**: `components/problem-type-selector.js`, `components/simulation-slot.js`
 
-**Done when**: Same blue shade for active state on both problem type and sim tabs
+**Acceptance Criteria**:
+- ✓ Problem type card active state uses same blue as simulation slot active state
+- ✓ Color applied consistently across all problem types (Wave, Sine, Const Vel, Const Accel)
+- ✓ Active state clearly distinguishes selected tab from inactive tabs
+- ✓ Color matches visual design (no gradient/opacity differences)
+
+**Verification**:
+- Open app, observe problem type selector
+- Click different problem types → active card highlights in blue
+- Switch to each problem type → corresponding simulation slots also use same blue highlight
+- No color discrepancy between the two tab groups
 
 ---
 
@@ -97,7 +107,19 @@ idle →[press]→ rampUp →[1s]→ sustain →[release|6s]→ rampDown →[1s]
 
 **Files**: `components/simulation-slot.js`, `controllers/simulation-controller.js`
 
-**Done when**: ✕ button resets name + settings, no ↺ visible
+**Acceptance Criteria**:
+- ✓ Reset button displays ✕ (not ↺)
+- ✓ Click ✕ → slot name reverts to default ("Sim 1", "Sim 2", "Sim 3")
+- ✓ Click ✕ → all parameter values reset to defaults (frequency, amplitude, damping, etc.)
+- ✓ Reset is immediate (no confirmation dialog, no delay)
+- ✓ Charts update immediately to reflect default parameters
+- ✓ No ↺ button visible anywhere
+
+**Verification**:
+- Edit slot name → click ✕ → name reverts to default
+- Change parameters → click ✕ → all parameters reset to defaults
+- Observe charts update immediately
+- Confirm ✕ icon displays and ↺ is not visible
 
 ---
 
