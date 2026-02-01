@@ -281,9 +281,7 @@ function EKFVisualization() {
     },
     zoom: {
       wheel: {
-        enabled: true,
-        speed: 0.1,
-        mode: 'x'
+        enabled: false  // Disabled to allow page scrolling (BUG-9)
       },
       pinch: {
         enabled: true,
