@@ -20,42 +20,15 @@
 | 23 | Unify highlight color to blue-500 across tabs | `b8a4b8e` |
 | 25 | Simulation slot hover highlight enhancement | `e36394e`, `a82dc5c` |
 | 21 | Splash hold-to-sustain with decay animation | `e27248d`, `5b8406c` |
+| 24 | Reset button ✕ with full slot reset | `938cbe8`, `c06d46f` |
 
-**Merges**: `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 24
-
----
-
-### Item 24: Reset Button → ✕ with Full Reset ❌
-**Branch**: `feat/reset-button`
-
-**Change**: Replace ↺ with ✕, reset both name AND settings on click
-
-**Behavior**:
-- Click ✕ → immediately reset slot name to default ("Sim 1", "Sim 2", etc.)
-- Click ✕ → immediately reset all parameters to defaults
-- No confirm dialog
-
-**Files**: `components/simulation-slot.js`, `controllers/simulation-controller.js`
-
-**Acceptance Criteria**:
-- ✓ Reset button displays ✕ (not ↺)
-- ✓ Click ✕ → slot name reverts to default ("Sim 1", "Sim 2", "Sim 3")
-- ✓ Click ✕ → all parameter values reset to defaults (frequency, amplitude, damping, etc.)
-- ✓ Reset is immediate (no confirmation dialog, no delay)
-- ✓ Charts update immediately to reflect default parameters
-- ✓ No ↺ button visible anywhere
-
-**Verification**:
-- Edit slot name → click ✕ → name reverts to default
-- Change parameters → click ✕ → all parameters reset to defaults
-- Observe charts update immediately
-- Confirm ✕ icon displays and ↺ is not visible
+**No planned features remaining.** 2 open bugs to investigate.
 
 ---
 
