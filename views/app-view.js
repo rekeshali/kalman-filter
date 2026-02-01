@@ -393,6 +393,14 @@ function EKFVisualization() {
     controllerRef.current.setParameter(name, value);
   };
 
+  const handleSplashFrequency = () => {
+    controllerRef.current.splashFrequency();
+  };
+
+  const handleSplashAmplitude = () => {
+    controllerRef.current.splashAmplitude();
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-900">
       {/* Header */}
@@ -440,6 +448,8 @@ function EKFVisualization() {
             <ParameterControls
               parameters={parameters}
               onParameterChange={handleParameterChange}
+              onSplashFrequency={handleSplashFrequency}
+              onSplashAmplitude={handleSplashAmplitude}
             />
           </div>
 

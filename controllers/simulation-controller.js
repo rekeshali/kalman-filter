@@ -23,6 +23,14 @@ class SimulationController extends window.EventEmitter {
     this.viewportEndIndex = null;  // null = live mode (show latest data)
     this.timelinePosition = 100;  // 0-100 percentage (100 = live mode)
 
+    // Splash state (transient disturbances)
+    this.splashState = {
+      frequency: { active: false, startTime: null, baseline: null },
+      amplitude: { active: false, startTime: null, baseline: null }
+    };
+    this.splashDuration = 2.0;  // 2 seconds
+    this.splashPeakMultiplier = 2.0;  // 2x baseline
+
     // Chart registry: chartName -> chartId
     this.chartRegistry = new Map();
 
@@ -371,6 +379,40 @@ class SimulationController extends window.EventEmitter {
     if (!tabState || !tabState.isRunning) return;
 
     const params = tabState.parameterModel.getScaledParameters();
+
+    // Apply splash transients if active
+    const currentTime = tabState.simulationState.time;
+
+    // Frequency splash
+    if (this.splashState.frequency.active) {
+      const elapsed = currentTime - this.splashState.frequency.startTime;
+      if (elapsed >= this.splashDuration) {
+        // Splash complete, deactivate
+        this.splashState.frequency.active = false;
+        params.frequency = this.splashState.frequency.baseline;
+      } else {
+        // Apply cosine transient: baseline * (1 + (peak-1) * (1 - cos(2π*t/duration)) / 2)
+        const progress = elapsed / this.splashDuration;
+        const multiplier = 1 + (this.splashPeakMultiplier - 1) * (1 - Math.cos(2 * Math.PI * progress)) / 2;
+        params.frequency = this.splashState.frequency.baseline * multiplier;
+      }
+    }
+
+    // Amplitude splash
+    if (this.splashState.amplitude.active) {
+      const elapsed = currentTime - this.splashState.amplitude.startTime;
+      if (elapsed >= this.splashDuration) {
+        // Splash complete, deactivate
+        this.splashState.amplitude.active = false;
+        params.scale = this.splashState.amplitude.baseline;
+      } else {
+        // Apply cosine transient: baseline * (1 + (peak-1) * (1 - cos(2π*t/duration)) / 2)
+        const progress = elapsed / this.splashDuration;
+        const multiplier = 1 + (this.splashPeakMultiplier - 1) * (1 - Math.cos(2 * Math.PI * progress)) / 2;
+        params.scale = this.splashState.amplitude.baseline * multiplier;
+      }
+    }
+
     tabState.simulationState.step(params);
 
     // Update charts with viewport data
@@ -446,6 +488,10 @@ class SimulationController extends window.EventEmitter {
     this.viewportMode = 'live';
     this.timelinePosition = 100;
 
+    // Clear splash state
+    this.splashState.frequency.active = false;
+    this.splashState.amplitude.active = false;
+
     // Clear and update charts
     this._clearAllCharts();
     this.emit('simulation-reset');
@@ -515,6 +561,52 @@ class SimulationController extends window.EventEmitter {
     tabState.parameterModel.resetToDefaults();
     this._saveState();
     this.emit('parameters-updated', tabState.parameterModel.getAllParameters());
+  }
+
+  /**
+   * Trigger a frequency splash (transient disturbance)
+   * Applies a cosine-shaped transient that temporarily increases frequency
+   */
+  splashFrequency() {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return;
+
+    // Only allow splash when simulation is running and initialized
+    if (!tabState.isRunning || !tabState.simulationState.initialized) return;
+
+    // Ignore if already splashing
+    if (this.splashState.frequency.active) return;
+
+    // Get baseline from scaled parameters (guaranteed to have value)
+    const params = tabState.parameterModel.getScaledParameters();
+    this.splashState.frequency = {
+      active: true,
+      startTime: tabState.simulationState.time,
+      baseline: params.frequency
+    };
+  }
+
+  /**
+   * Trigger an amplitude splash (transient disturbance)
+   * Applies a cosine-shaped transient that temporarily increases amplitude
+   */
+  splashAmplitude() {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return;
+
+    // Only allow splash when simulation is running and initialized
+    if (!tabState.isRunning || !tabState.simulationState.initialized) return;
+
+    // Ignore if already splashing
+    if (this.splashState.amplitude.active) return;
+
+    // Get baseline from scaled parameters (guaranteed to have value)
+    const params = tabState.parameterModel.getScaledParameters();
+    this.splashState.amplitude = {
+      active: true,
+      startTime: tabState.simulationState.time,
+      baseline: params.scale
+    };
   }
 
   /**

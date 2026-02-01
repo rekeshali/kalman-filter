@@ -62,8 +62,10 @@ function LevelButtonGroup({ value, onChange, compact = false }) {
  * @param {Object} props
  * @param {Object} props.parameters - All parameter values
  * @param {Function} props.onParameterChange - Parameter change handler (name, value)
+ * @param {Function} props.onSplashFrequency - Splash frequency handler
+ * @param {Function} props.onSplashAmplitude - Splash amplitude handler
  */
-function ParameterControls({ parameters, onParameterChange }) {
+function ParameterControls({ parameters, onParameterChange, onSplashFrequency, onSplashAmplitude }) {
   const {
     frequency = 0.5,
     scale = 1.0,
@@ -111,9 +113,10 @@ function ParameterControls({ parameters, onParameterChange }) {
               <label className="block text-xs font-medium mb-1 text-gray-200">
                 Frequency: <span className="text-blue-400">{frequency.toFixed(1)} Hz</span>
               </label>
-              <div className="flex gap-2">
-                <button onClick={decrementFrequency} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
-                <button onClick={incrementFrequency} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
+              <div className="flex gap-1">
+                <button onClick={decrementFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
+                <button onClick={incrementFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
+                <button onClick={onSplashFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm" title="Splash (transient disturbance)">≋</button>
               </div>
             </div>
           </Tooltip>
@@ -126,9 +129,10 @@ function ParameterControls({ parameters, onParameterChange }) {
               <label className="block text-xs font-medium mb-1 text-gray-200">
                 Amplitude: <span className="text-blue-400">{scale.toFixed(1)}x</span>
               </label>
-              <div className="flex gap-2">
-                <button onClick={decrementScale} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
-                <button onClick={incrementScale} className="px-3 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
+              <div className="flex gap-1">
+                <button onClick={decrementScale} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
+                <button onClick={incrementScale} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
+                <button onClick={onSplashAmplitude} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm" title="Splash (transient disturbance)">≋</button>
               </div>
             </div>
           </Tooltip>
