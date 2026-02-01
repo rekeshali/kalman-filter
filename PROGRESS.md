@@ -28,7 +28,38 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 26
+**Priority**: 1. ❌ Item 26 → 2. ❌ Item 27
+
+---
+
+### Item 27: Splash Button Tooltip ❌
+**Branch**: `feat/splash-tooltip`
+
+**Change**: Add tooltip to splash button explaining functionality and value effects
+
+**Tooltip Content**:
+```
+SPLASH: Apply perturbation to system
+- Hold to sustain (up to 6s)
+- Affects: Amplitude & Frequency envelope
+- Release to fade (1s decay)
+```
+
+**Files**: `components/parameter-controls.js`
+
+**Acceptance Criteria**:
+- ✓ Tooltip appears on splash button hover
+- ✓ Tooltip explains what splash does (applies perturbation)
+- ✓ Tooltip states which values are affected (amplitude, frequency)
+- ✓ Tooltip includes usage instructions (hold, release, timing)
+- ✓ Tooltip styling consistent with app design
+- ✓ No tooltip text overflow or layout issues
+
+**Verification**:
+- Hover over splash button → tooltip appears
+- Read tooltip content - explains functionality clearly
+- Verify styling matches other tooltips in app
+- Check responsive behavior on different screen sizes
 
 ---
 
