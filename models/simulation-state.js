@@ -5,9 +5,12 @@
 class SimulationState extends window.EventEmitter {
   constructor() {
     super();
-    this.dt = 0.05;
+    this.dt = 0.05;  // Default dt for OU process calculations
     this.amplitude = 1.0;
     this.dataCollector = new window.DataCollector(400);
+    this.debugLog = [];  // Debug log for 0.1-second snapshots
+    this.lastLogTime = -0.1;  // Force log at t=0
+    this.isRecording = false;  // Recording state (only log when true)
     this.reset();
   }
 
@@ -17,7 +20,12 @@ class SimulationState extends window.EventEmitter {
    */
   reset(params = {}) {
     this.time = 0;
+    this.startTime = null;  // Wall-clock start time (set on first step)
+    this.lastRealTime = null;  // Last wall-clock time (for dt calculation)
+    this.pauseStartTime = null;  // Track when pause started
     this.initialized = false;
+    this.debugLog = [];  // Clear debug log on reset
+    this.lastLogTime = -0.1;  // Force log at t=0
 
     const freq = params.frequency || 0.5;
     const waveType = params.waveType || 'sine';
@@ -45,10 +53,48 @@ class SimulationState extends window.EventEmitter {
   }
 
   /**
+   * Pause simulation (called when user pauses)
+   * Stores pause start time to skip over paused duration on resume
+   */
+  pause() {
+    this.pauseStartTime = performance.now();
+  }
+
+  /**
+   * Resume simulation (called when user resumes after pause)
+   * Adjusts startTime and lastRealTime to account for paused duration
+   */
+  resume() {
+    if (this.pauseStartTime !== null && this.startTime !== null) {
+      const now = performance.now();
+      const pauseDuration = now - this.pauseStartTime;
+      // Shift startTime forward by pause duration to skip over paused time
+      this.startTime += pauseDuration;
+      // Also update lastRealTime to prevent huge dt on first step after resume
+      this.lastRealTime = now;
+      this.pauseStartTime = null;
+    }
+  }
+
+  /**
    * Execute one simulation step
    * @param {Object} params - Scaled parameters from ParameterModel
    */
   step(params) {
+    // Real-time synchronization: use wall-clock time
+    const now = performance.now();
+    if (this.startTime === null) {
+      this.startTime = now;
+      this.lastRealTime = now;
+    }
+
+    // Calculate elapsed real time since simulation start
+    this.time = (now - this.startTime) / 1000;  // Convert ms to seconds
+
+    // Calculate dt (time since last frame) for physics calculations
+    const dt = this.lastRealTime ? (now - this.lastRealTime) / 1000 : this.dt;
+    this.lastRealTime = now;
+
     // Compute clean analytical wave state (reference trajectory)
     const analyticalPosition = window.WaveSimulator.getWavePosition(
       this.time, params.waveType, params.frequency, this.amplitude * params.scale
@@ -63,7 +109,6 @@ class SimulationState extends window.EventEmitter {
     // Ornstein-Uhlenbeck process for bounded perturbations
     const alpha = window.Config.OU_ALPHA;
     const sigma = params.jitter;
-    const dt = this.dt;
 
     // Update OU position perturbation (mean-reverting random walk)
     const posDecay = Math.exp(-alpha * dt);
@@ -123,7 +168,6 @@ class SimulationState extends window.EventEmitter {
         positionErrors: Math.abs(this.truePosition - ekfState[0])
       });
 
-      this.time += dt;
       this.emit('state-changed', this.dataCollector.getData());
       return;
     }
@@ -143,7 +187,9 @@ class SimulationState extends window.EventEmitter {
     const innovation = this.ekf.getInnovation();
     const kalmanGain = this.ekf.getKalmanGain();
 
-    // Process model: Start from last EKF estimate + one integration step with measured accel
+    // Process model: Sync with EKF velocity to prevent unbounded drift
+    // Then integrate forward one step with measured acceleration
+    this.processVelocity = ekfState[1];  // Sync to EKF's corrected velocity
     this.processVelocity += inertialMeasurement * dt;
     const processPosition = ekfState[0] + this.processVelocity * dt;
 
@@ -166,16 +212,81 @@ class SimulationState extends window.EventEmitter {
       positionErrors: Math.abs(this.truePosition - ekfState[0])
     });
 
-    this.time += dt;
+    // Debug logging every 0.1 seconds (only when recording)
+    if (this.isRecording && this.time - this.lastLogTime >= 0.1) {
+      this.lastLogTime = this.time;
+      const logEntry = {
+        time: this.time,
+        dt: dt,
+        // True state
+        truePosition: this.truePosition,
+        trueVelocity: this.trueVelocity,
+        trueAccel: this.trueAccel,
+        // Measurements
+        probeMeasurement: probeMeasurement,
+        inertialMeasurement: inertialMeasurement,
+        // Process model
+        processPosition: processPosition,
+        processVelocity: this.processVelocity,
+        // EKF estimates
+        ekfPosition: ekfState[0],
+        ekfVelocity: ekfState[1],
+        // EKF internals
+        innovation: innovation,
+        kalmanGainPos: kalmanGain[0],
+        kalmanGainVel: kalmanGain[1],
+        posUncertainty: this.ekf.getPositionUncertainty(),
+        velUncertainty: this.ekf.getVelocityUncertainty(),
+        // Errors
+        ekfPosError: Math.abs(this.truePosition - ekfState[0]),
+        processPosError: Math.abs(this.truePosition - processPosition),
+        // Parameters (for reference)
+        params: {
+          frequency: params.frequency,
+          waveType: params.waveType,
+          scale: params.scale,
+          jitter: params.jitter,
+          trueInertialNoise: params.trueInertialNoise,
+          trueInertialBias: params.trueInertialBias,
+          trueProbeNoise: params.trueProbeNoise,
+          trueProbeBias: params.trueProbeBias,
+          ekfProcessNoise: params.ekfProcessNoise,
+          ekfInertialBias: params.ekfInertialBias,
+          ekfProbeNoise: params.ekfProbeNoise,
+          ekfProbeBias: params.ekfProbeBias
+        }
+      };
+      this.debugLog.push(logEntry);
+      console.log(`[DEBUG t=${this.time.toFixed(1)}s]`, logEntry);
+    }
+
     this.emit('state-changed', this.dataCollector.getData());
   }
 
   /**
-   * Get all time-series data
+   * Get all time-series data (legacy method - returns full history)
    * @returns {Object} All data arrays
    */
   getDataArrays() {
     return this.dataCollector.getData();
+  }
+
+  /**
+   * Get viewport window of data for rendering
+   * @param {number|null} endIndex - End index (null = live mode)
+   * @returns {Object} Viewport data with metadata
+   */
+  getViewportData(endIndex = null) {
+    return this.dataCollector.getViewportData(endIndex);
+  }
+
+  /**
+   * Clear all historical data
+   * Used for long-running simulations to free memory
+   */
+  clearHistory() {
+    this.dataCollector.clearHistory();
+    this.emit('history-cleared');
   }
 
   /**
@@ -191,6 +302,61 @@ class SimulationState extends window.EventEmitter {
       trueAccel: this.trueAccel,
       dataPointsCount: this.dataCollector.getLength()
     };
+  }
+
+  /**
+   * Get debug log (0.1-second interval snapshots)
+   * @returns {Array} Debug log entries
+   */
+  getDebugLog() {
+    return this.debugLog;
+  }
+
+  /**
+   * Export debug log as JSON (for analysis)
+   * @returns {string} JSON string of debug log
+   */
+  exportDebugLog() {
+    return JSON.stringify(this.debugLog, null, 2);
+  }
+
+  /**
+   * Start recording debug snapshots
+   * Clears existing log and begins collecting data
+   */
+  startRecording() {
+    this.isRecording = true;
+    this.debugLog = [];  // Clear previous recording
+    this.lastLogTime = this.time - 0.1;  // Force immediate log on next interval
+  }
+
+  /**
+   * Stop recording debug snapshots
+   */
+  stopRecording() {
+    this.isRecording = false;
+  }
+
+  /**
+   * Check if currently recording
+   * @returns {boolean} True if recording
+   */
+  getIsRecording() {
+    return this.isRecording;
+  }
+
+  /**
+   * Download debug log as JSON file
+   */
+  downloadDebugLog() {
+    const json = this.exportDebugLog();
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ekf-debug-log-${new Date().toISOString()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }
 

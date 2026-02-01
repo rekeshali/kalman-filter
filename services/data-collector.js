@@ -1,13 +1,14 @@
 /**
- * Manages time-series data arrays with windowing
- * Implements sliding window of last N points for all 13 datasets
+ * Manages time-series data arrays with viewport windowing
+ * Stores unlimited historical data, provides viewport windows for rendering
  */
 class DataCollector {
   /**
-   * @param {number} maxPoints - Maximum points to keep (sliding window size)
+   * @param {number} viewportSize - Number of points to show in viewport (default: 400)
    */
-  constructor(maxPoints = 400) {
-    this.maxPoints = maxPoints;
+  constructor(viewportSize = 400) {
+    this.viewportSize = viewportSize;
+    this.maxHistoryPoints = viewportSize * 10;  // Limit history to 10x viewport (4000 points)
     this.reset();
   }
 
@@ -36,6 +37,7 @@ class DataCollector {
 
   /**
    * Add a new data point to all arrays
+   * Implements FIFO trimming at 10x viewport size (4000 points)
    * @param {Object} point - Data point with keys matching data arrays
    */
   addPoint(point) {
@@ -46,27 +48,18 @@ class DataCollector {
       }
     });
 
-    // Trim to maintain window size
-    this.trim();
+    // FIFO trimming: drop oldest data if exceeding limit
+    const currentLength = this.data.times.length;
+    if (currentLength > this.maxHistoryPoints) {
+      const trimCount = currentLength - this.maxHistoryPoints;
+      Object.keys(this.data).forEach(key => {
+        this.data[key].splice(0, trimCount);  // Remove oldest entries
+      });
+    }
   }
 
   /**
-   * Trim all arrays to maxPoints
-   * @returns {number} Number of points removed
-   */
-  trim() {
-    let removed = 0;
-    Object.keys(this.data).forEach(key => {
-      while (this.data[key].length > this.maxPoints) {
-        this.data[key].shift();
-        removed++;
-      }
-    });
-    return removed;
-  }
-
-  /**
-   * Get all data arrays
+   * Get all data arrays (legacy method - returns full history)
    * @returns {Object} Copy of all data arrays
    */
   getData() {
@@ -76,6 +69,44 @@ class DataCollector {
       result[key] = [...this.data[key]];
     });
     return result;
+  }
+
+  /**
+   * Get a viewport window of data for rendering
+   * @param {number|null} endIndex - End index (null = "live mode", show latest data)
+   * @returns {Object} Viewport data with metadata
+   */
+  getViewportData(endIndex = null) {
+    const totalPoints = this.data.times.length;
+
+    // endIndex = null means "live mode" (show latest viewportSize points)
+    // endIndex = number means "historical mode" (show viewportSize points ending at endIndex)
+    const end = endIndex === null ? totalPoints : Math.min(endIndex, totalPoints);
+    const start = Math.max(0, end - this.viewportSize);
+
+    // Extract viewport slice from each array
+    const viewportData = {};
+    Object.keys(this.data).forEach(key => {
+      viewportData[key] = this.data[key].slice(start, end);
+    });
+
+    return {
+      data: viewportData,
+      start: start,
+      end: end,
+      total: totalPoints,
+      isLive: endIndex === null
+    };
+  }
+
+  /**
+   * Clear all historical data
+   * Used for long-running simulations to free memory
+   */
+  clearHistory() {
+    Object.keys(this.data).forEach(key => {
+      this.data[key] = [];
+    });
   }
 
   /**
