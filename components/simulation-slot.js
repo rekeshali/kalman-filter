@@ -118,10 +118,10 @@ function SimulationSlot({ id, name, isActive, onRename, onReset, onClick }) {
           </button>
           <button
             onClick={handleResetClick}
-            className="text-gray-400 hover:text-yellow-400 text-lg transition-colors flex items-center justify-center w-6 h-6"
+            className="text-gray-400 hover:text-red-400 text-lg transition-colors flex items-center justify-center w-6 h-6"
             title="Reset simulation and name"
           >
-            ↺
+            ✕
           </button>
         </>
       )}
