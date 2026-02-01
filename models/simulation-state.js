@@ -61,7 +61,7 @@ class SimulationState extends window.EventEmitter {
 
   /**
    * Resume simulation (called when user resumes after pause)
-   * Adjusts startTime to account for paused duration
+   * Adjusts startTime and lastRealTime to account for paused duration
    */
   resume() {
     if (this.pauseStartTime !== null && this.startTime !== null) {
@@ -69,6 +69,8 @@ class SimulationState extends window.EventEmitter {
       const pauseDuration = now - this.pauseStartTime;
       // Shift startTime forward by pause duration to skip over paused time
       this.startTime += pauseDuration;
+      // Also update lastRealTime to prevent huge dt on first step after resume
+      this.lastRealTime = now;
       this.pauseStartTime = null;
     }
   }
