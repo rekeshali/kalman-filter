@@ -37,7 +37,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 36 (EKF flowchart math tooltips) → 2. ⏸️ Item 35 (backlog)
+**Priority**: 1. ❌ Item 36 (EKF flowchart math tooltips) → 2. ⏸️ Item 35 (backlog) → 3. ⏸️ Item 37 (backlog)
 
 ---
 
@@ -102,6 +102,38 @@
 - Hover over nodes and verify tooltip content
 - Check accuracy of mathematical expressions
 - Verify responsive behavior on mobile
+
+---
+
+### Item 37: Flowchart Tab Icons Highlight Color in Banner ❌
+**Branch**: `feat/flowchart-tab-icons-highlight`
+
+**Change**: Update flowchart tab icons in title banner to highlight to white when active/selected while maintaining their colored borders
+
+**Scope**: EKF flowchart component tab icons in header banner
+
+**Design**:
+- Active/selected tab icons: white background fill
+- Preserve colored border for each icon (original color)
+- Inactive tab icons: maintain current styling
+- Ensure visual consistency with selected state
+
+**Files**: `components/ekf-flowchart.js` or tab icon component
+
+**Acceptance Criteria**:
+- ✓ Active tab icon shows white fill
+- ✓ Colored borders remain visible on all states
+- ✓ Inactive tabs remain unchanged
+- ✓ Visual hierarchy is clear (active vs inactive)
+- ✓ Color contrast meets accessibility standards
+- ✓ Responsive on desktop/tablet/mobile
+
+**Verification**:
+- Click through flowchart tabs
+- Verify active icon has white fill
+- Confirm colored borders are preserved
+- Check inactive state styling
+- Test on mobile breakpoints
 
 ---
 
