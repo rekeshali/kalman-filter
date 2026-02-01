@@ -40,14 +40,31 @@ Wave = custom icon + gradient overlay; others = "Coming Soon"
 ### Item 21: Splash Hold-to-Sustain ❌
 **Branch**: `feat/splash-hold`
 
-**Envelope**: 1s half-sin ramp up → sustain at 1 → 1s half-sin ramp down
-- **Click**: full bump (up→down)
-- **Hold**: sustain until release or 6s timeout
-- **Animation**: progress bar fills left→right (6s), same blue
+**UI**: Single wide button replaces both ≋ buttons, fills row
+```
+┌─────────────────────────────────────┐
+│ ≋ SPLASH ████████░░░░░░░░░░░░░░░░░░ │  ← blue progress bar
+└─────────────────────────────────────┘
+```
+
+**Envelope** (half-sin):
+- Ramp up: `sin(π/2 × t/1s)` — 0→1 over 1s
+- Sustain: hold at 1 while pressed (max 6s)
+- Ramp down: `cos(π/2 × t/1s)` — 1→0 over 1s
+
+**State Machine**:
+```
+idle →[press]→ rampUp →[1s]→ sustain →[release|6s]→ rampDown →[1s]→ idle
+```
+
+**Events**:
+- `onPointerDown` → `startSplash()`
+- `onPointerUp/Leave` → `releaseSplash()`
+- animation frame → `updateSplash()` returns progress %
 
 **Files**: `components/parameter-controls.js`, `controllers/simulation-controller.js`
 
-**Done when**: Wide button, hold sustains, bar animates, auto-cutoff at 6s
+**Done when**: Wide button, hold sustains, bar animates (6s), auto-cutoff, smooth envelope
 
 ---
 
