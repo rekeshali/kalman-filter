@@ -44,7 +44,7 @@
 
 ## Remaining Tasks
 
-**Priority**: Only Item 35 remains - all enhancement items complete!
+**Priority**: 1. ❌ Item 35 (final polish) → 2. ⏸️ Item 43 (simple wave icon) → 3. ⏸️ Item 44 (simulation tab names)
 
 ---
 
@@ -92,6 +92,59 @@ BUG-13: Playback controls box missing bubble gradient — added dark gradient st
 **Previous Fixed**
 BUG-1→12: scroll, reset, tick labels, tab switch, button size, slot switch, white bubble, all charts ticks, wheel zoom, GIF grid layout, splash progress bar, slot name update
 (`08b94ac`, `5682d7c`, `98b6186`, `1745f53`, `0d9b12a`, `db3e1d8`, `c2ccd8b`, `e4d0fb5`, `5c21c95`, `f8f082d`, `c06668e`, `0433730`)
+
+### Item 43: Replace Simple Wave Icon ⏸️
+**Branch**: `feat/simple-wave-icon-replacement`
+
+**Change**: Replace the current simple wave icon with a new user-provided image
+
+**Scope**: Icon asset replacement in simulation UI
+
+**Design**:
+- User to provide new icon image file
+- Replace existing simple wave icon with new asset
+- Maintain consistent sizing and styling with other icons
+
+**Files**: Icon asset file (location TBD based on current structure)
+
+**Acceptance Criteria**:
+- ✓ New icon image asset provided by user
+- ✓ Icon successfully replaced in all locations where simple wave icon appears
+- ✓ Icon size and spacing consistent with other UI icons
+- ✓ Visual quality maintained at all resolutions
+
+**Verification**:
+- View simple wave simulation tab and confirm new icon is displayed
+- Check icon visibility at desktop/tablet/mobile
+- Verify no broken image references
+
+---
+
+### Item 44: Rename Default Simulation Tab Names ⏸️
+**Branch**: `feat/simulation-tab-naming`
+
+**Change**: Update default simulation tab names from "Simulation 1/2/3" to "Wave Simulation 1/2/3"
+
+**Scope**: Simulation slot UI text labels
+
+**Design**:
+- Change tab name format from "Simulation N" to "Wave Simulation N"
+- Apply consistently across all simulation slots
+- Maintain existing styling and layout
+
+**Files**: Likely `components/simulation-slot.js` or related slot-naming components
+
+**Acceptance Criteria**:
+- ✓ Default tab names changed to "Wave Simulation 1/2/3" format
+- ✓ Changes applied to all simulation slots
+- ✓ Text remains readable and properly styled
+- ✓ Layout maintains proper spacing with updated names
+- ✓ Custom simulation names (if user renames slots) still work independently
+
+**Verification**:
+- View all three simulation slots for simple wave problem type
+- Verify each shows "Wave Simulation 1/2/3" labels
+- Check responsive layout at all breakpoints
 
 ---
 
