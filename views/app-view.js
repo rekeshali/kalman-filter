@@ -230,7 +230,15 @@ function EKFVisualization() {
   }, []);
 
   // Track drag state for custom pan handling
-  const dragStateRef = useRef({ isDragging: false, startX: 0, startPosition: 0 });
+  const dragStateRef = useRef({
+    isDragging: false,
+    startX: 0,
+    startPosition: 0,
+    lastX: 0,
+    lastTime: 0,
+    velocity: 0
+  });
+  const momentumRef = useRef({ animationId: null });
 
   // Custom drag handlers for timeline navigation (when paused)
   const handleChartMouseDown = (e) => {
@@ -239,10 +247,19 @@ function EKFVisualization() {
     const timelineInfo = controllerRef.current?.getTimelineInfo() || { position: 100, totalPoints: 0 };
     if (timelineInfo.totalPoints < 400) return;  // Need history to navigate
 
+    // Cancel any ongoing momentum animation
+    if (momentumRef.current.animationId) {
+      cancelAnimationFrame(momentumRef.current.animationId);
+      momentumRef.current.animationId = null;
+    }
+
     dragStateRef.current = {
       isDragging: true,
       startX: e.clientX,
-      startPosition: timelineInfo.position
+      startPosition: timelineInfo.position,
+      lastX: e.clientX,
+      lastTime: Date.now(),
+      velocity: 0
     };
   };
 
@@ -266,12 +283,70 @@ function EKFVisualization() {
 
     const newPosition = Math.max(0, Math.min(100, dragStateRef.current.startPosition + deltaPercent));
     controllerRef.current.handleTimelineChange(newPosition);
+
+    // Track velocity for momentum scrolling
+    const now = Date.now();
+    const timeDelta = now - dragStateRef.current.lastTime;
+    if (timeDelta > 0) {
+      const pixelDelta = e.clientX - dragStateRef.current.lastX;
+      dragStateRef.current.velocity = pixelDelta / timeDelta; // pixels per ms
+      dragStateRef.current.lastX = e.clientX;
+      dragStateRef.current.lastTime = now;
+    }
+  };
+
+  // Momentum animation with deceleration
+  const applyMomentum = (initialVelocity) => {
+    if (!controllerRef.current) return;
+    if (Math.abs(initialVelocity) < 0.1) return; // Too slow, skip momentum
+
+    let velocity = initialVelocity;
+    const friction = 0.92; // Deceleration factor (0-1, lower = more friction)
+    const minVelocity = 0.05; // Stop threshold
+
+    const animate = () => {
+      if (!controllerRef.current) return;
+
+      const timelineInfo = controllerRef.current.getTimelineInfo();
+      if (timelineInfo.totalPoints === 0) return;
+
+      // Apply velocity to position
+      const chartWidth = chartGridRef.current?.offsetWidth || 800;
+      const viewportPercent = 100 * (400 / timelineInfo.totalPoints);
+      const deltaPercent = -(velocity * 16 / chartWidth) * viewportPercent; // 16ms ~= one frame
+
+      const currentPosition = timelineInfo.position;
+      const newPosition = Math.max(0, Math.min(100, currentPosition + deltaPercent));
+
+      // Stop if hit boundary
+      if ((newPosition === 0 && deltaPercent < 0) || (newPosition === 100 && deltaPercent > 0)) {
+        momentumRef.current.animationId = null;
+        return;
+      }
+
+      controllerRef.current.handleTimelineChange(newPosition);
+
+      // Apply friction
+      velocity *= friction;
+
+      // Continue if velocity is above threshold
+      if (Math.abs(velocity) > minVelocity) {
+        momentumRef.current.animationId = requestAnimationFrame(animate);
+      } else {
+        momentumRef.current.animationId = null;
+      }
+    };
+
+    momentumRef.current.animationId = requestAnimationFrame(animate);
   };
 
   const handleChartMouseUp = (e) => {
     if (dragStateRef.current.isDragging) {
       dragStateRef.current.isDragging = false;
       e.target.style.cursor = 'grab';
+
+      // Apply momentum based on final velocity
+      applyMomentum(dragStateRef.current.velocity);
     }
   };
 
@@ -279,6 +354,9 @@ function EKFVisualization() {
     if (dragStateRef.current.isDragging) {
       dragStateRef.current.isDragging = false;
       e.target.style.cursor = '';
+
+      // Apply momentum when leaving chart area
+      applyMomentum(dragStateRef.current.velocity);
     }
   };
 
