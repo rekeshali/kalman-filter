@@ -55,8 +55,8 @@ function SimulationGrid({
         ))}
       </div>
 
-      {/* Add Column Button - to the right of columns */}
-      <button
+      {/* Add Column Button - HIDDEN (fixed to 3 slots per problem type) */}
+      {/* <button
         onClick={onAddColumn}
         className="flex-shrink-0 bg-gray-700 hover:bg-gray-600 rounded-lg text-2xl text-gray-300 hover:text-white transition-colors flex items-center justify-center shadow-md hover:shadow-lg"
         style={{
@@ -66,7 +66,7 @@ function SimulationGrid({
         title={`Add column (${columns} column${columns !== 1 ? 's' : ''}, ${slots.length} slots)`}
       >
         +
-      </button>
+      </button> */}
 
       {/* Optional content after + button (e.g., EKF flowchart) */}
       {children}
