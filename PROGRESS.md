@@ -37,7 +37,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 36 (EKF flowchart math tooltips) → 2. ⏸️ Item 35 (backlog) → 3. ⏸️ Item 37 (backlog) → 4. ⏸️ Item 38 (backlog)
+**Priority**: 1. ❌ Item 36 (EKF flowchart math tooltips) → 2. ⏸️ Item 35 (backlog) → 3. ⏸️ Item 37 (backlog) → 4. ⏸️ Item 38 (backlog) → 5. ⏸️ Item 39 (backlog)
 
 ---
 
@@ -168,6 +168,37 @@
 - Verify blue gradient on selected
 - Compare colors with existing Coming Soon and Simple Wave styling
 - Test on mobile/tablet/desktop
+
+---
+
+### Item 39: Expand "EKF" Acronym to "Extended Kalman Filter" in Title ❌
+**Branch**: `feat/expand-ekf-acronym-title`
+
+**Change**: Replace "EKF" acronym with full text "Extended Kalman Filter" in the section header/title
+
+**Scope**: Welcome/home page EKF flowchart section title
+
+**Design**:
+- Change title from "Extended Kalman Filter Block Diagram" or similar
+- Use full expanded form: "Extended Kalman Filter Block Diagram" (if not already expanded)
+- Or clarify exact current title and update accordingly
+- Maintain consistent formatting and styling
+
+**Files**: `components/welcome-screen.js` or `components/ekf-section.js` (wherever title is defined)
+
+**Acceptance Criteria**:
+- ✓ "EKF" replaced with "Extended Kalman Filter" in title
+- ✓ Title reads clearly and naturally
+- ✓ No acronyms in the title (unless user specifies otherwise)
+- ✓ Formatting and styling unchanged
+- ✓ Responsive on all breakpoints
+- ✓ Consistent with other section titles
+
+**Verification**:
+- View welcome page
+- Check section title displays "Extended Kalman Filter" (no EKF acronym)
+- Verify styling and layout intact
+- Test on desktop/tablet/mobile
 
 ---
 
