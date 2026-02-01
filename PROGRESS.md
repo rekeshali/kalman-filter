@@ -28,14 +28,15 @@
 | 30 | Simulation tab horizontal margins (px-24) | `9abe87c`, `e036eaa` |
 | 31 | Chart bubble with dark gradient (gray-to-navy) | `6dc9e1c`, `0863d77`, `e6c7b71` |
 | 32 | Welcome page Kalman section reorganization (diagram first) | `80660c2`, `b053664`, `c0ff81c` |
+| 33 | Banner gradients & black slot/flowchart styling | `7249b0b`, `500215b`, `5a5ba56`, `9e13f37` |
 
-**Merges**: `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 33 → 2. ❌ Item 34 → 3. ❌ Item 35
+**Priority**: 1. ❌ Item 34 → 2. ❌ Item 35
 
 ---
 
@@ -92,32 +93,6 @@
 - Confirm diagram label is now a section header
 - Check layout and visual hierarchy
 - Verify all content is accessible and readable
-
----
-
-### Item 33: Recolor "Ready to Explore" Banner with Gradient ❌
-**Branch**: `feat/banner-gradient`
-
-**Change**: Add gradient styling to the "Ready to Explore" banner section
-
-**Scope**: Apply a visually appealing gradient background to the banner/hero section
-
-**Design**: Dark gradient similar to Item 31 (gray-to-navy) or alternative color scheme
-
-**Files**: Welcome/home page banner component (likely `views/welcome.js` or `components/banner.js`)
-
-**Acceptance Criteria**:
-- ✓ Gradient applied to "Ready to Explore" banner
-- ✓ Text remains readable on gradient background
-- ✓ Gradient colors are visually cohesive with overall design
-- ✓ Responsive layout maintained at all breakpoints
-- ✓ Visual hierarchy preserved
-
-**Verification**:
-- View banner on desktop/tablet/mobile
-- Check text contrast and readability
-- Verify gradient appearance and color blend
-- Test responsiveness
 
 ---
 
