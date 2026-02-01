@@ -6,11 +6,14 @@
 /**
  * Get icon path for a problem type
  * @param {string} problemTypeId - Problem type ID
+ * @param {boolean} isActive - Whether the problem type is currently selected
  * @returns {string|null} Icon path or null
  */
-function getProblemTypeIconPath(problemTypeId) {
+function getProblemTypeIconPath(problemTypeId, isActive) {
   const iconMap = {
-    'simple-wave': 'assets/icons/problem-types/wave_problem_icon.png',
+    'simple-wave': isActive
+      ? 'assets/icons/problem-types/wave_problem_icon_light.png'
+      : 'assets/icons/problem-types/wave_problem_icon.png',
     'placeholder': 'assets/icons/problem-types/under_construction.png'
   };
   return iconMap[problemTypeId] || null;
@@ -28,7 +31,7 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
     <div className="grid grid-cols-2 gap-3 w-64">
       {problemTypes.map(type => {
         const isActive = type.id === activeProblemTypeId;
-        const iconPath = getProblemTypeIconPath(type.id);
+        const iconPath = getProblemTypeIconPath(type.id, isActive);
 
         // Conditional gradient: blue if selected, gray if unselected
         const gradientColor = isActive ? '#3b82f6' : '#6b7280';  // blue-500 or gray-500
