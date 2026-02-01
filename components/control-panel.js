@@ -72,11 +72,7 @@ function ControlPanel({
         </button>
         <button
           onClick={onToggleRecording}
-          className={`w-12 h-12 text-white rounded-lg text-2xl flex items-center justify-center shadow-lg ${
-            isRecording
-              ? 'bg-green-700 hover:bg-green-600'
-              : 'bg-red-700 hover:bg-red-600'
-          }`}
+          className="w-12 h-12 bg-red-700 hover:bg-red-600 text-white rounded-lg text-2xl flex items-center justify-center shadow-lg"
           title={isRecording ? 'Stop Recording & Download' : 'Start Recording'}
         >
           {isRecording ? '↓' : '●'}

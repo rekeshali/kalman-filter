@@ -8,8 +8,8 @@ class SimulationState extends window.EventEmitter {
     this.dt = 0.05;  // Default dt for OU process calculations
     this.amplitude = 1.0;
     this.dataCollector = new window.DataCollector(400);
-    this.debugLog = [];  // Debug log for 0.5-second snapshots
-    this.lastLogTime = -0.5;  // Force log at t=0
+    this.debugLog = [];  // Debug log for 0.1-second snapshots
+    this.lastLogTime = -0.1;  // Force log at t=0
     this.isRecording = false;  // Recording state (only log when true)
     this.reset();
   }
@@ -25,7 +25,7 @@ class SimulationState extends window.EventEmitter {
     this.pauseStartTime = null;  // Track when pause started
     this.initialized = false;
     this.debugLog = [];  // Clear debug log on reset
-    this.lastLogTime = -0.5;  // Force log at t=0
+    this.lastLogTime = -0.1;  // Force log at t=0
 
     const freq = params.frequency || 0.5;
     const waveType = params.waveType || 'sine';
@@ -212,8 +212,8 @@ class SimulationState extends window.EventEmitter {
       positionErrors: Math.abs(this.truePosition - ekfState[0])
     });
 
-    // Debug logging every 0.5 seconds (only when recording)
-    if (this.isRecording && this.time - this.lastLogTime >= 0.5) {
+    // Debug logging every 0.1 seconds (only when recording)
+    if (this.isRecording && this.time - this.lastLogTime >= 0.1) {
       this.lastLogTime = this.time;
       const logEntry = {
         time: this.time,
@@ -305,7 +305,7 @@ class SimulationState extends window.EventEmitter {
   }
 
   /**
-   * Get debug log (0.5-second interval snapshots)
+   * Get debug log (0.1-second interval snapshots)
    * @returns {Array} Debug log entries
    */
   getDebugLog() {
@@ -327,7 +327,7 @@ class SimulationState extends window.EventEmitter {
   startRecording() {
     this.isRecording = true;
     this.debugLog = [];  // Clear previous recording
-    this.lastLogTime = this.time - 0.5;  // Force immediate log on next interval
+    this.lastLogTime = this.time - 0.1;  // Force immediate log on next interval
   }
 
   /**
