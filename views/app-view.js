@@ -571,7 +571,7 @@ function EKFVisualization() {
   return (
     <div className="flex flex-col h-screen bg-gray-900">
       {/* Header - Three Section Layout */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-gradient-to-r from-blue-900 to-purple-900 border-b border-blue-600">
         <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 px-24 py-4 items-center">
           {/* Left: Problem Type Selector */}
           <ProblemTypeSelector
