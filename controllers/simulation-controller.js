@@ -836,14 +836,13 @@ class SimulationController extends window.EventEmitter {
       return { position: 100, currentTime: 0, endTime: 0, totalPoints: 0 };
     }
 
-    // Get viewport data to match what charts are displaying
-    const viewportInfo = tabState.simulationState.getViewportData(this.viewportEndIndex);
-    const viewportTimes = viewportInfo.data.times;
-    const endTime = viewportTimes[viewportTimes.length - 1] || 0;
+    // Get full time range (total simulation time)
+    const fullTimes = dataCollector.data.times;
+    const endTime = fullTimes[fullTimes.length - 1] || 0;  // Total simulation time
 
-    let currentTime = endTime;
+    // Calculate current time based on viewport position
+    let currentTime = endTime;  // Default to end (live mode)
     if (this.viewportMode === 'historical' && this.viewportEndIndex !== null) {
-      const fullTimes = dataCollector.data.times;
       currentTime = fullTimes[Math.min(this.viewportEndIndex - 1, fullTimes.length - 1)] || 0;
     }
 

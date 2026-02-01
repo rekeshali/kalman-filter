@@ -211,7 +211,18 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              console.log('[X-AXIS TICK]', {
+                indexValue: v,
+                index,
+                tickCount: ticks.length,
+                actualTime,
+                currentTimeFromSlider: timelineInfo.currentTime,
+                endTimeFromSlider: timelineInfo.endTime
+              });
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Position', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -2, max: 2 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Wave Position Tracking', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
