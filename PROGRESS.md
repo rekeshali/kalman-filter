@@ -15,25 +15,15 @@
 | 17 | Header revamp: slot-based sims, problem type selector | `f4638fa` |
 | 19 | EKF flowchart component (vertical/horizontal) | `42328d3` |
 | 18 | GIF recording alongside JSON export | `31f1e3a`, `e4d0fb5` |
+| 20 | Problem type card icons + gradient overlay | `0648e27` |
 
-**Merges**: `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 20 → 2. ❌ Item 21 → 3. ❌ Item 22 → 4. ❌ Item 23 → 5. ❌ Item 24
-
----
-
-### Item 20: Problem Type Card Styling ❌
-**Branch**: `feat/problem-type-styling` (started, has wave icon)
-
-Wave = custom icon + gradient overlay; others = "Coming Soon"
-
-**Files**: `components/problem-type-selector.js`, `assets/icons/problem-types/`
-
-**Done when**: Cards have icons with gradient overlay, selection unchanged
+**Priority**: 1. ❌ Item 21 → 2. ❌ Item 22 → 3. ❌ Item 23 → 4. ❌ Item 24
 
 ---
 
