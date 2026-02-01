@@ -21,6 +21,7 @@ class SimulationState extends window.EventEmitter {
     this.time = 0;
     this.startTime = null;  // Wall-clock start time (set on first step)
     this.lastRealTime = null;  // Last wall-clock time (for dt calculation)
+    this.pauseStartTime = null;  // Track when pause started
     this.initialized = false;
     this.debugLog = [];  // Clear debug log on reset
     this.lastLogTime = -0.5;  // Force log at t=0
@@ -48,6 +49,28 @@ class SimulationState extends window.EventEmitter {
     this.dataCollector.reset();
 
     this.emit('reset');
+  }
+
+  /**
+   * Pause simulation (called when user pauses)
+   * Stores pause start time to skip over paused duration on resume
+   */
+  pause() {
+    this.pauseStartTime = performance.now();
+  }
+
+  /**
+   * Resume simulation (called when user resumes after pause)
+   * Adjusts startTime to account for paused duration
+   */
+  resume() {
+    if (this.pauseStartTime !== null && this.startTime !== null) {
+      const now = performance.now();
+      const pauseDuration = now - this.pauseStartTime;
+      // Shift startTime forward by pause duration to skip over paused time
+      this.startTime += pauseDuration;
+      this.pauseStartTime = null;
+    }
   }
 
   /**

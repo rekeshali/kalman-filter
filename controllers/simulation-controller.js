@@ -399,6 +399,9 @@ class SimulationController extends window.EventEmitter {
       const params = tabState.parameterModel.getScaledParameters();
       tabState.simulationState.reset(params);
       this._clearAllCharts();
+    } else {
+      // Resume from pause - adjust startTime to skip paused duration
+      tabState.simulationState.resume();
     }
 
     tabState.isRunning = true;
@@ -412,6 +415,9 @@ class SimulationController extends window.EventEmitter {
   pause() {
     const tabState = this._getCurrentTabState();
     if (!tabState || !tabState.isRunning) return;
+
+    // Notify simulation state that we're pausing (tracks pause start time)
+    tabState.simulationState.pause();
 
     tabState.isRunning = false;
     this.emit('running-changed', false);
@@ -689,12 +695,15 @@ class SimulationController extends window.EventEmitter {
       return { position: 100, currentTime: 0, endTime: 0, totalPoints: 0 };
     }
 
-    const times = dataCollector.data.times;
-    const endTime = times[times.length - 1] || 0;
+    // Get viewport data to match what charts are displaying
+    const viewportInfo = tabState.simulationState.getViewportData(this.viewportEndIndex);
+    const viewportTimes = viewportInfo.data.times;
+    const endTime = viewportTimes[viewportTimes.length - 1] || 0;
 
     let currentTime = endTime;
     if (this.viewportMode === 'historical' && this.viewportEndIndex !== null) {
-      currentTime = times[Math.min(this.viewportEndIndex - 1, times.length - 1)] || 0;
+      const fullTimes = dataCollector.data.times;
+      currentTime = fullTimes[Math.min(this.viewportEndIndex - 1, fullTimes.length - 1)] || 0;
     }
 
     return {
