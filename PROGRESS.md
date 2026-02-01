@@ -18,6 +18,7 @@
 | 20 | Problem type card icons + gradient overlay | `0648e27` |
 | 22 | Limit to 3 simulation slots per problem type | `8fde1a2` |
 | 23 | Unify highlight color to blue-500 across tabs | `b8a4b8e` |
+| 25 | Simulation slot hover highlight enhancement | `e36394e`, `a82dc5c` |
 
 **Merges**: `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
@@ -25,7 +26,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 21 → 2. ❌ Item 24 → 3. ❌ Item 25
+**Priority**: 1. ❌ Item 21 → 2. ❌ Item 24
 
 ---
 
@@ -100,31 +101,6 @@ idle →[press]→ rampUp →[1s]→ sustain →[release|6s]→ rampDown →[1s]
 - Change parameters → click ✕ → all parameters reset to defaults
 - Observe charts update immediately
 - Confirm ✕ icon displays and ↺ is not visible
-
----
-
-### Item 25: Simulation Tab Hover Highlight ❌
-**Branch**: `feat/slot-hover-highlight`
-
-**Change**: Add hover highlight to simulation slots matching the old + button hover state
-
-**Current State**:
-- Inactive slots: `bg-gray-700` with `hover:bg-gray-650`
-- Hover should provide stronger visual feedback
-
-**Files**: `components/simulation-slot.js`
-
-**Acceptance Criteria**:
-- ✓ Inactive slot shows subtle background color change on hover
-- ✓ Hover state is visually distinct from inactive state
-- ✓ Hover state does not conflict with active state styling
-- ✓ Consistent with old + button hover appearance
-- ✓ Smooth transition animation
-
-**Verification**:
-- Hover over inactive simulation slots → background highlights
-- Active slot hover state unchanged
-- Visual feedback is clear and consistent
 
 ---
 
