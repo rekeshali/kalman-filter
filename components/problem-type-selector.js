@@ -31,6 +31,7 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
     <div className="grid grid-cols-2 gap-3 w-64">
       {problemTypes.map(type => {
         const isActive = type.id === activeProblemTypeId;
+        const isPlaceholder = type.id === 'placeholder';
         const iconPath = getProblemTypeIconPath(type.id, isActive);
 
         // Conditional gradient: blue if selected, gray if unselected
@@ -40,11 +41,13 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
           <div
             key={type.id}
             className={`
-              relative rounded-lg overflow-hidden cursor-pointer
+              relative rounded-lg overflow-hidden
               transition-all duration-200 border-2
-              ${isActive
-                ? 'border-blue-500 brightness-110 shadow-lg'
-                : 'border-gray-600 hover:border-gray-400 hover:scale-102 shadow-md'
+              ${isPlaceholder
+                ? 'cursor-not-allowed opacity-60 border-gray-700'
+                : isActive
+                  ? 'cursor-pointer border-blue-500 brightness-110 shadow-lg'
+                  : 'cursor-pointer border-gray-600 hover:border-gray-400 hover:scale-102 shadow-md'
               }
             `}
             style={{
@@ -54,7 +57,7 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
               backgroundSize: 'cover',
               backgroundPosition: 'center'
             }}
-            onClick={() => onProblemTypeChange(type.id)}
+            onClick={isPlaceholder ? undefined : () => onProblemTypeChange(type.id)}
           >
             {/* Gradient overlay for depth and readability */}
             <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-transparent to-black/50 pointer-events-none" />
