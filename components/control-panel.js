@@ -7,6 +7,7 @@
  * ControlPanel - Control buttons and timeline for simulation
  * @param {Object} props
  * @param {boolean} props.isRunning - Whether simulation is running
+ * @param {boolean} props.isRecording - Whether debug logging is active
  * @param {number} props.timelinePosition - Current timeline position (0-100 percentage)
  * @param {number} props.currentTime - Current viewing time in seconds
  * @param {number} props.endTime - Total simulation duration in seconds
@@ -15,11 +16,12 @@
  * @param {Function} props.onPause - Pause handler
  * @param {Function} props.onReset - Reset handler
  * @param {Function} props.onRestart - Restart handler
- * @param {Function} props.onRecord - Record/download debug log handler
+ * @param {Function} props.onToggleRecording - Toggle recording handler
  * @param {Function} props.onTimelineChange - Timeline slider change handler
  */
 function ControlPanel({
   isRunning,
+  isRecording = false,
   timelinePosition = 100,
   currentTime = 0,
   endTime = 0,
@@ -28,7 +30,7 @@ function ControlPanel({
   onPause,
   onReset,
   onRestart,
-  onRecord,
+  onToggleRecording,
   onTimelineChange
 }) {
   return (
@@ -69,11 +71,15 @@ function ControlPanel({
           ↻
         </button>
         <button
-          onClick={onRecord}
-          className="w-12 h-12 bg-red-700 text-white rounded-lg hover:bg-red-600 text-2xl flex items-center justify-center shadow-lg"
-          title="Download Debug Log"
+          onClick={onToggleRecording}
+          className={`w-12 h-12 text-white rounded-lg text-2xl flex items-center justify-center shadow-lg ${
+            isRecording
+              ? 'bg-green-700 hover:bg-green-600'
+              : 'bg-red-700 hover:bg-red-600'
+          }`}
+          title={isRecording ? 'Stop Recording & Download' : 'Start Recording'}
         >
-          ●
+          {isRecording ? '↓' : '●'}
         </button>
       </div>
 

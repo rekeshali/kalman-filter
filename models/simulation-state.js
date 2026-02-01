@@ -10,6 +10,7 @@ class SimulationState extends window.EventEmitter {
     this.dataCollector = new window.DataCollector(400);
     this.debugLog = [];  // Debug log for 0.5-second snapshots
     this.lastLogTime = -0.5;  // Force log at t=0
+    this.isRecording = false;  // Recording state (only log when true)
     this.reset();
   }
 
@@ -211,8 +212,8 @@ class SimulationState extends window.EventEmitter {
       positionErrors: Math.abs(this.truePosition - ekfState[0])
     });
 
-    // Debug logging every 0.5 seconds
-    if (this.time - this.lastLogTime >= 0.5) {
+    // Debug logging every 0.5 seconds (only when recording)
+    if (this.isRecording && this.time - this.lastLogTime >= 0.5) {
       this.lastLogTime = this.time;
       const logEntry = {
         time: this.time,
@@ -317,6 +318,31 @@ class SimulationState extends window.EventEmitter {
    */
   exportDebugLog() {
     return JSON.stringify(this.debugLog, null, 2);
+  }
+
+  /**
+   * Start recording debug snapshots
+   * Clears existing log and begins collecting data
+   */
+  startRecording() {
+    this.isRecording = true;
+    this.debugLog = [];  // Clear previous recording
+    this.lastLogTime = this.time - 0.5;  // Force immediate log on next interval
+  }
+
+  /**
+   * Stop recording debug snapshots
+   */
+  stopRecording() {
+    this.isRecording = false;
+  }
+
+  /**
+   * Check if currently recording
+   * @returns {boolean} True if recording
+   */
+  getIsRecording() {
+    return this.isRecording;
   }
 
   /**

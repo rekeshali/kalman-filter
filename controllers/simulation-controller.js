@@ -626,14 +626,36 @@ class SimulationController extends window.EventEmitter {
   }
 
   /**
-   * Download debug log as JSON file
-   * Triggers browser download of 0.5-second interval snapshots
+   * Toggle recording state
+   * If not recording: start recording (clears log)
+   * If recording: stop recording and download log file
    */
-  downloadDebugLog() {
+  toggleRecording() {
     const tabState = this._getCurrentTabState();
     if (!tabState) return;
 
-    tabState.simulationState.downloadDebugLog();
+    const isRecording = tabState.simulationState.getIsRecording();
+
+    if (isRecording) {
+      // Stop recording and download
+      tabState.simulationState.stopRecording();
+      tabState.simulationState.downloadDebugLog();
+      this.emit('recording-changed', false);
+    } else {
+      // Start recording (clears previous log)
+      tabState.simulationState.startRecording();
+      this.emit('recording-changed', true);
+    }
+  }
+
+  /**
+   * Check if currently recording
+   * @returns {boolean} True if recording
+   */
+  getIsRecording() {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return false;
+    return tabState.simulationState.getIsRecording();
   }
 
   /**

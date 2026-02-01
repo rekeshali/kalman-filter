@@ -26,6 +26,7 @@ function EKFVisualization() {
   const [tabs, setTabs] = useState([{ id: 'welcome', name: 'Welcome', type: 'welcome' }]);
   const [activeTabId, setActiveTabId] = useState('welcome');
   const [isRunning, setIsRunning] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [parameters, setParameters] = useState({});
   const [timelineInfo, setTimelineInfo] = useState({ position: 100, currentTime: 0, endTime: 0, totalPoints: 0 });
 
@@ -104,6 +105,7 @@ function EKFVisualization() {
     setActiveTabId(controllerRef.current.getActiveTab() || 'welcome');
     setParameters(controllerRef.current.getAllParameters());
     setIsRunning(controllerRef.current.getIsRunning());
+    setIsRecording(controllerRef.current.getIsRecording());
 
     // Subscribe to controller events
     const unsubscribers = [];
@@ -125,6 +127,11 @@ function EKFVisualization() {
 
     unsubscribers.push(controllerRef.current.subscribe('running-changed', (running) => {
       setIsRunning(running);
+      forceUpdate();
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('recording-changed', (recording) => {
+      setIsRecording(recording);
       forceUpdate();
     }));
 
@@ -374,8 +381,8 @@ function EKFVisualization() {
     controllerRef.current.clearHistory();
   };
 
-  const handleRecord = () => {
-    controllerRef.current.downloadDebugLog();
+  const handleToggleRecording = () => {
+    controllerRef.current.toggleRecording();
   };
 
   const handleTimelineChange = (position) => {
@@ -418,6 +425,7 @@ function EKFVisualization() {
           <div className="flex-shrink-0 space-y-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', width: '320px'}}>
             <ControlPanel
               isRunning={isRunning}
+              isRecording={isRecording}
               timelinePosition={timelineInfo.position}
               currentTime={timelineInfo.currentTime}
               endTime={timelineInfo.endTime}
@@ -426,7 +434,7 @@ function EKFVisualization() {
               onPause={handlePause}
               onReset={handleReset}
               onRestart={handleRestart}
-              onRecord={handleRecord}
+              onToggleRecording={handleToggleRecording}
               onTimelineChange={handleTimelineChange}
             />
             <ParameterControls
