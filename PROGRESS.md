@@ -131,11 +131,11 @@ Replace pan gestures with a timeline slider control for navigating historical da
 - ✅ Downloads JSON file with 0.5s interval debug snapshots
 - ✅ Includes: true state, measurements, EKF/process estimates, errors, parameters
 
-### Item 11: Move Reset Button Before Play Button ❌
-**Status**: NOT STARTED
+### Item 11: Move Reset Button Before Play Button ✅
+**Commit**: `2413fc8`
 **File**: `components/control-panel.js`
-- ❌ Reorder buttons: Reset, Play, Pause, Restart, Record
-- ❌ Currently: Play, Pause, Reset, Restart, Record
+- ✅ Reordered buttons: Reset, Play, Pause, Restart, Record
+- ✅ Better UX: Reset clears state before Starting
 
 ### Item 12: Drag to Navigate History ❌
 **Status**: NOT STARTED
@@ -148,13 +148,23 @@ Replace pan gestures with a timeline slider control for navigating historical da
 - ❌ Only allow panning when simulation is paused
 - ❌ Keep zoom functionality (wheel/pinch) working
 
+### Item 13: Consistent Control Panel Width ❌
+**Status**: NOT STARTED
+**Feature**: All control panel boxes should have the same fixed width (304px)
+**Files**: `components/parameter-controls.js`
+- ❌ Currently: Playback Controls box has `width: 304px`, parameter boxes don't
+- ❌ Add `style={{width: '304px'}}` to Wave Parameters box
+- ❌ Add `style={{width: '304px'}}` to Inertial Sensor box
+- ❌ Add `style={{width: '304px'}}` to External Probe box
+- ❌ All boxes should be exactly wide enough for 5 buttons
+
 ---
 
 ## Remaining Tasks
 
 1. ❌ Item 9: Prevent scrolling below context window size
-2. ❌ Item 11: Move reset button before play button
-3. ❌ Item 12: Drag to navigate history (pan when paused)
+2. ❌ Item 12: Drag to navigate history (pan when paused)
+3. ❌ Item 13: Consistent control panel width (304px for all boxes)
 
 ---
 
@@ -172,6 +182,8 @@ Replace pan gestures with a timeline slider control for navigating historical da
 | `fa4666b` | Fix pause/play time jump (initial) | Item 8 |
 | `c5eb5de` | Fix pause/play: update lastRealTime on resume | Item 8 |
 | `31dd9f9` | Turn Clear button into Record button | Item 10 |
+| `1e9fe7a` | Update PROGRESS.md with Items 8, 10, 11, 12 | Documentation |
+| `2413fc8` | Move Reset button before Play button | Item 11 |
 
 ---
 
