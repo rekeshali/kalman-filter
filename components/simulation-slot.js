@@ -14,8 +14,9 @@ const { useState } = React;
  * @param {Function} props.onRename - Rename handler (newName)
  * @param {Function} props.onReset - Reset handler
  * @param {Function} props.onClick - Click handler
+ * @param {boolean} props.isPlaceholder - Whether this is a placeholder (Coming Soon) slot
  */
-function SimulationSlot({ id, name, isActive, onRename, onReset, onClick }) {
+function SimulationSlot({ id, name, isActive, onRename, onReset, onClick, isPlaceholder = false }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(name);
@@ -27,12 +28,16 @@ function SimulationSlot({ id, name, isActive, onRename, onReset, onClick }) {
 
   const handleDoubleClick = (e) => {
     e.stopPropagation();
-    setIsEditing(true);
+    if (!isPlaceholder) {
+      setIsEditing(true);
+    }
   };
 
   const handleEditClick = (e) => {
     e.stopPropagation();
-    setIsEditing(true);
+    if (!isPlaceholder) {
+      setIsEditing(true);
+    }
   };
 
   const handleEditBlur = () => {
@@ -69,22 +74,26 @@ function SimulationSlot({ id, name, isActive, onRename, onReset, onClick }) {
     setEditName(value);
   };
 
+  // Override display name for placeholder slots
+  const displayName = isPlaceholder ? 'Coming Soon' : name;
+
   return (
     <div
       className={`
-        relative flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
+        relative flex items-center gap-2 px-3 py-2 rounded-lg
         transition-all h-12 w-60
+        ${isPlaceholder ? 'cursor-default' : 'cursor-pointer'}
         ${isActive
           ? 'bg-gray-100 text-gray-900 border-2 border-blue-500 shadow-lg'
           : 'bg-black text-gray-300 hover:bg-gray-900 hover:border-gray-800 border-2 border-transparent'
         }
       `}
-      onClick={onClick}
+      onClick={isPlaceholder ? undefined : onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Editable name */}
-      {isEditing ? (
+      {isEditing && !isPlaceholder ? (
         <input
           type="text"
           value={editName}
@@ -100,14 +109,14 @@ function SimulationSlot({ id, name, isActive, onRename, onReset, onClick }) {
         <span
           className="flex-1 text-sm font-semibold tracking-wide truncate select-none"
           onDoubleClick={handleDoubleClick}
-          title={name}
+          title={displayName}
         >
-          {name}
+          {displayName}
         </span>
       )}
 
-      {/* Edit and Reset buttons (visible on hover, hidden when editing) */}
-      {isHovered && !isEditing && (
+      {/* Edit and Reset buttons (visible on hover, hidden when editing or placeholder) */}
+      {isHovered && !isEditing && !isPlaceholder && (
         <>
           <button
             onClick={handleEditClick}
