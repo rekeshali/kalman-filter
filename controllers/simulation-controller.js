@@ -1016,6 +1016,15 @@ class SimulationController extends window.EventEmitter {
    * @returns {boolean} Success
    */
   setActiveSlot(slotId) {
+    // Pause current slot if it's running (to track pause time for resume)
+    const currentSlotId = this.tabModel.getActiveSlotId();
+    if (currentSlotId && currentSlotId !== 'welcome') {
+      const currentSlotState = this.slotStates.get(currentSlotId);
+      if (currentSlotState && currentSlotState.isRunning) {
+        currentSlotState.simulationState.pause();
+      }
+    }
+
     const success = this.tabModel.setActiveSlot(slotId);
     if (!success) return false;
 
