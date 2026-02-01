@@ -30,6 +30,9 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
         const isActive = type.id === activeProblemTypeId;
         const iconPath = getProblemTypeIconPath(type.id);
 
+        // Conditional gradient: blue if selected, gray if unselected
+        const gradientColor = isActive ? '#3b82f6' : '#6b7280';  // blue-500 or gray-500
+
         return (
           <div
             key={type.id}
@@ -42,7 +45,7 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
               }
             `}
             style={{
-              backgroundColor: type.colorAccent,
+              backgroundColor: gradientColor,
               height: 'calc(3 * 3rem + 2 * 0.5rem)',  // 3 slots (h-12 = 3rem) + 2 gaps (gap-2 = 0.5rem)
               backgroundImage: iconPath ? `url('${iconPath}')` : 'none',
               backgroundSize: 'cover',
@@ -56,7 +59,7 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
             {/* Color gradient overlay - stronger at bottom */}
             <div
               className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-current opacity-60 pointer-events-none"
-              style={{ color: type.colorAccent }}
+              style={{ color: gradientColor }}
             />
 
             {/* Name - positioned at bottom for better readability over icon */}
