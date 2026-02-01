@@ -185,7 +185,6 @@ function SplashButton({ onStart, onEnd, progress, active }) {
           ? 'bg-gray-600 text-white'
           : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
       }`}
-      title="Click for bump, hold to sustain (6s max)"
     >
       {/* Progress bar - blue fill from left, only show if held > 0.5s or decaying */}
       {((showProgress && isHolding) || decayProgress !== null) && (
@@ -251,7 +250,7 @@ function ParameterControls({ parameters, onParameterChange, onSplashFrequencySta
         {/* Frequency and Amplitude */}
         <div className="grid grid-cols-2 gap-3 mb-2">
           <Tooltip
-            text={`Wave Frequency: ${frequency.toFixed(1)} Hz. Controls how fast the wave oscillates.\n\nRange: 0.1 - 2.0 Hz`}
+            text={`Wave Frequency: ${frequency.toFixed(1)} Hz. Controls how fast the wave oscillates.\n\nRange: 0.1 - 2.0 Hz\n\n≋ SPLASH: Hold to apply perturbation (6s max, 1s decay)`}
             position="bottom"
           >
             <div>
@@ -272,7 +271,7 @@ function ParameterControls({ parameters, onParameterChange, onSplashFrequencySta
           </Tooltip>
 
           <Tooltip
-            text={`Wave Amplitude: ${scale.toFixed(1)}x. Multiplies the wave amplitude.\n\nRange: 0.1x - 5.0x`}
+            text={`Wave Amplitude: ${scale.toFixed(1)}x. Multiplies the wave amplitude.\n\nRange: 0.1x - 5.0x\n\n≋ SPLASH: Hold to apply perturbation (6s max, 1s decay)`}
             position="bottom"
           >
             <div>
