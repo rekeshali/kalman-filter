@@ -341,7 +341,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Acceleration', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -5, max: 5 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Wave Acceleration', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -362,7 +365,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Velocity', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -3, max: 3 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Velocity Tracking', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -380,7 +386,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Innovation', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: -1, max: 1 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Measurement Residual', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -401,7 +410,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Kalman Gain', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 1 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Kalman Gain (Measurement Trust)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -422,7 +434,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: 'Std Dev (σ)', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 1 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Filter Uncertainty (Convergence)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
@@ -440,7 +455,10 @@ function EKFVisualization() {
         options: {
           responsive: true, maintainAspectRatio: false, animation: false, backgroundColor: '#1f2937',
           scales: {
-            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: (v) => Number(v).toFixed(2) }, grid: { color: '#374151' } },
+            x: { title: { display: true, text: 'Time (s)', color: '#f3f4f6' }, ticks: { maxTicksLimit: 10, color: '#d1d5db', callback: function(v, index, ticks) {
+              const actualTime = this.chart.data.labels[index];
+              return Number(actualTime).toFixed(2);
+            } }, grid: { color: '#374151' } },
             y: { title: { display: true, text: '|Error|', color: '#f3f4f6' }, ticks: { color: '#d1d5db' }, grid: { color: '#374151' }, min: 0, max: 0.5 }
           },
           plugins: { zoom: createPanZoomConfig(), legend: { display: true, position: 'top', labels: { color: '#f3f4f6' } }, title: { display: true, text: 'Position Error (Performance)', color: '#f3f4f6', font: { size: 14, weight: 'bold' } } }
