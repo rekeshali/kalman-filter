@@ -35,7 +35,33 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 33
+**Priority**: 1. ❌ Item 33 → 2. ❌ Item 34
+
+---
+
+### Item 34: Move EKF Block Diagram to Section Header ❌
+**Branch**: `feat/ekf-diagram-header`
+
+**Change**: Reorganize welcome page section structure - move "Extended Kalman Filter Block Diagram" label from within diagram content to section header
+
+**Scope**: Welcome/home page EKF flowchart section
+
+**Design**: Extract "Extended Kalman Filter Block Diagram" text and use it as the section header instead of having it embedded in the diagram area
+
+**Files**: Welcome/home page component (likely `views/welcome.js` or `components/ekf-section.js`)
+
+**Acceptance Criteria**:
+- ✓ "Extended Kalman Filter Block Diagram" moved from diagram content to section header
+- ✓ Section structure is clean and hierarchical
+- ✓ Diagram content remains visible and readable
+- ✓ Visual spacing and layout preserved
+- ✓ Responsive at all breakpoints
+
+**Verification**:
+- View welcome page on desktop/tablet/mobile
+- Confirm diagram label is now a section header
+- Check layout and visual hierarchy
+- Verify all content is accessible and readable
 
 ---
 
