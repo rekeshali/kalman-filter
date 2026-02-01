@@ -36,7 +36,7 @@ function ControlPanel({
   onTimelineChange
 }) {
   return (
-    <div className="bg-gradient-to-br from-gray-800 to-slate-900 p-4 rounded-lg border border-gray-700 shadow-lg" style={{width: '304px'}}>
+    <div className="bg-gradient-to-br from-gray-800 to-slate-900 p-4 rounded border border-gray-700 shadow-lg" style={{width: '304px'}}>
       {/* Title */}
       <h3 className="text-sm font-semibold text-gray-300 mb-3">Playback Controls</h3>
 
