@@ -35,7 +35,37 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 33 → 2. ❌ Item 34
+**Priority**: 1. ❌ Item 33 → 2. ❌ Item 34 → 3. ❌ Item 35
+
+---
+
+### Item 35: Header Banner Column Spacing and Divider ❌
+**Branch**: `feat/header-column-divider`
+
+**Change**: Add spacing and visual divider between header title banner columns
+
+**Scope**: Header/banner component - add px-24 horizontal margin between columns and add a faint line divider
+
+**Design**:
+- px-24 margin between columns
+- Crisp, faint vertical line divider between column sections
+- Maintain visual hierarchy and readability
+
+**Files**: Header/banner component (likely `components/app-header.js` or header banner section)
+
+**Acceptance Criteria**:
+- ✓ px-24 margin applied between header columns
+- ✓ Crisp faint vertical divider line added between columns
+- ✓ Divider line is subtle but clearly visible
+- ✓ Text and content remain readable
+- ✓ Responsive layout maintained at all breakpoints
+- ✓ Visual balance and hierarchy preserved
+
+**Verification**:
+- View header at desktop/tablet/mobile
+- Measure margin spacing (should be px-24)
+- Check divider line visibility and crispness
+- Verify responsiveness and alignment
 
 ---
 
