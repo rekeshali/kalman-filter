@@ -32,14 +32,15 @@
 | 34 | Move EKF diagram title to section header | `62da308` |
 | 36 | EKF flowchart tooltips with expanded math equations | `b2c2108` |
 | 37 | Flowchart tab icons with white highlight + colored borders | `d35b5d7` |
+| 38 | Problem type icons with conditional gradients (gray/blue) | `581ea20` |
 
-**Merges**: `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `76971d5` (Item 38), `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 38 (problem type gradients) → 3. ⏸️ Item 39 (expand EKF title) → 4. ⏸️ Item 40 (remove Ready to Explore)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 39 (expand EKF title) → 3. ⏸️ Item 40 (remove Ready to Explore)
 
 ---
 
@@ -70,40 +71,6 @@
 - Measure margin spacing (should be px-24)
 - Check divider line visibility and crispness
 - Verify responsiveness and alignment
-
----
-
-### Item 38: Problem Type Icon Gradient Styling (Selected/Unselected) ❌
-**Branch**: `feat/problem-type-icon-gradients`
-
-**Change**: Update problem type icons with gradient styling based on selection state
-
-**Scope**: Problem type card/icon component - apply conditional gradient colors
-
-**Design**:
-- **Unselected icons**: gray gradient (same as "Coming Soon" card styling)
-- **Selected icons**: blue gradient (same as "Simple Wave" card styling)
-- Clear visual distinction between selected and unselected states
-- Smooth transition/animation between states (if applicable)
-
-**Files**: Problem type component (likely `components/problem-type-card.js` or similar)
-
-**Acceptance Criteria**:
-- ✓ Unselected problem type icons display gray gradient
-- ✓ Selected problem type icons display blue gradient
-- ✓ Gray matches "Coming Soon" card color exactly
-- ✓ Blue matches "Simple Wave" card color exactly
-- ✓ State changes are visually clear
-- ✓ Responsive on all breakpoints
-- ✓ No performance regression
-
-**Verification**:
-- View problem type selector
-- Click between problem types
-- Verify gray gradient on unselected
-- Verify blue gradient on selected
-- Compare colors with existing Coming Soon and Simple Wave styling
-- Test on mobile/tablet/desktop
 
 ---
 
