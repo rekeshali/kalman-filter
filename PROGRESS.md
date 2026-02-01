@@ -36,14 +36,15 @@
 | 39 | Expanded EKF acronym to full "Extended Kalman Filter" in title | `d9543dc` |
 | 40 | Removed "Ready to Explore" block from welcome page | `9c9a494` |
 | 41 | Flowchart tooltips with variable notation legend | `7abfaab` |
+| 42 | Chart momentum/inertia scrolling on x-axis drag | `a1ccef1` |
 
-**Merges**: `51b0037` (Item 41), `0a64504` (Item 39), `76971d5` (Item 38), `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `9585bba` (Item 42), `51b0037` (Item 41), `0a64504` (Item 39), `76971d5` (Item 38), `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 42 (chart momentum scrolling)
+**Priority**: Only Item 35 remains - all enhancement items complete!
 
 ---
 
@@ -74,49 +75,6 @@
 - Measure margin spacing (should be px-24)
 - Check divider line visibility and crispness
 - Verify responsiveness and alignment
-
----
-
-### Item 42: Add Momentum/Inertia Scrolling to Chart X-Axis ❌
-**Branch**: `feat/chart-momentum-scrolling`
-
-**Change**: Implement momentum/inertia-based scrolling on chart x-axis - allow flick gestures to continue scrolling with deceleration
-
-**Scope**: Chart component - enhance drag-to-scroll interaction with momentum physics
-
-**Design**:
-- Detect drag velocity when user releases mouse/touch
-- Apply momentum scroll with deceleration over time
-- Smooth easing/animation (ease-out or similar deceleration curve)
-- Prevent overshooting/boundary issues (respect chart min/max bounds)
-- Make momentum optional or configurable if needed
-- Works on both mouse drag and touch swipe
-
-**Physics**:
-- Calculate velocity from last drag movement speed
-- Apply friction/deceleration (e.g., reduce velocity by 5-10% per frame)
-- Continue scrolling until velocity approaches zero
-- Use requestAnimationFrame for smooth animation
-
-**Files**: Chart component (likely `components/chart.js` or scroll handler)
-
-**Acceptance Criteria**:
-- ✓ Drag gesture followed by release continues scrolling with momentum
-- ✓ Velocity-based deceleration feels natural and responsive
-- ✓ Chart respects min/max scroll bounds (no overshooting)
-- ✓ Smooth animation (60fps or target device FPS)
-- ✓ Works with mouse drag, touch swipe, and trackpad
-- ✓ No conflict with auto-pause-on-drag feature
-- ✓ No performance regression or jank
-- ✓ Responsive on all breakpoints
-
-**Verification**:
-- Perform quick flick drag on chart x-axis
-- Verify scroll continues with smooth deceleration
-- Test at chart edges (verify it stops at bounds)
-- Test on different devices (mouse, touchpad, mobile)
-- Verify no interaction conflicts
-- Check performance with browser DevTools
 
 ---
 
