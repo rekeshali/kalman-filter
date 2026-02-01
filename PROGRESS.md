@@ -117,10 +117,14 @@ Replace pan gestures with a timeline slider control for navigating historical da
 - ✅ Called from SimulationController's start/pause methods
 - ✅ Verified: Pause continuity behavior works correctly
 
-### Item 9: Prevent Scrolling Below Context Window Size ❌
-**Status**: NOT STARTED
-**Bug**: Scrolling back too far scales axes and messes up apparent scale
-**Fix**: Add minimum scroll position based on viewport size in `handleTimelineChange()`
+### Item 9: Prevent Scrolling Below Context Window Size ✅
+**Commit**: `37da8c6`
+**Bug**: Scrolling back too far caused axis scaling issues (not enough points to fill viewport)
+**Fix**: Clamp timeline position to minimum based on viewport size (400 points)
+- ✅ Calculate minimum position: `(viewportSize / totalPoints) * 100`
+- ✅ Prevent scrolling below minimum (always show at least 400 points)
+- ✅ If totalPoints < viewportSize, allow full range
+- ✅ Maintains consistent axis scaling across all timeline positions
 
 ### Item 10: Record Button ✅
 **Commit**: `31dd9f9`
@@ -158,13 +162,24 @@ Replace pan gestures with a timeline slider control for navigating historical da
 - ❌ Add `style={{width: '304px'}}` to External Probe box
 - ❌ All boxes should be exactly wide enough for 5 buttons
 
+### Item 14: Toggle Record/Download Button ❌
+**Status**: NOT STARTED
+**Feature**: Record button starts recording; transforms into Download button to stop and save
+**Files**: `components/control-panel.js`, `views/app-view.js`, `controllers/simulation-controller.js`
+- ❌ Add `isRecording` state to track recording status
+- ❌ Press ● (Record) → starts recording, button changes to ⬇ (Download)
+- ❌ Press ⬇ (Download) → stops recording and downloads the log file
+- ❌ Only collect debug snapshots while recording is active
+- ❌ Clear debug log when starting a new recording
+- ❌ Update button color: red for Record, green for Download
+
 ---
 
 ## Remaining Tasks
 
-1. ❌ Item 9: Prevent scrolling below context window size
-2. ❌ Item 12: Drag to navigate history (pan when paused)
-3. ❌ Item 13: Consistent control panel width (304px for all boxes)
+1. ❌ Item 12: Drag to navigate history (pan when paused)
+2. ❌ Item 13: Consistent control panel width (304px for all boxes)
+3. ❌ Item 14: Toggle Record/Download button behavior
 
 ---
 
@@ -184,6 +199,8 @@ Replace pan gestures with a timeline slider control for navigating historical da
 | `31dd9f9` | Turn Clear button into Record button | Item 10 |
 | `1e9fe7a` | Update PROGRESS.md with Items 8, 10, 11, 12 | Documentation |
 | `2413fc8` | Move Reset button before Play button | Item 11 |
+| `7f9aefa` | Mark Item 11 complete in PROGRESS.md | Documentation |
+| `37da8c6` | Prevent timeline scrolling below viewport size | Item 9 |
 
 ---
 
