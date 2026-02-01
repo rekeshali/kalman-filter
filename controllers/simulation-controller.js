@@ -1234,7 +1234,8 @@ class SimulationController extends window.EventEmitter {
   }
 
   /**
-   * Reset a slot to default state
+   * Reset a slot to default state (like deleting and recreating)
+   * Resets name, parameters, simulation, charts, and timeline
    * @param {string} slotId - Slot ID
    * @returns {boolean} Success
    */
@@ -1245,6 +1246,8 @@ class SimulationController extends window.EventEmitter {
       return false;
     }
 
+    const isActiveSlot = this.tabModel.getActiveSlotId() === slotId;
+
     // Reset name to default
     const defaultName = `Simulation ${slot.globalIndex}`;
     this.tabModel.renameSlot(slotId, defaultName);
@@ -1252,20 +1255,38 @@ class SimulationController extends window.EventEmitter {
     // Reset simulation state if it exists
     const state = this.slotStates.get(slotId);
     if (state) {
-      // Stop if running
-      if (state.isRunning) {
-        state.isRunning = false;
+      // Stop animation if this is the active slot and running
+      if (isActiveSlot && state.isRunning) {
+        this._stopAnimation();
       }
+      state.isRunning = false;
 
       // Reset parameter model to defaults
       state.parameterModel.resetToDefaults();
 
-      // Reset simulation state with new parameters
+      // Reset simulation state with default parameters
       state.simulationState.reset(state.parameterModel.getScaledParameters());
 
-      // Update all charts for this slot if it's active
-      if (this.tabModel.getActiveSlotId() === slotId) {
-        this._updateAllCharts(state.simulationState);
+      // If this is the active slot, do full UI reset
+      if (isActiveSlot) {
+        // Reset timeline to live mode
+        this.viewportEndIndex = null;
+        this.viewportMode = 'live';
+        this.timelinePosition = 100;
+
+        // Clear splash state
+        this.splashState.frequency.active = false;
+        this.splashState.amplitude.active = false;
+
+        // Clear and update charts
+        this._clearAllCharts();
+
+        // Emit events for UI updates
+        this.emit('parameters-updated', state.parameterModel.getAllParameters());
+        this.emit('running-changed', false);
+        this.emit('simulation-reset');
+        this.emit('viewport-mode-changed', { mode: 'live' });
+        this.emit('timeline-position-changed', { position: 100 });
       }
     }
 
