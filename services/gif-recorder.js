@@ -95,16 +95,27 @@ class GIFRecorder {
    */
   async _renderFrame(chartState) {
     try {
+      // Force 2-column grid layout with inline styles (html2canvas ignores media queries)
+      // Save original styles to restore after capture
+      const originalGridStyle = this.targetElement.style.gridTemplateColumns;
+      const originalDisplay = this.targetElement.style.display;
+
+      // Apply explicit 2-column grid (matches md:grid-cols-2)
+      this.targetElement.style.display = 'grid';
+      this.targetElement.style.gridTemplateColumns = 'repeat(2, 1fr)';
+
       // Use html2canvas to convert DOM to canvas
       const canvas = await html2canvas(this.targetElement, {
         backgroundColor: '#111827', // bg-gray-900
         scale: 1, // 1:1 scale for performance
         logging: false,
         useCORS: true,
-        allowTaint: false,
-        windowWidth: 1200, // Force desktop width to trigger md: breakpoint (2-column layout)
-        windowHeight: 2400 // Allow enough height for 4 charts
+        allowTaint: false
       });
+
+      // Restore original styles
+      this.targetElement.style.gridTemplateColumns = originalGridStyle;
+      this.targetElement.style.display = originalDisplay;
 
       return canvas;
     } catch (error) {
