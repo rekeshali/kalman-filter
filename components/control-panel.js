@@ -8,6 +8,7 @@
  * @param {Object} props
  * @param {boolean} props.isRunning - Whether simulation is running
  * @param {boolean} props.isRecording - Whether debug logging is active
+ * @param {boolean} props.isGeneratingGif - Whether GIF is being generated
  * @param {number} props.timelinePosition - Current timeline position (0-100 percentage)
  * @param {number} props.currentTime - Current viewing time in seconds
  * @param {number} props.endTime - Total simulation duration in seconds
@@ -22,6 +23,7 @@
 function ControlPanel({
   isRunning,
   isRecording = false,
+  isGeneratingGif = false,
   timelinePosition = 100,
   currentTime = 0,
   endTime = 0,
@@ -72,10 +74,20 @@ function ControlPanel({
         </button>
         <button
           onClick={onToggleRecording}
-          className="w-12 h-12 bg-red-700 hover:bg-red-600 text-white rounded-lg text-2xl flex items-center justify-center shadow-lg"
-          title={isRecording ? 'Stop Recording & Download' : 'Start Recording'}
+          className={`w-12 h-12 text-white rounded-lg text-2xl flex items-center justify-center shadow-lg bg-red-700 ${
+            isGeneratingGif ? 'cursor-wait' : 'hover:bg-red-600'
+          }`}
+          title={isGeneratingGif ? 'Generating GIF...' : (isRecording ? 'Stop Recording & Download' : 'Start Recording')}
+          disabled={isGeneratingGif}
         >
-          {isRecording ? '↓' : '●'}
+          {isGeneratingGif ? (
+            <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          ) : (
+            isRecording ? '↓' : '●'
+          )}
         </button>
       </div>
 

@@ -257,7 +257,6 @@ class SimulationState extends window.EventEmitter {
         }
       };
       this.debugLog.push(logEntry);
-      console.log(`[DEBUG t=${this.time.toFixed(1)}s]`, logEntry);
     }
 
     this.emit('state-changed', this.dataCollector.getData());

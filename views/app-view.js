@@ -3,7 +3,7 @@
  * Integrates MVC components into the main React app
  */
 
-const { useState, useEffect, useRef, useReducer } = React;
+const { useState, useEffect, useRef, useReducer, useCallback } = React;
 const { TabBar, WelcomeScreen, ControlPanel, ParameterControls, ChartCanvas, ProblemTypeSelector, SimulationGrid } = window;
 
 function EKFVisualization() {
@@ -30,6 +30,7 @@ function EKFVisualization() {
   const [activeTabId, setActiveTabId] = useState('welcome');
   const [isRunning, setIsRunning] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [isGeneratingGif, setIsGeneratingGif] = useState(false);
   const [parameters, setParameters] = useState({});
   const [timelineInfo, setTimelineInfo] = useState({ position: 100, currentTime: 0, endTime: 0, totalPoints: 0 });
 
@@ -152,6 +153,11 @@ function EKFVisualization() {
       forceUpdate();
     }));
 
+    unsubscribers.push(controllerRef.current.subscribe('gif-generating-changed', (generating) => {
+      setIsGeneratingGif(generating);
+      forceUpdate();
+    }));
+
     unsubscribers.push(controllerRef.current.subscribe('simulation-updated', () => {
       // Charts are updated by controller, just force re-render if needed
     }));
@@ -207,10 +213,11 @@ function EKFVisualization() {
     };
   }, []);
 
-  // Set chart grid element for GIF recording
-  useEffect(() => {
-    if (controllerRef.current && chartGridRef.current) {
-      controllerRef.current.setChartGridElement(chartGridRef.current);
+  // Callback ref for chart grid element (sets immediately when element renders)
+  const chartGridRefCallback = useCallback((element) => {
+    chartGridRef.current = element;
+    if (element && controllerRef.current) {
+      controllerRef.current.setChartGridElement(element);
     }
   }, []);
 
@@ -581,6 +588,7 @@ function EKFVisualization() {
             <ControlPanel
               isRunning={isRunning}
               isRecording={isRecording}
+              isGeneratingGif={isGeneratingGif}
               timelinePosition={timelineInfo.position}
               currentTime={timelineInfo.currentTime}
               endTime={timelineInfo.endTime}
@@ -603,7 +611,7 @@ function EKFVisualization() {
           {/* RIGHT SIDE: Charts - Can overflow to the right */}
           <div className="flex-1 overflow-x-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', minWidth: 0, overflowY: 'scroll'}}>
             <div
-              ref={chartGridRef}
+              ref={chartGridRefCallback}
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
               style={{minWidth: '800px', cursor: isRunning ? 'default' : 'grab'}}
               onMouseDown={handleChartMouseDown}

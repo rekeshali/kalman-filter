@@ -20,6 +20,13 @@ class SimulationController extends window.EventEmitter {
 
     // Initialize services
     this.chartManager = new window.ChartManager();
+    this.gifRecorder = new window.GIFRecorder();
+
+    // Chart grid element reference for GIF recording
+    this.chartGridElement = null;
+
+    // GIF generation state
+    this.isGeneratingGif = false;
 
     // Animation state
     this.animationFrameId = null;
@@ -739,24 +746,189 @@ class SimulationController extends window.EventEmitter {
   }
 
   /**
+   * Set chart grid element for GIF recording
+   * @param {HTMLElement} element - Chart grid container element
+   */
+  setChartGridElement(element) {
+    this.chartGridElement = element;
+  }
+
+  /**
+   * Get current chart state for GIF snapshot
+   * @returns {Object} Current chart data state
+   * @private
+   */
+  _getCurrentChartState() {
+    const slotState = this._getCurrentSlotState();
+    if (!slotState) return null;
+
+    // Get current viewport data (what's currently displayed on charts)
+    const viewportInfo = slotState.simulationState.getViewportData(this.viewportEndIndex);
+
+    return {
+      data: viewportInfo.data,
+      viewportEndIndex: this.viewportEndIndex
+    };
+  }
+
+  /**
+   * Apply chart state to charts (for GIF rendering)
+   * @param {Object} chartState - Chart state to apply
+   * @private
+   */
+  _applyChartState(chartState) {
+    if (!chartState || !chartState.data) return;
+
+    // Directly update charts with snapshot data
+    // This bypasses viewport calculation and uses stored chart data
+
+    // Position chart
+    if (this.chartRegistry.has('position')) {
+      this.chartManager.updateChart(this.chartRegistry.get('position'), {
+        labels: chartState.data.times,
+        datasets: [
+          chartState.data.truePositions,
+          chartState.data.ekfPositions,
+          chartState.data.probeMeasurements,
+          chartState.data.trueAccels,
+          chartState.data.inertialMeasurements
+        ]
+      });
+    }
+
+    // Velocity chart
+    if (this.chartRegistry.has('velocity')) {
+      this.chartManager.updateChart(this.chartRegistry.get('velocity'), {
+        labels: chartState.data.times,
+        datasets: [
+          chartState.data.trueVelocities,
+          chartState.data.estimatedVelocities
+        ]
+      });
+    }
+
+    // Innovation chart
+    if (this.chartRegistry.has('innovation')) {
+      this.chartManager.updateChart(this.chartRegistry.get('innovation'), {
+        labels: chartState.data.times,
+        datasets: [chartState.data.innovations]
+      });
+    }
+
+    // Uncertainty charts
+    if (this.chartRegistry.has('uncertainty')) {
+      this.chartManager.updateChart(this.chartRegistry.get('uncertainty'), {
+        labels: chartState.data.times,
+        datasets: [
+          chartState.data.posUncertainties,
+          chartState.data.velUncertainties
+        ]
+      });
+    }
+
+    // Error charts
+    if (this.chartRegistry.has('error')) {
+      this.chartManager.updateChart(this.chartRegistry.get('error'), {
+        labels: chartState.data.times,
+        datasets: [
+          chartState.data.ekfPosErrors,
+          chartState.data.processPosErrors
+        ]
+      });
+    }
+  }
+
+  /**
    * Toggle recording state
    * If not recording: start recording (clears log)
-   * If recording: stop recording and download log file
+   * If recording: stop recording and download log + GIF file
    */
-  toggleRecording() {
-    const tabState = this._getCurrentTabState();
-    if (!tabState) return;
+  async toggleRecording() {
+    const slotState = this._getCurrentSlotState();
+    if (!slotState) return;
 
-    const isRecording = tabState.simulationState.getIsRecording();
+    const isRecording = slotState.simulationState.getIsRecording();
 
     if (isRecording) {
-      // Stop recording and download
-      tabState.simulationState.stopRecording();
-      tabState.simulationState.downloadDebugLog();
+      // Stop JSON recording
+      slotState.simulationState.stopRecording();
+
+      // Remember if simulation was running
+      const wasRunning = slotState.isRunning;
+
+      // ALWAYS pause simulation when clicking download
+      slotState.simulationState.pause();
+      slotState.isRunning = false;
+      this._stopAnimation();
+      this.emit('running-changed', false);
+
+      // Generate timestamp for both files
+      const timestamp = new Date().toISOString();
+
+      // Download JSON log with timestamp
+      const json = slotState.simulationState.exportDebugLog();
+      const jsonBlob = new Blob([json], { type: 'application/json' });
+      const jsonUrl = URL.createObjectURL(jsonBlob);
+      const jsonLink = document.createElement('a');
+      jsonLink.href = jsonUrl;
+      jsonLink.download = `ekf-debug-log-${timestamp}.json`;
+      jsonLink.click();
+      URL.revokeObjectURL(jsonUrl);
+
+      // Stop GIF recording and download
+      if (this.gifRecorder.getIsRecording()) {
+        try {
+          // Emit generating state (disables UI)
+          this.isGeneratingGif = true;
+          this.emit('gif-generating-changed', true);
+
+          // Save current chart state before GIF generation
+          const savedChartState = this._getCurrentChartState();
+
+          // Generate GIF from snapshots
+          const gifBlob = await this.gifRecorder.stopRecording((chartState) => {
+            this._applyChartState(chartState);
+          });
+          this.gifRecorder.downloadGIF(gifBlob, timestamp);
+
+          // Restore the saved chart state to fix any corruption
+          if (savedChartState) {
+            this._applyChartState(savedChartState);
+          }
+
+          // Clear generating state
+          this.isGeneratingGif = false;
+          this.emit('gif-generating-changed', false);
+        } catch (error) {
+          console.error('Failed to generate GIF:', error);
+          this.isGeneratingGif = false;
+          this.emit('gif-generating-changed', false);
+        }
+      }
+
+      // Resume simulation if it was running before
+      if (wasRunning) {
+        slotState.simulationState.resume();
+        slotState.isRunning = true;
+        this._startAnimation();
+        this.emit('running-changed', true);
+      }
+
       this.emit('recording-changed', false);
     } else {
-      // Start recording (clears previous log)
-      tabState.simulationState.startRecording();
+      // Start JSON recording (clears previous log)
+      slotState.simulationState.startRecording();
+
+      // Start GIF recording with snapshot callback
+      if (this.chartGridElement) {
+        this.gifRecorder.startRecording(
+          this.chartGridElement,
+          () => this._getCurrentChartState()
+        );
+      } else {
+        console.warn('Chart grid element not set - GIF recording disabled');
+      }
+
       this.emit('recording-changed', true);
     }
   }
@@ -769,6 +941,14 @@ class SimulationController extends window.EventEmitter {
     const tabState = this._getCurrentTabState();
     if (!tabState) return false;
     return tabState.simulationState.getIsRecording();
+  }
+
+  /**
+   * Check if currently generating GIF
+   * @returns {boolean} True if generating GIF
+   */
+  getIsGeneratingGif() {
+    return this.isGeneratingGif;
   }
 
   /**
@@ -922,12 +1102,6 @@ class SimulationController extends window.EventEmitter {
         parameterModel: parameterModel,
         simulationState: simulationState,
         isRunning: false
-      });
-
-      console.log(`[SimulationController] Created new state for slot: ${slotId}`, {
-        parameterModel,
-        simulationState,
-        slotStatesSize: this.slotStates.size
       });
     }
 
