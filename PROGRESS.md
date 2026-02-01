@@ -31,14 +31,15 @@
 | 33 | Banner gradients & black slot/flowchart styling | `7249b0b`, `500215b`, `5a5ba56`, `9e13f37` |
 | 34 | Move EKF diagram title to section header | `62da308` |
 | 36 | EKF flowchart tooltips with expanded math equations | `b2c2108` |
+| 37 | Flowchart tab icons with white highlight + colored borders | `d35b5d7` |
 
-**Merges**: `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 37 (tab icons) → 3. ⏸️ Item 38 (problem type gradients) → 4. ⏸️ Item 39 (expand EKF title)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 38 (problem type gradients) → 3. ⏸️ Item 39 (expand EKF title)
 
 ---
 
@@ -69,38 +70,6 @@
 - Measure margin spacing (should be px-24)
 - Check divider line visibility and crispness
 - Verify responsiveness and alignment
-
----
-
-### Item 37: Flowchart Tab Icons Highlight Color in Banner ❌
-**Branch**: `feat/flowchart-tab-icons-highlight`
-
-**Change**: Update flowchart tab icons in title banner to highlight to white when active/selected while maintaining their colored borders
-
-**Scope**: EKF flowchart component tab icons in header banner
-
-**Design**:
-- Active/selected tab icons: white background fill
-- Preserve colored border for each icon (original color)
-- Inactive tab icons: maintain current styling
-- Ensure visual consistency with selected state
-
-**Files**: `components/ekf-flowchart.js` or tab icon component
-
-**Acceptance Criteria**:
-- ✓ Active tab icon shows white fill
-- ✓ Colored borders remain visible on all states
-- ✓ Inactive tabs remain unchanged
-- ✓ Visual hierarchy is clear (active vs inactive)
-- ✓ Color contrast meets accessibility standards
-- ✓ Responsive on desktop/tablet/mobile
-
-**Verification**:
-- Click through flowchart tabs
-- Verify active icon has white fill
-- Confirm colored borders are preserved
-- Check inactive state styling
-- Test on mobile breakpoints
 
 ---
 
