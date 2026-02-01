@@ -33,6 +33,7 @@ function EKFVisualization() {
   const [isGeneratingGif, setIsGeneratingGif] = useState(false);
   const [parameters, setParameters] = useState({});
   const [timelineInfo, setTimelineInfo] = useState({ position: 100, currentTime: 0, endTime: 0, totalPoints: 0 });
+  const [splashProgress, setSplashProgress] = useState({ frequency: { progress: 0, active: false }, amplitude: { progress: 0, active: false } });
 
   // Header revamp state (slot-based)
   const [problemTypes, setProblemTypes] = useState([]);
@@ -156,6 +157,13 @@ function EKFVisualization() {
     unsubscribers.push(controllerRef.current.subscribe('gif-generating-changed', (generating) => {
       setIsGeneratingGif(generating);
       forceUpdate();
+    }));
+
+    unsubscribers.push(controllerRef.current.subscribe('splash-progress', (data) => {
+      setSplashProgress(prev => ({
+        ...prev,
+        [data.type]: { progress: data.progress, active: data.active }
+      }));
     }));
 
     unsubscribers.push(controllerRef.current.subscribe('simulation-updated', () => {
@@ -525,12 +533,18 @@ function EKFVisualization() {
     controllerRef.current.setParameter(name, value);
   };
 
-  const handleSplashFrequency = () => {
-    controllerRef.current.splashFrequency();
+  // Splash hold-to-sustain handlers
+  const handleSplashFrequencyStart = () => {
+    controllerRef.current.splashFrequencyStart();
   };
-
-  const handleSplashAmplitude = () => {
-    controllerRef.current.splashAmplitude();
+  const handleSplashFrequencyEnd = () => {
+    controllerRef.current.splashFrequencyEnd();
+  };
+  const handleSplashAmplitudeStart = () => {
+    controllerRef.current.splashAmplitudeStart();
+  };
+  const handleSplashAmplitudeEnd = () => {
+    controllerRef.current.splashAmplitudeEnd();
   };
 
   // Header revamp handlers (slot-based)
@@ -624,8 +638,11 @@ function EKFVisualization() {
             <ParameterControls
               parameters={parameters}
               onParameterChange={handleParameterChange}
-              onSplashFrequency={handleSplashFrequency}
-              onSplashAmplitude={handleSplashAmplitude}
+              onSplashFrequencyStart={handleSplashFrequencyStart}
+              onSplashFrequencyEnd={handleSplashFrequencyEnd}
+              onSplashAmplitudeStart={handleSplashAmplitudeStart}
+              onSplashAmplitudeEnd={handleSplashAmplitudeEnd}
+              splashProgress={splashProgress}
             />
           </div>
 

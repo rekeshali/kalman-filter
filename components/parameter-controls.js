@@ -58,14 +58,64 @@ function LevelButtonGroup({ value, onChange, compact = false }) {
 }
 
 /**
+ * SplashButton - Inline button with hold-to-sustain and progress bar
+ */
+function SplashButton({ onStart, onEnd, progress, active }) {
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    onStart();
+  };
+
+  const handleMouseUp = () => {
+    onEnd();
+  };
+
+  const handleMouseLeave = () => {
+    // Also end on mouse leave to prevent stuck state
+    if (active) onEnd();
+  };
+
+  // Progress bar width: 6s max sustain = 100%
+  const progressPercent = Math.min(progress * 100, 100);
+
+  return (
+    <button
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
+      className={`relative flex-1 py-1 rounded font-medium transition-colors overflow-hidden ${
+        active
+          ? 'bg-blue-600 text-white'
+          : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+      }`}
+      title="Click for bump, hold to sustain (6s max)"
+    >
+      {/* Progress bar background */}
+      {active && (
+        <div
+          className="absolute inset-0 bg-blue-400 opacity-50 transition-all"
+          style={{ width: `${progressPercent}%`, left: 0 }}
+        />
+      )}
+      <span className="relative z-10 text-2xl leading-none">≋</span>
+    </button>
+  );
+}
+
+/**
  * ParameterControls - All simulation parameter controls
  * @param {Object} props
  * @param {Object} props.parameters - All parameter values
  * @param {Function} props.onParameterChange - Parameter change handler (name, value)
- * @param {Function} props.onSplashFrequency - Splash frequency handler
- * @param {Function} props.onSplashAmplitude - Splash amplitude handler
+ * @param {Function} props.onSplashFrequencyStart - Splash frequency start handler (mousedown)
+ * @param {Function} props.onSplashFrequencyEnd - Splash frequency end handler (mouseup)
+ * @param {Function} props.onSplashAmplitudeStart - Splash amplitude start handler (mousedown)
+ * @param {Function} props.onSplashAmplitudeEnd - Splash amplitude end handler (mouseup)
+ * @param {Object} props.splashProgress - Splash progress state { frequency: {progress, active}, amplitude: {progress, active} }
  */
-function ParameterControls({ parameters, onParameterChange, onSplashFrequency, onSplashAmplitude }) {
+function ParameterControls({ parameters, onParameterChange, onSplashFrequencyStart, onSplashFrequencyEnd, onSplashAmplitudeStart, onSplashAmplitudeEnd, splashProgress }) {
   const {
     frequency = 0.5,
     scale = 1.0,
@@ -116,7 +166,12 @@ function ParameterControls({ parameters, onParameterChange, onSplashFrequency, o
               <div className="flex gap-1">
                 <button onClick={decrementFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
                 <button onClick={incrementFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
-                <button onClick={onSplashFrequency} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm" title="Splash (transient disturbance)">≋</button>
+                <SplashButton
+                  onStart={onSplashFrequencyStart}
+                  onEnd={onSplashFrequencyEnd}
+                  progress={splashProgress?.frequency?.progress || 0}
+                  active={splashProgress?.frequency?.active || false}
+                />
               </div>
             </div>
           </Tooltip>
@@ -132,7 +187,12 @@ function ParameterControls({ parameters, onParameterChange, onSplashFrequency, o
               <div className="flex gap-1">
                 <button onClick={decrementScale} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▼</button>
                 <button onClick={incrementScale} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm">▲</button>
-                <button onClick={onSplashAmplitude} className="px-2 py-1 bg-gray-700 text-gray-200 rounded hover:bg-gray-600 text-sm" title="Splash (transient disturbance)">≋</button>
+                <SplashButton
+                  onStart={onSplashAmplitudeStart}
+                  onEnd={onSplashAmplitudeEnd}
+                  progress={splashProgress?.amplitude?.progress || 0}
+                  active={splashProgress?.amplitude?.active || false}
+                />
               </div>
             </div>
           </Tooltip>
