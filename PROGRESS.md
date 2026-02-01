@@ -30,14 +30,15 @@
 | 32 | Welcome page Kalman section reorganization (diagram first) | `80660c2`, `b053664`, `c0ff81c` |
 | 33 | Banner gradients & black slot/flowchart styling | `7249b0b`, `500215b`, `5a5ba56`, `9e13f37` |
 | 34 | Move EKF diagram title to section header | `62da308` |
+| 36 | EKF flowchart tooltips with expanded math equations | `b2c2108` |
 
-**Merges**: `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 36 (EKF flowchart math tooltips) → 2. ⏸️ Item 35 (backlog) → 3. ⏸️ Item 37 (backlog) → 4. ⏸️ Item 38 (backlog) → 5. ⏸️ Item 39 (backlog)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 37 (tab icons) → 3. ⏸️ Item 38 (problem type gradients) → 4. ⏸️ Item 39 (expand EKF title)
 
 ---
 
@@ -68,40 +69,6 @@
 - Measure margin spacing (should be px-24)
 - Check divider line visibility and crispness
 - Verify responsiveness and alignment
-
----
-
-### Item 36: EKF Flowchart Enhanced Tooltips with Math Documentation ❌
-**Branch**: `feat/ekf-flowchart-math-tooltips`
-
-**Change**: Enhance EKF flowchart component tooltips with expanded mathematical equations from FILTER_MATH.md
-
-**Scope**: EKF flowchart component - add rich tooltips with fully expanded matrix equations for each step (Prediction, Update, etc.)
-
-**Design**:
-- Reference fully expanded matrix equations from FILTER_MATH.md
-- Add tooltips to flowchart nodes showing:
-  - Prediction step: state & covariance equations with matrix expansions
-  - Update step: innovation, gain, state update equations
-  - Key matrix forms (F, B, Q, H, R, K)
-- Make tooltips accessible and readable with proper formatting
-- Link to relevant sections in FILTER_MATH.md when appropriate
-
-**Files**: `components/ekf-flowchart.js` (or related flowchart component)
-
-**Acceptance Criteria**:
-- ✓ Tooltips added to major flowchart nodes (predict, update, etc.)
-- ✓ Equations displayed include fully expanded matrix forms
-- ✓ References to FILTER_MATH.md sections are accurate
-- ✓ Tooltip formatting is readable and well-styled
-- ✓ Tooltips do not obstruct flowchart visual hierarchy
-- ✓ Works on desktop/tablet/mobile breakpoints
-
-**Verification**:
-- View flowchart in welcome page
-- Hover over nodes and verify tooltip content
-- Check accuracy of mathematical expressions
-- Verify responsive behavior on mobile
 
 ---
 
