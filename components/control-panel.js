@@ -39,6 +39,13 @@ function ControlPanel({
       {/* Playback Buttons */}
       <div className="flex gap-2 justify-center flex-nowrap">
         <button
+          onClick={onReset}
+          className="w-12 h-12 bg-blue-700 text-white rounded-lg hover:bg-blue-600 text-2xl flex items-center justify-center shadow-lg"
+          title="Reset"
+        >
+          ↺
+        </button>
+        <button
           onClick={onStart}
           className="w-12 h-12 bg-green-700 text-white rounded-lg hover:bg-green-600 text-2xl disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center shadow-lg"
           disabled={isRunning}
@@ -53,13 +60,6 @@ function ControlPanel({
           title="Pause"
         >
           ❚❚
-        </button>
-        <button
-          onClick={onReset}
-          className="w-12 h-12 bg-blue-700 text-white rounded-lg hover:bg-blue-600 text-2xl flex items-center justify-center shadow-lg"
-          title="Reset"
-        >
-          ↺
         </button>
         <button
           onClick={onRestart}
