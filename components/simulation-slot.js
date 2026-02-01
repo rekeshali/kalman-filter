@@ -76,7 +76,7 @@ function SimulationSlot({ id, name, isActive, onRename, onReset, onClick }) {
         transition-all h-12 w-60
         ${isActive
           ? 'bg-gray-900 text-white border-2 border-blue-500 shadow-lg'
-          : 'bg-gray-700 text-gray-300 hover:bg-gray-650 border-2 border-transparent'
+          : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:border-gray-500 border-2 border-transparent'
         }
       `}
       onClick={onClick}
