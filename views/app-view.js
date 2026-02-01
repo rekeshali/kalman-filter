@@ -658,31 +658,31 @@ function EKFVisualization() {
               onMouseLeave={handleChartMouseLeave}
             >
               {/* Row 1: Position Tracking (spanning 2 cols) */}
-              <div className="md:col-span-2 h-80 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg p-3">
+              <div className="md:col-span-2 h-80 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg">
                 <ChartCanvas ref={positionChartRef} />
               </div>
 
               {/* Row 2: Acceleration | Velocity */}
-              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg p-3">
+              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg">
                 <ChartCanvas ref={accelChartRef} />
               </div>
-              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg p-3">
+              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg">
                 <ChartCanvas ref={velocityChartRef} />
               </div>
 
               {/* Row 3: Innovation | Kalman Gain */}
-              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg p-3">
+              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg">
                 <ChartCanvas ref={innovationChartRef} />
               </div>
-              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg p-3">
+              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg">
                 <ChartCanvas ref={kalmanGainChartRef} />
               </div>
 
               {/* Row 4: Uncertainty | Position Error */}
-              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg p-3">
+              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg">
                 <ChartCanvas ref={uncertaintyChartRef} />
               </div>
-              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg p-3">
+              <div className="h-64 bg-gradient-to-br from-gray-800 to-slate-900 rounded-xl shadow-lg">
                 <ChartCanvas ref={errorChartRef} />
               </div>
             </div>
