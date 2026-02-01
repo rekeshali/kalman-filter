@@ -39,7 +39,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 38 (problem type gradients) → 3. ⏸️ Item 39 (expand EKF title)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 38 (problem type gradients) → 3. ⏸️ Item 39 (expand EKF title) → 4. ⏸️ Item 40 (remove Ready to Explore)
 
 ---
 
@@ -135,6 +135,37 @@
 - Check section title displays "Extended Kalman Filter" (no EKF acronym)
 - Verify styling and layout intact
 - Test on desktop/tablet/mobile
+
+---
+
+### Item 40: Remove "Ready to Explore" Block from Welcome Page ❌
+**Branch**: `feat/remove-ready-to-explore-block`
+
+**Change**: Remove the "Ready to Explore" section/block from the welcome page
+
+**Scope**: Welcome/home page - remove entire Ready to Explore UI block
+
+**Design**:
+- Delete "Ready to Explore" section entirely
+- Clean up any related styling or spacing
+- Ensure remaining content flows properly
+
+**Files**: `components/welcome-screen.js` or relevant welcome page component
+
+**Acceptance Criteria**:
+- ✓ "Ready to Explore" block completely removed
+- ✓ No orphaned UI elements or broken references
+- ✓ Page layout flows properly without the block
+- ✓ Spacing and alignment correct on all breakpoints
+- ✓ No console errors or warnings
+- ✓ Visual appearance clean and intentional
+
+**Verification**:
+- View welcome page
+- Confirm "Ready to Explore" block is gone
+- Check page layout and spacing
+- Verify responsive behavior on mobile/tablet/desktop
+- Check browser console for errors
 
 ---
 
