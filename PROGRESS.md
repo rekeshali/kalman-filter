@@ -176,6 +176,14 @@ Reusable EKFFlowchart component with direction prop: horizontal 3-row layout in 
 
 ### Open
 
+- **BUG-10**: GIF recording renders charts stacked vertically instead of grid
+  - **Repro**: Record simulation, download GIF, open file
+  - **Expected**: Charts in 2-column grid layout (matching app view)
+  - **Actual**: Charts stacked vertically on top of each other
+  - **Likely Files**: GIF capture logic in `views/app-view.js` or recording controller
+  - **Fix**: Ensure html2canvas captures the chart grid container with correct CSS grid/flex layout preserved
+  - **Priority**: P1 (breaks Item 18 deliverable)
+
 - **BUG-9**: Y-axis zoom conflicts with window scrolling
   - **Repro**: Scroll mouse wheel over chart area
   - **Expected**: Page scrolls normally
