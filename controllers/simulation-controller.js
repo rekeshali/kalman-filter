@@ -441,9 +441,16 @@ class SimulationController extends window.EventEmitter {
     const params = tabState.parameterModel.getScaledParameters();
     tabState.simulationState.reset(params);
 
+    // Reset timeline to live mode
+    this.viewportEndIndex = null;
+    this.viewportMode = 'live';
+    this.timelinePosition = 100;
+
     // Clear and update charts
     this._clearAllCharts();
     this.emit('simulation-reset');
+    this.emit('viewport-mode-changed', { mode: 'live' });
+    this.emit('timeline-position-changed', { position: 100 });
   }
 
   /**

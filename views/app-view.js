@@ -444,7 +444,7 @@ function EKFVisualization() {
           </div>
 
           {/* RIGHT SIDE: Charts - Can overflow to the right */}
-          <div className="flex-1 overflow-y-auto overflow-x-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', minWidth: 0}}>
+          <div className="flex-1 overflow-x-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', minWidth: 0, overflowY: 'scroll'}}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{minWidth: '800px'}}>
               {/* Row 1: Position Tracking (spanning 2 cols) */}
               <div className="md:col-span-2 h-80">

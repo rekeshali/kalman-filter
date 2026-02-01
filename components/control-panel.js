@@ -79,23 +79,22 @@ function ControlPanel({
         </button>
       </div>
 
-      {/* Timeline Slider - only show when data exists */}
-      {totalPoints > 0 && (
-        <div className="w-full mt-3 px-2">
-          <div className="flex items-center gap-2">
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={timelinePosition}
-              onChange={(e) => onTimelineChange(Number(e.target.value))}
-              className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
-              title={`Time: ${currentTime.toFixed(1)}s`}
-            />
-            <span className="text-xs text-gray-400 w-12">{endTime.toFixed(1)}s</span>
-          </div>
+      {/* Timeline Slider - always visible to prevent layout shift */}
+      <div className="w-full mt-3 px-2">
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={timelinePosition}
+            onChange={(e) => onTimelineChange(Number(e.target.value))}
+            disabled={totalPoints === 0}
+            className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb disabled:opacity-30 disabled:cursor-not-allowed"
+            title={totalPoints > 0 ? `Time: ${currentTime.toFixed(1)}s` : 'No data'}
+          />
+          <span className="text-xs text-gray-400 w-12">{totalPoints > 0 ? `${endTime.toFixed(1)}s` : '0.0s'}</span>
         </div>
-      )}
+      </div>
     </div>
   );
 }
