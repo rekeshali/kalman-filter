@@ -70,6 +70,20 @@ function WelcomeScreen({ onCreateSimulation, problemType }) {
 
         {/* RIGHT SIDE: Problem Description */}
         <div className="space-y-6">
+          <div className="bg-gradient-to-r from-blue-900 to-purple-900 border border-blue-600 rounded-lg p-6 shadow-lg">
+            <h3 className="text-lg font-semibold mb-2 text-white">Ready to Explore?</h3>
+            <p className="text-gray-200 text-sm mb-4">
+              Click the button below or the <strong className="text-blue-300">+</strong> button next to the Welcome tab to create a new simulation.
+              You can create multiple simulations and rename them by hovering over the tab name. Try changing parameters in real-time and watch how the filter responds!
+            </p>
+            <button
+              onClick={onCreateSimulation}
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 font-medium transition-colors"
+            >
+              Create New Simulation →
+            </button>
+          </div>
+
           <div className="bg-gray-800 border border-gray-600 rounded-lg p-6 shadow-lg">
             <h2 className="text-2xl font-bold mb-4 text-white">The Tracking Problem</h2>
             <p className="text-gray-200 mb-6">
@@ -160,20 +174,6 @@ function WelcomeScreen({ onCreateSimulation, problemType }) {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="bg-gradient-to-r from-blue-900 to-purple-900 border border-blue-600 rounded-lg p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-2 text-white">Ready to Explore?</h3>
-            <p className="text-gray-200 text-sm mb-4">
-              Click the button below or the <strong className="text-blue-300">+</strong> button next to the Welcome tab to create a new simulation.
-              You can create multiple simulations and rename them by hovering over the tab name. Try changing parameters in real-time and watch how the filter responds!
-            </p>
-            <button
-              onClick={onCreateSimulation}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 font-medium transition-colors"
-            >
-              Create New Simulation →
-            </button>
           </div>
         </div>
 
