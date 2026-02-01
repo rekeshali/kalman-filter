@@ -15,7 +15,7 @@
  * @param {Function} props.onPause - Pause handler
  * @param {Function} props.onReset - Reset handler
  * @param {Function} props.onRestart - Restart handler
- * @param {Function} props.onClearHistory - Clear history handler
+ * @param {Function} props.onRecord - Record/download debug log handler
  * @param {Function} props.onTimelineChange - Timeline slider change handler
  */
 function ControlPanel({
@@ -28,7 +28,7 @@ function ControlPanel({
   onPause,
   onReset,
   onRestart,
-  onClearHistory,
+  onRecord,
   onTimelineChange
 }) {
   return (
@@ -69,11 +69,11 @@ function ControlPanel({
           ↻
         </button>
         <button
-          onClick={onClearHistory}
+          onClick={onRecord}
           className="w-12 h-12 bg-red-700 text-white rounded-lg hover:bg-red-600 text-2xl flex items-center justify-center shadow-lg"
-          title="Clear History"
+          title="Download Debug Log"
         >
-          ✕
+          ●
         </button>
       </div>
 

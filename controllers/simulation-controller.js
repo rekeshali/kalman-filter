@@ -626,6 +626,17 @@ class SimulationController extends window.EventEmitter {
   }
 
   /**
+   * Download debug log as JSON file
+   * Triggers browser download of 0.5-second interval snapshots
+   */
+  downloadDebugLog() {
+    const tabState = this._getCurrentTabState();
+    if (!tabState) return;
+
+    tabState.simulationState.downloadDebugLog();
+  }
+
+  /**
    * Check if simulation is currently running
    * @returns {boolean} True if running
    */

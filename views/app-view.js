@@ -374,6 +374,10 @@ function EKFVisualization() {
     controllerRef.current.clearHistory();
   };
 
+  const handleRecord = () => {
+    controllerRef.current.downloadDebugLog();
+  };
+
   const handleTimelineChange = (position) => {
     controllerRef.current.handleTimelineChange(position);
   };
@@ -422,7 +426,7 @@ function EKFVisualization() {
               onPause={handlePause}
               onReset={handleReset}
               onRestart={handleRestart}
-              onClearHistory={handleClearHistory}
+              onRecord={handleRecord}
               onTimelineChange={handleTimelineChange}
             />
             <ParameterControls
