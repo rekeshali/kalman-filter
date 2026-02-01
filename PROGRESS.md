@@ -23,14 +23,15 @@
 | 24 | Reset button ✕ with full slot reset | `938cbe8`, `c06d46f` |
 
 | 27 | Splash button explanation tooltip | `c958315`, `02ca97e` |
+| 28 | Header horizontal margin alignment | `d092d81`, `7bbdf74` |
 
-**Merges**: `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 30 → 2. ❌ Item 31 → 3. ❌ Item 28 → 4. ❌ Item 29 → 5. ❌ Item 26
+**Priority**: 1. ❌ Item 30 → 2. ❌ Item 31 → 3. ❌ Item 29 → 4. ❌ Item 26
 
 ---
 
