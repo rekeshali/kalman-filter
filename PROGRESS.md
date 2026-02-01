@@ -35,14 +35,15 @@
 | 38 | Problem type icons with conditional gradients (gray/blue) | `581ea20` |
 | 39 | Expanded EKF acronym to full "Extended Kalman Filter" in title | `d9543dc` |
 | 40 | Removed "Ready to Explore" block from welcome page | `9c9a494` |
+| 41 | Flowchart tooltips with variable notation legend | `7abfaab` |
 
-**Merges**: `0a64504` (Item 39), `76971d5` (Item 38), `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `51b0037` (Item 41), `0a64504` (Item 39), `76971d5` (Item 38), `64b7f20` (Item 37), `072469d` (Item 36), `62da308` (Item 34), `9e13f37` (Item 33), `e6c7b71` (Item 31), `c0ff81c` (Item 32), `b9b49c7` (Item 26), `e036eaa` (Item 30), `7bbdf74` (Item 28), `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 41 (flowchart notation legend) → 3. ⏸️ Item 42 (chart momentum scrolling)
+**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 42 (chart momentum scrolling)
 
 ---
 
@@ -73,43 +74,6 @@
 - Measure margin spacing (should be px-24)
 - Check divider line visibility and crispness
 - Verify responsiveness and alignment
-
----
-
-### Item 41: Add Variable Notation Legend to Flowchart Tooltips ❌
-**Branch**: `feat/flowchart-tooltip-notation-legend`
-
-**Change**: Add a notation/legend section at the bottom of each flowchart tooltip listing variable definitions
-
-**Scope**: EKF flowchart component - enhance existing tooltips from Item 36 with variable definitions
-
-**Design**:
-- Add "Notation" or "Variables" section at bottom of each tooltip
-- List all variables used in that step with their definitions
-- Format as clean, readable list (e.g., `x_k: state vector`, `P_k: covariance matrix`)
-- Reference definitions from FILTER_MATH.md Notation Summary (lines 454-477)
-- Keep notation section visually distinct from main tooltip content
-- Include only variables relevant to that specific flowchart step
-
-**Files**: `components/ekf-flowchart.js` (enhance existing tooltip data)
-
-**Acceptance Criteria**:
-- ✓ Each tooltip has a "Notation" section at the bottom
-- ✓ Notation lists all variables used in that step
-- ✓ Definitions are clear and match FILTER_MATH.md reference
-- ✓ Notation section is visually distinct
-- ✓ No duplicate variable listings
-- ✓ Formatting is clean and readable
-- ✓ Responsive on all breakpoints
-- ✓ No performance regression from Item 36 implementation
-
-**Verification**:
-- Hover over flowchart nodes
-- Check notation section appears at bottom of each tooltip
-- Verify variable definitions are accurate
-- Compare definitions with FILTER_MATH.md
-- Test on desktop/tablet/mobile
-- Verify visual hierarchy and readability
 
 ---
 
