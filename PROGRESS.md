@@ -13,69 +13,64 @@
 | 12 | Drag chart to navigate history when paused | `f68aa3b` |
 | 13-16 | 304px width, Record/Download toggle, splash ≋ | `b479cda`..`8096d2f` |
 | 17 | Header revamp: slot-based sims, problem type selector | `f4638fa` |
+| 18 | GIF recording alongside JSON export | `31f1e3a`, `e4d0fb5` |
 | 19 | EKF flowchart component (vertical/horizontal) | `42328d3` |
+| 20 | Problem type card icons + gradient overlay | `0648e27` |
+| 22 | Limit to 3 simulation slots per problem type | `8fde1a2` |
+| 23 | Unify highlight color to blue-500 across tabs | `b8a4b8e` |
+| 25 | Simulation slot hover highlight enhancement | `e36394e`, `a82dc5c` |
+| 21 | Splash hold-to-sustain with decay animation | `e27248d`, `5b8406c` |
 
-**Merges**: `6baa407` (Item 19), `2d67481` (timeline-slider)
+**Merges**: `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. 🚧 Item 18 → 2. ❌ Item 20 → 3. ❌ Item 21
+**Priority**: 1. ❌ Item 24
 
 ---
 
-### Item 18: GIF Recording 🚧
-**Branch**: `feat/gif-recording` | **Blocker**: BUG-10
+### Item 24: Reset Button → ✕ with Full Reset ❌
+**Branch**: `feat/reset-button`
 
-Capture chart grid as GIF (html2canvas + gif.js, 15fps)
+**Change**: Replace ↺ with ✕, reset both name AND settings on click
 
-**Done when**: ● starts JSON+GIF capture, ↓ downloads both with matching timestamps
+**Behavior**:
+- Click ✕ → immediately reset slot name to default ("Sim 1", "Sim 2", etc.)
+- Click ✕ → immediately reset all parameters to defaults
+- No confirm dialog
 
-**Acceptance**: [ ] GIF downloads [ ] Shows 4 charts in grid [ ] Timestamps match JSON
+**Files**: `components/simulation-slot.js`, `controllers/simulation-controller.js`
 
----
+**Acceptance Criteria**:
+- ✓ Reset button displays ✕ (not ↺)
+- ✓ Click ✕ → slot name reverts to default ("Sim 1", "Sim 2", "Sim 3")
+- ✓ Click ✕ → all parameter values reset to defaults (frequency, amplitude, damping, etc.)
+- ✓ Reset is immediate (no confirmation dialog, no delay)
+- ✓ Charts update immediately to reflect default parameters
+- ✓ No ↺ button visible anywhere
 
-### Item 20: Problem Type Card Styling ❌
-**Branch**: `feat/problem-type-styling` (started, has wave icon)
-
-Wave = custom icon + gradient overlay; others = "Coming Soon"
-
-**Files**: `components/problem-type-selector.js`, `assets/icons/problem-types/`
-
-**Done when**: Cards have icons with gradient overlay, selection unchanged
-
----
-
-### Item 21: Splash Hold-to-Sustain ❌
-**Branch**: `feat/splash-hold`
-
-**Envelope**: 1s half-sin ramp up → sustain at 1 → 1s half-sin ramp down
-- **Click**: full bump (up→down)
-- **Hold**: sustain until release or 6s timeout
-- **Animation**: progress bar fills left→right (6s), same blue
-
-**Files**: `components/parameter-controls.js`, `controllers/simulation-controller.js`
-
-**Done when**: Wide button, hold sustains, bar animates, auto-cutoff at 6s
+**Verification**:
+- Edit slot name → click ✕ → name reverts to default
+- Change parameters → click ✕ → all parameters reset to defaults
+- Observe charts update immediately
+- Confirm ✕ icon displays and ↺ is not visible
 
 ---
 
 ## Bugs
 
 ### Open
-- **BUG-11**: Splash progress bar behavior incorrect
+- **BUG-11**: Splash progress bar behavior
   - Symptoms: Progress shows immediately on click, doesn't stop on release, abrupt color change
   - Expected: Only show progress if held > 0.5s, stop when released, fade color on release
   - Files: `components/parameter-controls.js`, `controllers/simulation-controller.js`
   - Status: Investigating
 
-### Fixed (pending Director update)
-- **BUG-10**: GIF renders charts stacked (not grid) — Fixed `e4d0fb5`
-
 ### Fixed
-BUG-1→9: scroll, reset, tick labels, tab switch, button size, slot switch, white bubble, all charts ticks, wheel zoom
-(`08b94ac`, `5682d7c`, `98b6186`, `1745f53`, `0d9b12a`, `db3e1d8`, `c2ccd8b`)
+BUG-1→10: scroll, reset, tick labels, tab switch, button size, slot switch, white bubble, all charts ticks, wheel zoom, GIF grid layout
+(`08b94ac`, `5682d7c`, `98b6186`, `1745f53`, `0d9b12a`, `db3e1d8`, `c2ccd8b`, `e4d0fb5`)
 
 ---
 
