@@ -28,7 +28,39 @@
 
 ## Remaining Tasks
 
-**No planned features remaining.** 2 open bugs to investigate.
+**Priority**: 1. ❌ Item 26
+
+---
+
+### Item 26: Kalman Filter Math Verification ❌
+**Branch**: `doc/filter-math-verification`
+
+**Scope**: Verify filter algorithm (Kalman) and EKF against academic references
+
+**Deliverable**: README with mathematical derivations in LaTeX
+
+**Files**:
+- `FILTER_MATH.md` (new) - comprehensive math documentation
+- `controllers/kalman-filter.js` - inline math comments referencing document
+- `controllers/ekf-controller.js` - inline math comments referencing document
+
+**Acceptance Criteria**:
+- ✓ Kalman filter equations documented with LaTeX
+  - Predict step: x̂⁻ = Fx̂⁺, P⁻ = FP⁺Fᵀ + Q
+  - Update step: K = P⁻Hᵀ(HP⁻Hᵀ + R)⁻¹, x̂⁺ = x̂⁻ + K(z - Hx̂⁻)
+- ✓ EKF equations documented with LaTeX
+  - Jacobian matrices (F_x, H_x) defined and explained
+  - State transition function derivation
+  - Measurement model derivation
+- ✓ Equations verified against academic references (textbooks/papers)
+- ✓ Code comments link to relevant equations in documentation
+- ✓ Parameter definitions (Q, R, initial state covariance, etc.)
+
+**Verification**:
+- Read through FILTER_MATH.md - equations are clear and mathematically sound
+- Check code comments reference specific equations
+- Confirm math matches implementation logic
+- Cross-check against known Kalman/EKF references (e.g., Welch & Bishop, Bar-Shalom)
 
 ---
 
