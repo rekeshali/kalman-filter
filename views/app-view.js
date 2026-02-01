@@ -662,7 +662,8 @@ function EKFVisualization() {
           <SimulationGrid
             slots={currentSlots.map(slot => ({
               ...slot,
-              isActive: slot.id === activeSlotId
+              isActive: slot.id === activeSlotId,
+              isPlaceholder: activeProblemTypeId === 'placeholder'
             }))}
             columns={currentColumns}
             onSlotClick={handleSlotClick}
@@ -685,8 +686,8 @@ function EKFVisualization() {
         </div>
       </div>
 
-      {/* Welcome Screen */}
-      {activeSlotId === 'welcome' && (
+      {/* Welcome Screen or Placeholder Screen */}
+      {(activeSlotId === 'welcome' || activeProblemTypeId === 'placeholder') && (
         <WelcomeScreen
           onCreateSimulation={handleAddTab}
           problemType={problemTypes.find(pt => pt.id === activeProblemTypeId)}
@@ -694,7 +695,7 @@ function EKFVisualization() {
       )}
 
       {/* Simulation Content */}
-      {activeSlotId !== 'welcome' && (
+      {activeSlotId !== 'welcome' && activeProblemTypeId !== 'placeholder' && (
         <div className="flex-1 flex gap-4 px-24 py-4 overflow-hidden bg-gray-900">
           {/* LEFT COLUMN: Controls - Fixed width, always visible */}
           <div className="flex-shrink-0 space-y-3 overflow-y-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', width: '320px'}}>

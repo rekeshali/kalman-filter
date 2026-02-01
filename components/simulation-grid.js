@@ -48,6 +48,7 @@ function SimulationGrid({
             id={slot.id}
             name={slot.name}
             isActive={slot.isActive || false}
+            isPlaceholder={slot.isPlaceholder || false}
             onRename={(newName) => onSlotRename(slot.id, newName)}
             onReset={() => onSlotReset(slot.id)}
             onClick={() => onSlotClick(slot.id)}
