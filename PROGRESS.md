@@ -22,13 +22,15 @@
 | 21 | Splash hold-to-sustain with decay animation | `e27248d`, `5b8406c` |
 | 24 | Reset button ✕ with full slot reset | `938cbe8`, `c06d46f` |
 
-**Merges**: `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
+| 27 | Splash button explanation tooltip | `c958315`, `02ca97e` |
+
+**Merges**: `02ca97e` (Item 27), `c06d46f` (Item 24), `5b8406c` (Item 21), `a82dc5c` (Item 25), `b8a4b8e` (Item 23), `8fde1a2` (Item 22), `1ce8a94` (Item 20), `6baa407` (Item 19), `2d67481` (timeline-slider)
 
 ---
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 28 → 2. ❌ Item 29 → 3. ❌ Item 26 → 4. ❌ Item 27
+**Priority**: 1. ❌ Item 28 → 2. ❌ Item 29 → 3. ❌ Item 26
 
 ---
 
@@ -74,37 +76,6 @@
 - View app at different breakpoints (mobile, tablet, desktop)
 - Check alignment: banner edges should align with content edges
 - Use browser DevTools to measure margins and verify they match
-
----
-
-### Item 27: Splash Button Tooltip ❌
-**Branch**: `feat/splash-tooltip`
-
-**Change**: Add tooltip to splash button explaining functionality and value effects
-
-**Tooltip Content**:
-```
-SPLASH: Apply perturbation to system
-- Hold to sustain (up to 6s)
-- Affects: Amplitude & Frequency envelope
-- Release to fade (1s decay)
-```
-
-**Files**: `components/parameter-controls.js`
-
-**Acceptance Criteria**:
-- ✓ Tooltip appears on splash button hover
-- ✓ Tooltip explains what splash does (applies perturbation)
-- ✓ Tooltip states which values are affected (amplitude, frequency)
-- ✓ Tooltip includes usage instructions (hold, release, timing)
-- ✓ Tooltip styling consistent with app design
-- ✓ No tooltip text overflow or layout issues
-
-**Verification**:
-- Hover over splash button → tooltip appears
-- Read tooltip content - explains functionality clearly
-- Verify styling matches other tooltips in app
-- Check responsive behavior on different screen sizes
 
 ---
 
