@@ -226,7 +226,7 @@ class TabModel extends window.EventEmitter {
       const globalIndex = columnIndex * 3 + row + 1;
       slots.push({
         id: `${problemTypeId}-slot-${globalIndex}`,
-        name: `Simulation ${globalIndex}`,
+        name: `Wave Simulation ${globalIndex}`,
         problemTypeId: problemTypeId,
         columnIndex: columnIndex,
         rowIndex: row,
@@ -275,7 +275,7 @@ class TabModel extends window.EventEmitter {
       return false;
     }
 
-    const defaultName = `Simulation ${slot.globalIndex}`;
+    const defaultName = `Wave Simulation ${slot.globalIndex}`;
     const oldName = slot.name;
     slot.name = defaultName;
 
