@@ -37,7 +37,7 @@ function ProblemTypeSelector({ problemTypes, activeProblemTypeId, onProblemTypeC
               relative rounded-lg overflow-hidden cursor-pointer
               transition-all duration-200 border-2
               ${isActive
-                ? 'border-blue-400 brightness-110 shadow-lg'
+                ? 'border-blue-500 brightness-110 shadow-lg'
                 : 'border-gray-600 hover:border-gray-400 hover:scale-102 shadow-md'
               }
             `}
