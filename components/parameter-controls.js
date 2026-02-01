@@ -117,15 +117,15 @@ function SplashButton({ onStart, onEnd, progress, active }) {
       onTouchEnd={handleMouseUp}
       className={`relative flex-1 py-1 rounded font-medium overflow-hidden transition-all duration-300 ${
         isActiveDisplay
-          ? 'bg-blue-600 text-white'
+          ? 'bg-gray-600 text-white'
           : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
       }`}
       title="Click for bump, hold to sustain (6s max)"
     >
-      {/* Progress bar background - only show if held > 0.5s */}
+      {/* Progress bar - blue fill from left, only show if held > 0.5s */}
       {showProgress && isHolding && (
         <div
-          className="absolute inset-0 bg-blue-400 opacity-50"
+          className="absolute inset-0 bg-blue-600"
           style={{ width: `${progressPercent}%`, left: 0 }}
         />
       )}
