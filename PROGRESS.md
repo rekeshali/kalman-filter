@@ -37,7 +37,7 @@
 
 ## Remaining Tasks
 
-**Priority**: 1. ❌ Item 35 (header column spacing) → 2. ⏸️ Item 36 (backlog)
+**Priority**: 1. ❌ Item 36 (EKF flowchart math tooltips) → 2. ⏸️ Item 35 (backlog)
 
 ---
 
