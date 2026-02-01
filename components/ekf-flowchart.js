@@ -17,7 +17,8 @@ const EKF_BLOCKS = [
       title: 'Initialization:',
       formula: 'x₀ = [p₀, v₀]ᵀ = [0, 0]ᵀ\n\nP₀ = [σ²ₚ₀   0  ]\n     [  0   σ²ᵥ₀]',
       purpose: 'Set initial state estimate and uncertainty.',
-      intuition: 'Start with high uncertainty (large P₀). As measurements arrive, filter converges to true state.'
+      intuition: 'Start with high uncertainty (large P₀). As measurements arrive, filter converges to true state.',
+      notation: 'x₀: initial state vector [position, velocity]\nP₀: initial covariance matrix (uncertainty)\np₀, v₀: initial position and velocity\nσ²: variance (squared uncertainty)'
     }
   },
   {
@@ -32,7 +33,8 @@ const EKF_BLOCKS = [
       title: 'Reality Simulation:',
       formula: 'x(t) = A·sin(ωt) + η(t)\nη: OU process noise (mean-reverting)',
       purpose: 'Generate ground truth with realistic disturbances.',
-      intuition: 'Black line in charts. The "reality" our filter tries to track despite never directly observing it.'
+      intuition: 'Black line in charts. The "reality" our filter tries to track despite never directly observing it.',
+      notation: 'x(t): true position at time t\nA: wave amplitude\nω: angular frequency\nη(t): Ornstein-Uhlenbeck process noise'
     }
   },
   {
@@ -47,7 +49,8 @@ const EKF_BLOCKS = [
       title: 'State Prediction:',
       formula: 'x̂ₖ₊₁⁻ = F·x̂ₖ⁺ + B·uₖ\n\nF = [1  Δt]    B = [½Δt²]\n    [0   1]        [ Δt ]\n\nExpanded:\np̂ₖ₊₁⁻ = p̂ₖ⁺ + v̂ₖ⁺·Δt + ½uₖ·Δt²\nv̂ₖ₊₁⁻ = v̂ₖ⁺ + uₖ·Δt\n\nuₖ = aₘₑₐₛ - bₐ (bias-corrected accel)',
       purpose: 'Use acceleration measurement to predict next position and velocity.',
-      intuition: 'Dead reckoning - where do we think we are based on motion? Uncertainty grows due to imperfect model.'
+      intuition: 'Dead reckoning - where do we think we are based on motion? Uncertainty grows due to imperfect model.',
+      notation: 'x̂⁻: prior (predicted) state estimate\nx̂⁺: posterior (updated) state estimate\nF: state transition matrix\nB: control input matrix\nuₖ: control input (bias-corrected acceleration)\nΔt: time step\nbₐ: acceleration bias'
     }
   },
   {
@@ -62,7 +65,8 @@ const EKF_BLOCKS = [
       title: 'Linearization Matrices:',
       formula: 'F = ∂f/∂x = [1  Δt]  (state transition)\n            [0   1]\n\nH = ∂h/∂x = [1  0]  (measurement)\n\nFor our linear model, Jacobians are exact\n(no linearization error).',
       purpose: 'Linearize nonlinear dynamics for Gaussian propagation.',
-      intuition: 'EKF approximates nonlinear system as locally linear. For our linear model, Jacobians are exact.'
+      intuition: 'EKF approximates nonlinear system as locally linear. For our linear model, Jacobians are exact.',
+      notation: 'F: state transition matrix (Jacobian)\nH: measurement matrix (Jacobian)\n∂f/∂x: partial derivative of state model\n∂h/∂x: partial derivative of measurement model'
     }
   },
   {
@@ -77,7 +81,8 @@ const EKF_BLOCKS = [
       title: 'Uncertainty Propagation:',
       formula: 'P̄ₖ₊₁ = F·Pₖ·Fᵀ + Q\n\nQ = σₐ²·B·Bᵀ = σₐ²·[Δt⁴/4  Δt³/2]\n                   [Δt³/2   Δt² ]\n\nExpanded P̄:\nP̄ₚₚ = Pₚₚ + 2Δt·Pₚᵥ + Δt²·Pᵥᵥ + Qₚₚ\nP̄ₚᵥ = Pₚᵥ + Δt·Pᵥᵥ + Qₚᵥ\nP̄ᵥᵥ = Pᵥᵥ + Qᵥᵥ',
       purpose: 'Grow uncertainty during prediction due to process noise.',
-      intuition: 'Uncertainty grows when we predict without measurements. Q represents model imperfections. See Uncertainty chart.'
+      intuition: 'Uncertainty grows when we predict without measurements. Q represents model imperfections. See Uncertainty chart.',
+      notation: 'P: state covariance matrix (uncertainty)\nP̄: prior covariance (after prediction)\nF: state transition matrix\nQ: process noise covariance\nσₐ: acceleration/process noise std dev\nB: control input matrix'
     }
   },
   {
@@ -93,7 +98,8 @@ const EKF_BLOCKS = [
       formula: 'K = P̄·Hᵀ·S⁻¹\n\nS = H·P̄·Hᵀ + R = P̄ₚₚ + R  (scalar)\n\nK = [P̄ₚₚ/S]  = [K₁]\n    [P̄ᵥₚ/S]    [K₂]\n\nK₁: position gain, K₂: velocity gain',
       purpose: 'Balance trust between prediction and measurement.',
       intuition: 'K→1: trust measurement (low R). K→0: trust prediction (high R). S is innovation covariance.',
-      chart: 'Kalman Gain chart shows K over time. Watch it adapt to changing uncertainty!'
+      chart: 'Kalman Gain chart shows K over time. Watch it adapt to changing uncertainty!',
+      notation: 'K: Kalman gain (optimal weight)\nP̄: prior covariance\nH: measurement matrix\nS: innovation covariance\nR: measurement noise variance'
     }
   },
   {
@@ -109,7 +115,8 @@ const EKF_BLOCKS = [
       formula: 'y = zᶜᵒʳʳ - H·x̂⁻\n\nzᶜᵒʳʳ = zₘₑₐₛ - bᵤ  (bias-corrected)\n\nSince H = [1  0]:\ny = zᶜᵒʳʳ - p̂⁻  (scalar)',
       purpose: 'Quantify prediction error using measurement.',
       intuition: 'How surprised are we by the measurement? Large innovation means poor prediction.',
-      chart: 'Innovation chart should be zero-mean white noise if filter is tuned correctly.'
+      chart: 'Innovation chart should be zero-mean white noise if filter is tuned correctly.',
+      notation: 'y: innovation (measurement residual)\nz: measurement (position)\nH: measurement matrix\nx̂⁻: prior state estimate\nb_z: measurement bias'
     }
   },
   {
@@ -125,7 +132,8 @@ const EKF_BLOCKS = [
       formula: 'x̂⁺ = x̂⁻ + K·y\n\nExpanded:\np̂⁺ = p̂⁻ + K₁·y\nv̂⁺ = v̂⁻ + K₂·y\n\nCorrection = Gain × Innovation',
       purpose: 'Fuse prediction with measurement for optimal estimate.',
       intuition: 'Pull prediction toward measurement by K·y. This is the magic of Kalman filtering!',
-      chart: 'Red line (EKF estimate) tracks black (true) by correcting predictions with measurements.'
+      chart: 'Red line (EKF estimate) tracks black (true) by correcting predictions with measurements.',
+      notation: 'x̂⁺: posterior (updated) state estimate\nx̂⁻: prior (predicted) state estimate\nK: Kalman gain\ny: innovation (residual)\np̂, v̂: position and velocity estimates'
     }
   },
   {
@@ -141,7 +149,8 @@ const EKF_BLOCKS = [
       formula: 'P⁺ = (I - K·H)·P̄\n\nI - K·H = [1-K₁  0]\n          [-K₂   1]\n\nReduced uncertainty after measurement:\nP⁺ₚₚ = (1-K₁)·P̄ₚₚ\nP⁺ₚᵥ = (1-K₁)·P̄ₚᵥ\nP⁺ᵥᵥ = -K₂·P̄ᵥₚ + P̄ᵥᵥ',
       purpose: 'Reduce uncertainty after incorporating measurement.',
       intuition: 'Measurements give us information, reducing uncertainty. Uncertainty decreases after update, grows after prediction.',
-      chart: 'Uncertainty chart shows σ decreasing as filter converges, then stabilizing.'
+      chart: 'Uncertainty chart shows σ decreasing as filter converges, then stabilizing.',
+      notation: 'P⁺: posterior covariance (after update)\nP̄: prior covariance (before update)\nK: Kalman gain\nH: measurement matrix\nI: identity matrix'
     }
   }
 ];
@@ -217,7 +226,15 @@ function EKFBlock({ block, direction, compact, skinny = false }) {
           </div>
           <p className="mb-1"><strong>Purpose:</strong> {block.tooltip.purpose}</p>
           <p className="mb-1"><strong>Intuition:</strong> {block.tooltip.intuition}</p>
-          {block.tooltip.chart && <p><strong>Chart:</strong> {block.tooltip.chart}</p>}
+          {block.tooltip.chart && <p className="mb-2"><strong>Chart:</strong> {block.tooltip.chart}</p>}
+          {block.tooltip.notation && (
+            <div className="mt-3 pt-3 border-t border-gray-300">
+              <strong className="block mb-1 text-gray-700">Notation:</strong>
+              <div className="text-xs text-gray-600 whitespace-pre-line">
+                {block.tooltip.notation}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -235,7 +252,15 @@ function EKFBlock({ block, direction, compact, skinny = false }) {
         </div>
         <p className="mb-1"><strong>Purpose:</strong> {block.tooltip.purpose}</p>
         <p className="mb-1"><strong>Intuition:</strong> {block.tooltip.intuition}</p>
-        {block.tooltip.chart && <p><strong>Chart:</strong> {block.tooltip.chart}</p>}
+        {block.tooltip.chart && <p className="mb-2"><strong>Chart:</strong> {block.tooltip.chart}</p>}
+        {block.tooltip.notation && (
+          <div className="mt-3 pt-3 border-t border-gray-600">
+            <strong className="block mb-1 text-gray-300">Notation:</strong>
+            <div className="text-xs text-gray-400 whitespace-pre-line">
+              {block.tooltip.notation}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
