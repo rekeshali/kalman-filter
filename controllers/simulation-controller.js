@@ -1302,7 +1302,11 @@ class SimulationController extends window.EventEmitter {
    * @returns {boolean} Success
    */
   renameSlot(slotId, newName) {
-    return this.tabModel.renameSlot(slotId, newName);
+    const success = this.tabModel.renameSlot(slotId, newName);
+    if (success) {
+      this.emit('slot-renamed', { slotId, newName });
+    }
+    return success;
   }
 
   /**
