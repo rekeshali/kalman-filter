@@ -19,6 +19,9 @@ function EKFVisualization() {
   const uncertaintyChartRef = useRef(null);
   const errorChartRef = useRef(null);
 
+  // Chart grid container ref for GIF recording
+  const chartGridRef = useRef(null);
+
   // Force re-render when controller state changes
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
@@ -204,28 +207,88 @@ function EKFVisualization() {
     };
   }, []);
 
-  // Pan/zoom configuration for Chart.js plugin
+  // Set chart grid element for GIF recording
+  useEffect(() => {
+    if (controllerRef.current && chartGridRef.current) {
+      controllerRef.current.setChartGridElement(chartGridRef.current);
+    }
+  }, []);
+
+  // Track drag state for custom pan handling
+  const dragStateRef = useRef({ isDragging: false, startX: 0, startPosition: 0 });
+
+  // Custom drag handlers for timeline navigation (when paused)
+  const handleChartMouseDown = (e) => {
+    if (controllerRef.current?.getIsRunning()) return;  // Only when paused
+
+    const timelineInfo = controllerRef.current?.getTimelineInfo() || { position: 100, totalPoints: 0 };
+    if (timelineInfo.totalPoints < 400) return;  // Need history to navigate
+
+    dragStateRef.current = {
+      isDragging: true,
+      startX: e.clientX,
+      startPosition: timelineInfo.position
+    };
+  };
+
+  const handleChartMouseMove = (e) => {
+    if (!dragStateRef.current.isDragging) return;
+    if (!controllerRef.current) return;
+
+    const timelineInfo = controllerRef.current.getTimelineInfo();
+    if (timelineInfo.totalPoints === 0) return;
+
+    // Calculate drag delta in pixels
+    const deltaX = e.clientX - dragStateRef.current.startX;
+
+    // Use the chart grid ref for consistent width
+    const chartWidth = chartGridRef.current?.offsetWidth || 800;
+    const viewportPercent = 100 * (400 / timelineInfo.totalPoints);
+
+    // Drag right = pull content right = see earlier data = decrease position
+    // Drag left = pull content left = see later data = increase position
+    const deltaPercent = -(deltaX / chartWidth) * viewportPercent;
+
+    const newPosition = Math.max(0, Math.min(100, dragStateRef.current.startPosition + deltaPercent));
+    controllerRef.current.handleTimelineChange(newPosition);
+  };
+
+  const handleChartMouseUp = (e) => {
+    if (dragStateRef.current.isDragging) {
+      dragStateRef.current.isDragging = false;
+      e.target.style.cursor = 'grab';
+    }
+  };
+
+  const handleChartMouseLeave = (e) => {
+    if (dragStateRef.current.isDragging) {
+      dragStateRef.current.isDragging = false;
+      e.target.style.cursor = '';
+    }
+  };
+
+  // Pan/zoom configuration for Chart.js plugin (zoom only, pan disabled)
   const createPanZoomConfig = () => ({
     pan: {
-      enabled: false,  // Disabled - using timeline slider instead
+      enabled: false  // Using custom drag handler instead
     },
     zoom: {
       wheel: {
         enabled: true,
-        speed: 0.1,  // Mouse wheel zoom speed
+        speed: 0.1,
         mode: 'x'
       },
       pinch: {
         enabled: true,
-        mode: 'x'  // Pinch in = zoom in (more detail), pinch out = zoom out (more data)
+        mode: 'x'
       },
       mode: 'x'
     },
     limits: {
       x: {
-        min: 'original',  // Can't pan before start of data
-        max: 'original',  // Can't pan beyond end of data
-        minRange: 0.01   // Minimum zoom: 1% of total data (prevents zooming in too far)
+        min: 'original',
+        max: 'original',
+        minRange: 0.01
       },
       y: {
         min: 'original',
@@ -539,7 +602,15 @@ function EKFVisualization() {
 
           {/* RIGHT SIDE: Charts - Can overflow to the right */}
           <div className="flex-1 overflow-x-auto pr-2" style={{maxHeight: 'calc(100vh - 120px)', minWidth: 0, overflowY: 'scroll'}}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{minWidth: '800px'}}>
+            <div
+              ref={chartGridRef}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              style={{minWidth: '800px', cursor: isRunning ? 'default' : 'grab'}}
+              onMouseDown={handleChartMouseDown}
+              onMouseMove={handleChartMouseMove}
+              onMouseUp={handleChartMouseUp}
+              onMouseLeave={handleChartMouseLeave}
+            >
               {/* Row 1: Position Tracking (spanning 2 cols) */}
               <div className="md:col-span-2 h-80">
                 <ChartCanvas ref={positionChartRef} />
