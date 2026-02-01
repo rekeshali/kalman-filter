@@ -38,6 +38,10 @@ function WelcomeScreen({ onCreateSimulation, problemType }) {
         {/* LEFT SIDE: Kalman Filter Explanation */}
         <div className="space-y-6">
           <div className="bg-gray-800 border border-gray-600 rounded-lg p-6 shadow-lg">
+            <div className="mb-6">
+              <EKFFlowchart direction="vertical" />
+            </div>
+
             <h2 className="text-2xl font-bold mb-4 text-white">How a Kalman Filter Works</h2>
             <p className="text-gray-200 mb-4">
               The Kalman filter is an optimal recursive algorithm for estimating the state of a system from noisy measurements.
@@ -60,10 +64,6 @@ function WelcomeScreen({ onCreateSimulation, problemType }) {
                   The gain balances trust between the model and measurements. Uncertainty decreases.
                 </p>
               </div>
-            </div>
-
-            <div className="mt-6">
-              <EKFFlowchart direction="vertical" />
             </div>
           </div>
         </div>
