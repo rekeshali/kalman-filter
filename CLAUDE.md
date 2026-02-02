@@ -1,0 +1,1 @@
+/Users/rma/.claude-hitmen/CLAUDE.md
