@@ -6,8 +6,8 @@ labels: ''
 ---
 
 <!--
-TITLE FORMAT: <type>: <concise outcome>
-Examples: "Feature: Add timeline scrubbing", "Bug: Slider drift"
+TITLE FORMAT: <type>[SCOPE]: <concise outcome>
+Examples: "feat[UI]: Add timeline scrubbing", "fix[ASSETS]: Slider drift"
 Details belong in the fields below, not the title.
 -->
 

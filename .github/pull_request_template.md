@@ -1,6 +1,6 @@
 <!--
-PR TITLE FORMAT: <type>: <outcome> (#<issue>)
-Examples: "feat: Add auth flow (#42)", "fix: Slider drift (#17)"
+PR TITLE FORMAT: <type>[SCOPE]: <outcome> (#<issue>)
+Examples: "feat[AUTH]: Add login flow (#42)", "fix[SLIDER]: Drift on endTime (#17)"
 -->
 
 ## Summary
