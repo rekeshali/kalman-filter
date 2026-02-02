@@ -3,11 +3,15 @@
  *
  * NOISE LEVEL RATIONALE (Issue #50):
  * The Kalman gain K[0] = P⁻₁₁ / (P⁻₁₁ + R) where R = σz² (measurement noise variance).
- * Process noise contributes to P via Q[0][0] = σₐ² × dt⁴/4 (CWNA model).
- * Due to the dt⁴ factor (~6e-6 at 50ms), process noise σₐ must be ~800× larger
- * than measurement noise σz to achieve comparable effect on K.
+ * Process noise contributes to P via Q matrix (CWNA model):
+ *   Q[0][0] = σₐ² × dt⁴/4  (position - tiny due to dt⁴)
+ *   Q[1][0] = σₐ² × dt³/2  (cross-covariance - 40× larger than Q[0][0])
+ *   Q[1][1] = σₐ² × dt²    (velocity - 1600× larger than Q[0][0])
  *
- * At 'med' settings: σₐ=400, σz=0.5 → Q[0][0] ≈ R ≈ 0.25 → K ≈ 0.5
+ * To keep velocity gain K[1] < 1, we need moderate σₐ values.
+ * K[0] will trend toward 1 (trust measurements) but responds to parameter changes.
+ *
+ * At 'med' settings: σₐ=30, σz=0.5 → K[0] ≈ 0.7-0.9, K[1] < 0.5
  */
 
 // Inertial sensor noise level mappings (TRUE noise in simulation)
@@ -51,20 +55,20 @@ const JITTER_LEVELS = {
 };
 
 // EKF process noise level mappings (what the filter THINKS the noise is)
-// Much larger than TRUE noise to make K responsive (see rationale above)
+// Moderate values to keep K[1] (velocity gain) below 1 while K[0] responds
 const EKF_PROCESS_NOISE_LEVELS = {
   zero: 0,
-  low: 100,
-  med: 400,
-  high: 1000
+  low: 10,
+  med: 30,
+  high: 60
 };
 
 // EKF measurement noise level mappings (what the filter THINKS the probe noise is)
 const EKF_PROBE_NOISE_LEVELS = {
   zero: 0,
-  low: 0.1,
+  low: 0.2,
   med: 0.5,
-  high: 2.0
+  high: 1.0
 };
 
 // Default parameter values
