@@ -82,16 +82,16 @@ class ParameterModel extends window.EventEmitter {
     const scale = this.params.scale || 1.0;
 
     return {
-      // Inertial sensor parameters
+      // Inertial sensor parameters (TRUE = simulation, EKF = what filter thinks)
       trueInertialNoise: window.Config.NOISE_LEVELS[this.params.trueInertialNoise] * scale,
       trueInertialBias: window.Config.BIAS_LEVELS[this.params.trueInertialBias] * scale,
-      ekfProcessNoise: window.Config.NOISE_LEVELS[this.params.ekfProcessNoise] * scale,
+      ekfProcessNoise: window.Config.EKF_PROCESS_NOISE_LEVELS[this.params.ekfProcessNoise],  // No scale - absolute value
       ekfInertialBias: window.Config.BIAS_LEVELS[this.params.ekfInertialBias] * scale,
 
-      // External probe parameters
+      // External probe parameters (TRUE = simulation, EKF = what filter thinks)
       trueProbeNoise: window.Config.PROBE_NOISE_LEVELS[this.params.trueProbeNoise] * scale,
       trueProbeBias: window.Config.PROBE_BIAS_LEVELS[this.params.trueProbeBias] * scale,
-      ekfProbeNoise: window.Config.PROBE_NOISE_LEVELS[this.params.ekfProbeNoise] * scale,
+      ekfProbeNoise: window.Config.EKF_PROBE_NOISE_LEVELS[this.params.ekfProbeNoise],  // No scale - absolute value
       ekfProbeBias: window.Config.PROBE_BIAS_LEVELS[this.params.ekfProbeBias] * scale,
 
       // Wave parameters
