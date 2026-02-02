@@ -1,7 +1,7 @@
 ---
 name: Feature / Task
 about: Create a new feature, task, or bug fix issue
-title: '[TYPE]: '
+title: ''
 labels: ''
 ---
 
