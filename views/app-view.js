@@ -648,15 +648,18 @@ function EKFVisualization() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900">
-      {/* Header - Three Section Layout */}
+      {/* Header - Three Section Layout with Dividers */}
       <div className="bg-gradient-to-r from-blue-900 to-purple-900 border-b border-blue-600">
-        <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 px-24 py-4 items-center">
+        <div className="grid grid-cols-[auto_auto_1fr_auto_auto] gap-x-6 px-24 py-4 items-center">
           {/* Left: Problem Type Selector */}
           <ProblemTypeSelector
             problemTypes={problemTypes}
             activeProblemTypeId={activeProblemTypeId}
             onProblemTypeChange={handleProblemTypeChange}
           />
+
+          {/* Divider */}
+          <div className="w-px h-12 bg-white/20"></div>
 
           {/* Center: Simulation Grid + EKF Flowchart */}
           <SimulationGrid
@@ -676,6 +679,9 @@ function EKFVisualization() {
               <EKFFlowchart direction="horizontal" compact={true} />
             </div>
           </SimulationGrid>
+
+          {/* Divider */}
+          <div className="w-px h-12 bg-white/20"></div>
 
           {/* Right: Title */}
           <div className="text-right pr-4">
